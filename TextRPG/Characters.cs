@@ -14,6 +14,8 @@ namespace TextRPG
         private float health;
         private float maxMagicPoint;
         private float magicPoint;
+        private int criticalHitChance;
+        private int criticalHitDamagePercentage;
         private int level;
         private AttackStat attackStat;
         private DefendStat defendStat;
@@ -25,17 +27,21 @@ namespace TextRPG
         public float Health { get { return health; } set { health = value; } }
         public float MaxMagicPoint { get { return maxMagicPoint; } set { maxMagicPoint = value; } }
         public float MagicPoint { get { return magicPoint; } set { magicPoint = value; } }
+        public int CriticalHitChance { get { return criticalHitChance; } set { criticalHitChance = value; } }
+        public int CriticalHitDamagePercentage { get { return criticalHitDamagePercentage; } set { criticalHitDamagePercentage = value; } }
         public AttackStat AttackStat { get { return attackStat; } set { attackStat = value; } }
         public DefendStat DefendStat { get { return defendStat; } set { defendStat = value; } }
 
         // Constructor
-        public CharacterStat(string name, float maxHealth, float maxMagicPoint, int level, AttackStat attackStat, DefendStat defendStat)
+        public CharacterStat(string name, float maxHealth, float maxMagicPoint, int criticalHitChange, int criticalHitDamagePercentage, int level, AttackStat attackStat, DefendStat defendStat)
         {
             Name = name;
             MaxHealth = maxHealth;
             Health = maxHealth;
             MaxMagicPoint = maxMagicPoint;
             MagicPoint = maxMagicPoint;
+            CriticalHitChance = criticalHitChange;
+            CriticalHitDamagePercentage = criticalHitDamagePercentage;
             Level = level;
             AttackStat = attackStat;
             DefendStat = defendStat;
@@ -48,13 +54,15 @@ namespace TextRPG
             Health = characterStat.Health;
             MaxMagicPoint = characterStat.MaxMagicPoint;
             MagicPoint = characterStat.MagicPoint;
+            CriticalHitChance = characterStat.CriticalHitChance;
+            CriticalHitDamagePercentage = characterStat.CriticalHitDamagePercentage;
             Level = characterStat.Level;
             AttackStat = new(characterStat.AttackStat);
             DefendStat = new(characterStat.DefendStat);
         }
 
         [JsonConstructor]
-        public CharacterStat(string name, float maxHealth, float health, float maxMagicPoint, float magicPoint, int level, AttackStat attackStat, DefendStat defendStat)
+        public CharacterStat(string name, float maxHealth, float health, float maxMagicPoint, float magicPoint, int criticalHitChange, int criticalHitDamagePercentage, int level, AttackStat attackStat, DefendStat defendStat)
         {
             Name = name ?? "Unknown";
             MaxHealth = maxHealth;
@@ -85,6 +93,8 @@ namespace TextRPG
         [JsonInclude] public float Health { get { return characterStat.Health; } protected set { characterStat.Health = Math.Clamp(value, 0, MaxHealth); } }
         [JsonInclude] public float MaxMagicPoint { get { return characterStat.MaxMagicPoint; } protected set { characterStat.MaxMagicPoint = value; } }
         [JsonInclude] public float MagicPoint { get { return characterStat.MagicPoint; } protected set { characterStat.MagicPoint = Math.Clamp(value,0, MaxMagicPoint); } }
+        [JsonInclude] public int CriticalHitChance { get { return characterStat.CriticalHitChance; } protected set { characterStat.CriticalHitChance = value; } }
+        [JsonInclude] public int CriticalHitDamagePercentage { get { return characterStat.CriticalHitDamagePercentage; } protected set { characterStat.CriticalHitDamagePercentage = value; } }
         [JsonInclude] public int Level { get { return characterStat.Level; } protected set { characterStat.Level = value; } }
         [JsonInclude] public AttackStat AttackStat { get { return characterStat.AttackStat; } set { characterStat.AttackStat = value; } }
         [JsonInclude] public DefendStat DefendStat { get { return characterStat.DefendStat; } set { characterStat.DefendStat = value; } }
@@ -111,9 +121,9 @@ namespace TextRPG
         }
 
         [JsonConstructor]
-        public Character(string name, float maxHealth, float health, float maxMagicPoint, float magicPoint, int level, AttackStat attackStat, DefendStat defendStat, int currency, int exp, bool isAlive)
+        public Character(string name, float maxHealth, float health, float maxMagicPoint, float magicPoint, int criticalHitChange, int criticalHitDamagePercentage, int level, AttackStat attackStat, DefendStat defendStat, int currency, int exp, bool isAlive)
         {
-            CharacterStat = new(name, maxHealth, health, maxMagicPoint, magicPoint, level, attackStat, defendStat);
+            CharacterStat = new(name, maxHealth, health, maxMagicPoint, magicPoint, criticalHitChange, criticalHitDamagePercentage, level, attackStat, defendStat);
             Currency = currency;
             Exp = exp;
             IsAlive = isAlive;
@@ -255,8 +265,12 @@ namespace TextRPG
         public Warrior(Warrior warrior) : base(warrior.CharacterStat, warrior.Currency, warrior.Exp) { job = Job.Warrior; }
 
         [JsonConstructor]
-        public Warrior(string name, float maxHealth, float health, float maxMagicPoint, float magicPoint, int level, AttackStat attackStat, DefendStat defendStat, int currency, int exp, bool isAlive, List<Armor> armors, List<Weapon> weapons, List<Consumables> consumables, Armor?[] equippedArmor, Weapon? equippedWeapon)
-            : base(name, maxHealth, health, maxMagicPoint, magicPoint, level, attackStat, defendStat, currency, exp, isAlive)
+        public Warrior(string name, float maxHealth, float health, float maxMagicPoint, float magicPoint, 
+            int criticalHitChange, int criticalHitDamagePercentage, int level, 
+            AttackStat attackStat, DefendStat defendStat, int currency, int exp, bool isAlive, 
+            List<Armor> armors, List<Weapon> weapons, List<Consumables> consumables, 
+            Armor?[] equippedArmor, Weapon? equippedWeapon)
+            : base(name, maxHealth, health, maxMagicPoint, magicPoint, criticalHitChange, criticalHitDamagePercentage, level, attackStat, defendStat, currency, exp, isAlive)
         {
             Job = Job.Warrior;
             Armors = armors ?? new List<Armor>();
@@ -288,8 +302,8 @@ namespace TextRPG
         public Wizard(Wizard wizard) : base(wizard.CharacterStat, wizard.Currency, wizard.Exp) { job = Job.Wizard; }
 
         [JsonConstructor]
-        public Wizard(string name, float maxHealth, float health, float maxMagicPoint, float magicPoint, int level, AttackStat attackStat, DefendStat defendStat, int currency, int exp, bool isAlive, List<Armor> armors, List<Weapon> weapons, List<Consumables> consumables, Armor?[] equippedArmor, Weapon? equippedWeapon)
-            : base(name, maxHealth, health, maxMagicPoint, magicPoint, level, attackStat, defendStat, currency, exp, isAlive)
+        public Wizard(string name, float maxHealth, float health, float maxMagicPoint, float magicPoint, int criticalHitChange, int criticalHitDamagePercentage, int level, AttackStat attackStat, DefendStat defendStat, int currency, int exp, bool isAlive, List<Armor> armors, List<Weapon> weapons, List<Consumables> consumables, Armor?[] equippedArmor, Weapon? equippedWeapon)
+            : base(name, maxHealth, health, maxMagicPoint, magicPoint, criticalHitChange, criticalHitDamagePercentage, level, attackStat, defendStat, currency, exp, isAlive)
         {
             Job = Job.Wizard;
             IsAlive = isAlive;
@@ -322,8 +336,8 @@ namespace TextRPG
         public Archer(Archer archer) : base(archer.CharacterStat, archer.Currency, archer.Exp) { job = Job.Archer; }
 
         [JsonConstructor]
-        public Archer(string name, float maxHealth, float health, float maxMagicPoint, float magicPoint, int level, AttackStat attackStat, DefendStat defendStat, int currency, int exp, bool isAlive, List<Armor> armors, List<Weapon> weapons, List<Consumables> consumables, Armor?[] equippedArmor, Weapon? equippedWeapon)
-            : base(name, maxHealth, health, maxMagicPoint, magicPoint, level, attackStat, defendStat, currency, exp, isAlive)
+        public Archer(string name, float maxHealth, float health, float maxMagicPoint, float magicPoint, int criticalHitChange, int criticalHitDamagePercentage, int level, AttackStat attackStat, DefendStat defendStat, int currency, int exp, bool isAlive, List<Armor> armors, List<Weapon> weapons, List<Consumables> consumables, Armor?[] equippedArmor, Weapon? equippedWeapon)
+            : base(name, maxHealth, health, maxMagicPoint, magicPoint, criticalHitChange, criticalHitDamagePercentage, level, attackStat, defendStat, currency, exp, isAlive)
         {
             Job = Job.Archer;
             IsAlive = isAlive;

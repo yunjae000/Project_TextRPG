@@ -5,12 +5,14 @@ namespace TextRPG
         // Field
         public GameManager GameManager { get; private set; }
         public SpawnManager SpawnManager { get; private set; }
+        public QuestManager QuestManager { get; private set; }
 
         // Constructor
-        public InGame(GameManager gameManager, SpawnManager spawnManager)
+        public InGame(GameManager gameManager, SpawnManager spawnManager, QuestManager questManager)
         {
             GameManager = gameManager;
-            SpawnManager = spawnManager;    
+            SpawnManager = spawnManager;
+            QuestManager = questManager;
         }
 
         /// <summary>
@@ -486,7 +488,7 @@ namespace TextRPG
         {
             // Game Start UI
             UIManager.StartUI();
-            InGame inGame = new(new GameManager(), new SpawnManager());
+            InGame inGame = new(new GameManager(), new SpawnManager(), new QuestManager());
 
             // Main Game
             inGame.MainGame();

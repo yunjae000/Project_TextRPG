@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Text;
 using System.Text.Json;
 
@@ -403,15 +404,51 @@ namespace TextRPG
     }
 
     /// <summary>
+    /// Manage quests
+    /// </summary>
+    class QuestManager
+    {
+        // Property
+        public int ContractedQuest { get; set; } = 0;
+        public int CompletedQuest { get; set; } = 0;
+
+        // Methods
+        public static IEnumerable GetContractedQuests_KillMonster()
+        {
+            return from quest in Quests
+                   where quest.IsContracted == true && quest.QuestType == QuestType.KillMonster
+                   select quest;
+        }
+
+        public static IEnumerable GetContractedQuests_CollectItem()
+        {
+            return from quest in Quests
+                   where quest.IsContracted == true && quest.QuestType == QuestType.CollectItem
+                   select quest;
+        }
+
+        public static IEnumerable GetQuests() { return Quests; }
+
+        private static Quest[] Quests =
+        {
+
+        };
+    }
+
+
+    /// <summary>
     /// Manage spawning monsters
     /// </summary>
     class SpawnManager
     {
+        // Property
         public List<Monster> spawnedMonsters = new();
         public int KilledMonsterCount { get; set; } = 0;
 
+        // Constructor
         public SpawnManager() { }
 
+        // Public Methods
         public void SpawnMonsters(Character character, int groundLevel)
         {
             int count = new Random().Next(1, 5);
@@ -439,14 +476,13 @@ namespace TextRPG
                 }
             }
         }
-        
-        // Public Methods
         public int GetMonsterCount() { return spawnedMonsters.Count; }
         public void ResetKillCount() { KilledMonsterCount = 0; }
         public void RemoveAllMonsters() { spawnedMonsters.Clear(); }
 
         // Private Methods
         // TODO: Increase monster stat based on ground level
+        // Set monster
         private void SetMonster(Monster monster, int groundLevel, Character character, int currency)
         {
             monster.Level = character.Level;
@@ -459,6 +495,8 @@ namespace TextRPG
             monster.OnDeath += () =>
             {
                 RemoveMonster(character, monster, currency);
+                var quests = QuestManager.GetContractedQuests_KillMonster();
+                foreach (KillMonsterQuest quest in quests) quest.OnProgress();
             };
         }
         private void AddMonster(Monster monster) { spawnedMonsters.Add(monster); }
@@ -478,7 +516,7 @@ namespace TextRPG
             spawnedMonsters.Remove(monster);
         }
 
-
+        // Return random items
         private Armor? GetRandomArmor(int level)
         {
             if (new Random().Next(1, 101) % 2 != 0) return null;
@@ -616,17 +654,17 @@ namespace TextRPG
                 case Job.Warrior:
                     Console.WriteLine("| You selected Warrior! |");
                     Console.Write("Type the name of your warrior : ");
-                    SelectedCharacter = new Warrior(new CharacterStat(Console.ReadLine(), 150, 50, 1, new AttackStat(30f, 6f, 1f), new DefendStat(25, 15, 5)), 100, 0);
+                    SelectedCharacter = new Warrior(new CharacterStat(Console.ReadLine(), 150, 50, 15, 160, 1, new AttackStat(30f, 6f, 1f), new DefendStat(25, 15, 5)), 100, 0);
                     break;
                 case Job.Wizard:
                     Console.WriteLine("| You selected Wizard! |");
                     Console.Write("Type the name of your wizard : ");
-                    SelectedCharacter = new Wizard(new CharacterStat(Console.ReadLine(), 100, 65, 1, new AttackStat(1f, 6f, 30f), new DefendStat(5, 10, 30)), 100, 0);
+                    SelectedCharacter = new Wizard(new CharacterStat(Console.ReadLine(), 100, 65, 15, 160, 1, new AttackStat(1f, 6f, 30f), new DefendStat(5, 10, 30)), 100, 0);
                     break;
                 case Job.Archer:
                     Console.WriteLine("| You selected Archer! |");
                     Console.Write("Type the name of your archer : ");
-                    SelectedCharacter = new Archer(new CharacterStat(Console.ReadLine(), 120, 80, 1, new AttackStat(6f, 30f, 1f), new DefendStat(15, 25, 5)), 100, 0);
+                    SelectedCharacter = new Archer(new CharacterStat(Console.ReadLine(), 120, 80, 15, 160, 1, new AttackStat(6f, 30f, 1f), new DefendStat(15, 25, 5)), 100, 0);
                     break;
             }
 
@@ -791,8 +829,8 @@ namespace TextRPG
             if (character.GetType().Equals(typeof(Warrior)))
             {
                 var basicSwords = from sword in ItemLists.Weapons
-                              where sword.GetType().Equals(typeof(Sword)) && sword.Rarity == Rarity.Common
-                              select sword;
+                                  where sword.GetType().Equals(typeof(Sword)) && sword.Rarity == Rarity.Common
+                                  select sword;
                 if (basicSwords.Count() > 0) { character.Weapons.Add(new Sword((Sword)basicSwords.First())); }
             }
             else if (character.GetType().Equals(typeof(Wizard)))
