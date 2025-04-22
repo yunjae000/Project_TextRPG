@@ -55,18 +55,31 @@ namespace TextRPG
                 else if(opt < 1 || opt > 4) { Console.WriteLine("| Invalid Input! |"); continue; }
                 switch (Math.Clamp(option, 1, 4))
                 {
-                    case 1: Console.WriteLine("| Have a great day! |"); return;
+                    case 1: Console.WriteLine("| Have a great day! |");
+                             return;
                     case 2:
                         if (GameManager.SelectedCharacter.Currency < 20) { Console.WriteLine("| Not enough Money! |"); }
-                        else { isSelected = true; }
+                        else 
+                        {
+                            foreach (string line in Miscs.Rest1) ;
+                            isSelected = true;                           
+                        }
                         break;
                     case 3:
                         if (GameManager.SelectedCharacter.Currency < 40) { Console.WriteLine("| Not enough Money! |"); }
-                        else { isSelected = true; }
+                        else
+                        {
+                            foreach (string line in Miscs.Rest2) ;
+                            isSelected = true;
+                        }
                         break;
                     case 4:
                         if (GameManager.SelectedCharacter.Currency < 60) { Console.WriteLine("| Not enough Money! |"); }
-                        else { isSelected = true; }
+                        else 
+                        {
+                            foreach (string line in Miscs.Rest3) ;
+                            isSelected = true;
+                        }
                         break;
                 }
             }
