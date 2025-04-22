@@ -35,7 +35,7 @@ namespace TextRPG
 
     interface IContractable
     {
-        public void OnContracted(Character character);
+        public void OnContracted();
         public void OnProgress();
         public void OnProgress(Character character);
         public void OnCompleted(Character character);

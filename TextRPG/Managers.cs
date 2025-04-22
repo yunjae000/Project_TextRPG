@@ -25,7 +25,8 @@ namespace TextRPG
 
         public static void InventoryUI(Character character)
         {
-            Console.WriteLine("\n| ----- Inventory ----- |");
+            Console.Clear();
+            Console.WriteLine("| ----- Inventory ----- |");
             Console.WriteLine("|\"Armors\" |");
             int i = 1;
             foreach(Armor armor in character.Armors) { Console.WriteLine($"{i++}. {armor}"); }
@@ -62,7 +63,8 @@ namespace TextRPG
 
         public static void ShopUI(Character character)
         {
-            Console.WriteLine("\n| ----- Welcome to Henry's Shop! ----- |");
+            Console.Clear();
+            Console.WriteLine("| ----- Welcome to Henry's Shop! ----- |");
             foreach(string line in Miscs.Henry) Console.WriteLine(line);
             Console.WriteLine("| ---------------------------------- |");
 
@@ -119,7 +121,8 @@ namespace TextRPG
 
         public static void CabinUI()
         {
-            Console.WriteLine("\n| ----- Welcome to Alby's Cabin! ----- |");
+            Console.Clear();
+            Console.WriteLine("| ----- Welcome to Alby's Cabin! ----- |");
             foreach(string line in Miscs.Alby) Console.WriteLine(line);
             Console.WriteLine("\n| Room Options |");
             Console.WriteLine("| 1. Back |");
@@ -130,9 +133,25 @@ namespace TextRPG
             Console.Write("\nChoose Room Option : ");
         }
 
+        public static void QuestUI()
+        {
+            Console.Clear();
+            Console.WriteLine("| ----- Welcome to Adventurers' Guild ----- |");
+            Console.WriteLine("\n| Actions |");
+            Console.WriteLine("| 1. Back |");
+            Console.WriteLine("| 2. Contract Quest |");
+            Console.WriteLine("| 3. Complete Quest |");
+            Console.WriteLine("| 4. Show Contractable Quests |");
+            Console.WriteLine("| 4. Show Contracted Quests |");
+            Console.WriteLine("| 5. Show Completed Quests |");
+            Console.WriteLine("| ------------------------------------------ |");
+            Console.Write("\nChoose Action : ");
+        }
+
         public static void StatusUI(Character character)
         {
-            Console.WriteLine("\n| ----- \"Character Info.\" ----- |");
+            Console.Clear();
+            Console.WriteLine("| ----- \"Character Info.\" ----- |");
             Console.WriteLine($"\n| \"Name\" : {character.Name} |");
             Console.WriteLine($"| \"Lv {character.Level:D2}\" |");
             Console.WriteLine($"| \"Experience\" : {character.Exp:F2} |");
@@ -408,30 +427,84 @@ namespace TextRPG
     /// </summary>
     class QuestManager
     {
-        // Property
-        public int ContractedQuest { get; set; } = 0;
-        public int CompletedQuest { get; set; } = 0;
-
         // Methods
-        public static IEnumerable GetContractedQuests_KillMonster()
+        /// <summary>
+        /// Get Contracted Quests
+        /// </summary>
+        /// <returns></returns>
+        public static IEnumerable<Quest> GetContractedQuests()
         {
-            return from quest in Quests
-                   where quest.IsContracted == true && quest.QuestType == QuestType.KillMonster
-                   select quest;
+            Console.WriteLine("\n| Contracted Quests |");
+            var contracted = from quest in Quests
+                                where quest.IsContracted == true && quest.IsCompleted == false
+                                select quest;
+            if (contracted.Count() < 1)
+                Console.WriteLine("| There are no quests available! |");
+            else Console.WriteLine($"| There are {contracted.Count()} quests available! |");
+            return contracted;
         }
 
-        public static IEnumerable GetContractedQuests_CollectItem()
+        /// <summary>
+        /// Get Contractable Quests
+        /// </summary>
+        /// <returns></returns>
+        public static IEnumerable<Quest> GetContractableQuests()
         {
-            return from quest in Quests
-                   where quest.IsContracted == true && quest.QuestType == QuestType.CollectItem
-                   select quest;
+            Console.WriteLine("\n| Contractable Quests |");
+            var contractables = from quest in Quests
+                                where quest.IsContracted == false && quest.IsCompleted == false
+                                select quest;
+            if (contractables.Count() < 1)
+                Console.WriteLine("| There are no quests available! |");
+            else Console.WriteLine($"| There are {contractables.Count()} quests available! |");
+            return contractables;
         }
 
-        public static IEnumerable GetQuests() { return Quests; }
+        /// <summary>
+        /// Get Completed Quests
+        /// </summary>
+        /// <returns></returns>
+        public static IEnumerable<Quest> GetCompletedQuests()
+        {
+            Console.WriteLine("\n| Completed Quests |");
+            var completed = from quest in Quests
+                             where quest.IsCompleted == true && quest.IsContracted == false
+                             select quest;
+            if (completed.Count() < 1)
+                Console.WriteLine("| There are no quests available! |");
+            else Console.WriteLine($"| There are {completed.Count()} quests available! |");
+            return completed;
+        }
 
+        /// <summary>
+        /// Get Completable Quests
+        /// </summary>
+        /// <returns></returns>
+        public static IEnumerable<Quest> GetCompletableQuests()
+        {
+            Console.WriteLine("\n| Completable Quests |");
+            var completables = from quest in Quests
+                             where quest.IsCompleted == true && quest.IsContracted == true
+                             select quest;
+            if (completables.Count() < 1)
+                Console.WriteLine("| There are no quests available! |");
+            else Console.WriteLine($"| There are {completables.Count()} quests available! |");
+            return completables;
+        }
+
+        /// <summary>
+        /// Get all quests
+        /// </summary>
+        /// <returns></returns>
+        public static IEnumerable<Quest> GetQuests() { return Quests; }
+
+        /// <summary>
+        /// Quest List
+        /// </summary>
         private static Quest[] Quests =
         {
-
+            new KillMonsterQuest("Please save us from monsters' attack", "Kill 5 Goblins", QuestDifficulty.Hard, 5, 120,300),
+            
         };
     }
 
