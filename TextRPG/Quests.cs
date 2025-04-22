@@ -1,3 +1,4 @@
+using System.Text;
 using System.Text.Json.Serialization;
 
 namespace TextRPG
@@ -110,6 +111,11 @@ namespace TextRPG
             Console.WriteLine($"\n| Quest '{Name}' |");
             Console.WriteLine($"| Progress: {QuestProgress}/{QuestGoal} |");
         }
+
+        internal void OnContracted()
+        {
+            throw new NotImplementedException();
+        }
     }
 
     /// <summary>
@@ -118,14 +124,14 @@ namespace TextRPG
     class NormalQuest : Quest, ICancelable
     {
         // Constructor
-        public NormalQuest(string name, string description, QuestDifficulty difficulty, QuestType questType, 
-                           int questGoal, int rewardExp, int rewardGold) 
+        public NormalQuest(string name, string description, QuestDifficulty difficulty, QuestType questType,
+                           int questGoal, int rewardExp, int rewardGold)
             : base(name, description, difficulty, questType, questGoal, rewardExp, rewardGold) { IsSpecial = false; }
         public NormalQuest(NormalQuest quest) : base(quest) { IsSpecial = false; }
         [JsonConstructor]
-        public NormalQuest(string name, string description, QuestDifficulty difficulty, QuestType questType, 
-                           int questProgress, int questGoal, int rewardExp, int rewardGold, 
-                           bool isCompleted, bool isSpecial) 
+        public NormalQuest(string name, string description, QuestDifficulty difficulty, QuestType questType,
+                           int questProgress, int questGoal, int rewardExp, int rewardGold,
+                           bool isCompleted, bool isSpecial)
             : base(name, description, difficulty, questType, questProgress, questGoal, rewardExp, rewardGold, isCompleted, isSpecial) { }
 
         /// <summary>
@@ -137,6 +143,16 @@ namespace TextRPG
             IsContracted = false;
             IsCompleted = false;
             QuestProgress = 0;
+        }
+        public virtual new string Tostring()
+        {
+            StringBuilder sb = new();
+            _ = IsSpecial == true ? sb.Append("| [★]") : sb.Append("| []");
+            sb.AppendLine($"Quest : '{Name}' |")
+              .AppendLine($"| Description : '{Description}' | ")
+              .AppendLine($"| Diff. : '{Difficulty}', Type : '{QuestType}' |")
+              .AppendLine($"| Exp. : '{RewardExp}', Gold : '{RewardGold} |");
+            return sb.ToString();
         }
     }
 
@@ -190,6 +206,16 @@ namespace TextRPG
         public override void OnCompleted(Character character)
         {
             base.OnCompleted(character);
+        }
+
+        public override string Tostring()
+        {
+            StringBuilder sb = new(base.Tostring());
+            if(IsContracted)
+            {
+                sb.AppendLine($"| Progress : {QuestProgress}/{QuestGoal} |");
+            }
+            return sb.ToString();
         }
     }
 

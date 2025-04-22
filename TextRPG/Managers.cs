@@ -136,8 +136,9 @@ namespace TextRPG
             Console.WriteLine("| 1. Back |");
             Console.WriteLine("| 2. Contract Quest |");
             Console.WriteLine("| 3. Complete Quest |");
-            Console.WriteLine("| 4. Show Contracted Quests |");
-            Console.WriteLine("| 5. Show Completed Quests |");
+            Console.WriteLine("| 4. Show Contractable Quests |");
+            Console.WriteLine("| 5. Show Contracted Quests |");
+            Console.WriteLine("| 6. Show Completed Quests |");
             Console.WriteLine("| -----------------------------------|");
             Console.WriteLine("\n| Choose Action : ");
         }
@@ -426,14 +427,14 @@ namespace TextRPG
         public int CompletedQuest { get; set; } = 0;
 
         // Methods
-        public static IEnumerable GetContractedQuests_KillMonster()
+        public static IEnumerable<Quest> GetContractedQuests_KillMonster()
         {
             return from quest in Quests
                    where quest.IsContracted == true && quest.QuestType == QuestType.KillMonster
                    select quest;
         }
 
-        public static IEnumerable GetContractedQuests_CollectItem()
+        public static IEnumerable<Quest> GetContractedQuests_CollectItem()
         {
             return from quest in Quests
                    where quest.IsContracted == true && quest.QuestType == QuestType.CollectItem
@@ -446,6 +447,56 @@ namespace TextRPG
         {
 
         };
+
+        /// <summary>
+        /// Get Contracted Quests
+        /// </summary>
+        /// <returns></returns>
+        public static IEnumerable<Quest> GetContractableQuests()
+        {
+            Console.WriteLine("\n| Contractable Quests |");
+            var contractables = from quest in Quests
+                                where quest.IsContracted == false && quest.IsCompleted == false
+                                select quest;
+            if (contractables.Count() < 1)
+                Console.WriteLine("| There are no quests available! |");
+            else Console.WriteLine($"| There are {contractables.Count()} quests available! |");
+            return contractables;
+        }
+        /// <summary>
+        /// Get Contracted Quests
+        /// </summary>
+        /// <returns></returns>
+        public static IEnumerable GetContractedQuests()
+        {
+            Console.WriteLine("\n| Contracted Quests |");
+            var contracted = from quest in Quests
+                             where quest.IsContracted == true && quest.IsCompleted == false
+                             select quest;
+            if (contracted.Count() < 1)
+                Console.WriteLine("| There are no quests available! |");
+            else Console.WriteLine($"| There are {contracted.Count()} quests available! |");
+            return contracted;
+        }
+        /// <summary>
+        /// Get Completed Quests
+        /// </summary>
+        /// <returns></returns>
+        /// <summary>
+        /// Get Completable Quests
+        /// </summary>
+        /// <returns> IEnumerable Array of Completable Quests </returns>
+        public static IEnumerable<Quest> GetCompletableQuests()
+        {
+            Console.WriteLine("\n| Completable Quests |");
+            var completables = from quest in Quests
+                               where quest.IsCompleted == true && quest.IsContracted == true
+                               select quest;
+            if (completables.Count() < 1)
+                Console.WriteLine("| There are no quests available! |");
+            else Console.WriteLine($"| There are {completables.Count()} quests available! |");
+            return completables;
+        }
     }
 
 

@@ -73,6 +73,13 @@ namespace TextRPG
         KillMonster,
         CollectItem,
     }
+    public enum QuestStatus
+    {
+        NotStarted,
+        InProgress,
+        Completable,
+        Completed,
+    }
     #endregion
 
     #region Game Mechanism Sources
