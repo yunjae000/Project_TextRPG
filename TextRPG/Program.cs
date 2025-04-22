@@ -416,21 +416,22 @@ namespace TextRPG
         private void InTown()
         {
             Console.Clear();
+
             UIManager.BaseUI(GameManager.SelectedCharacter, "The Town of Adventurers", typeof(IdleOptions));
 
             if (!int.TryParse(Console.ReadLine(), out int opt)) { Console.WriteLine("| Invalid Input! |"); return; }
             else if(opt < 1 || opt > Enum.GetValues(typeof(IdleOptions)).Length) { Console.WriteLine("| Invalid Input! |"); return; }
-                switch ((IdleOptions)(Math.Clamp(opt - 1, 0, Enum.GetValues(typeof(IdleOptions)).Length - 1)))
-                {
-                    case IdleOptions.Shop: InShop(); break;
-                    case IdleOptions.Quest: InQuest(); break;
-                    case IdleOptions.Dungeon: GameManager.GameState = GameState.Dungeon; break;
-                    case IdleOptions.Rest: InRest(); break;
-                    case IdleOptions.Inventory: InInventory(); break;
-                    case IdleOptions.Status: InStatus(); break;
-                    case IdleOptions.Option: InOption(); break;
-                    default: Console.WriteLine("| Something is wrong! |"); break;
-                }
+            switch ((IdleOptions)(Math.Clamp(opt - 1, 0, Enum.GetValues(typeof(IdleOptions)).Length - 1)))
+            {
+                case IdleOptions.Shop: InShop(); break;
+                case IdleOptions.Quest: InQuest(); break;
+                case IdleOptions.Dungeon: GameManager.GameState = GameState.Dungeon; break;
+                case IdleOptions.Rest: InRest(); break;
+                case IdleOptions.Inventory: InInventory(); break;
+                case IdleOptions.Status: InStatus(); break;
+                case IdleOptions.Option: InOption(); break;
+                default: Console.WriteLine("| Something is wrong! |"); break;
+            }
         }
         #endregion
 
@@ -449,6 +450,7 @@ namespace TextRPG
 
             // Print UI of Kill Count and Player Options
             Console.Clear();
+            // TODO: Insert Dungeon Path UI
             UIManager.KillCountUI(SpawnManager.KilledMonsterCount, GameManager.Quota);
             UIManager.BaseUI(GameManager.SelectedCharacter, $"The Dungeon Lv{GameManager.GroundLevel}", typeof(DungeonOptions));
 

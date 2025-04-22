@@ -166,7 +166,7 @@ namespace TextRPG
         public override string ToString()
         {
             StringBuilder sb = new();
-            _ = IsSpecial == true ? sb.Append("| [★]") : sb.Append("| []");
+            _ = IsSpecial == true ? sb.Append("| [★] ") : sb.Append("| [] ");
             sb.AppendLine($"Quest : '{Name}' |")
               .AppendLine($"| Description : '{Description}' | ")
               .AppendLine($"| Diff. : '{Difficulty}', Type : '{QuestType}' |")

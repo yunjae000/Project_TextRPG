@@ -77,13 +77,13 @@ namespace TextRPG
         {
             int i = 1;
             Console.WriteLine("\n| ----- Buy Items ----- |");
-            Console.WriteLine("|\"Armors\" |");
+            Console.WriteLine("| 1. \"Armors\" |");
             foreach (Armor armor in ItemLists.Armors) { Console.WriteLine($"{i++}. {armor}"); }
             i = 1;
-            Console.WriteLine("|\"Weapons\" |");
+            Console.WriteLine("| 2. \"Weapons\" |");
             foreach (Weapon weapon in ItemLists.Weapons) { Console.WriteLine($"{i++}. {weapon}"); }
             i = 1;
-            Console.WriteLine("|\"Potions\" |");
+            Console.WriteLine("| 3. \"Potions\" |");
             foreach (Consumables potion in ItemLists.Consumables) { Console.WriteLine($"{i++}. {potion}"); }
             Console.WriteLine("| --------------------- |");
             Console.Write("\nWhat do you want to buy? ( Type [ Category,Index ] ) : ");
@@ -93,12 +93,12 @@ namespace TextRPG
         {
             int i = 1;
             Console.WriteLine("\n| ----- Sell Items ----- |");
-            Console.WriteLine("|\"Armors\" |");
+            Console.WriteLine("| 1. \"Armors\" |");
             foreach (Armor armor in character.Armors) { Console.WriteLine($"{i++}. {armor}"); }
-            Console.WriteLine("|\"Weapons\" |");
+            Console.WriteLine("| 2. \"Weapons\" |");
             i = 1;
             foreach (Weapon weapon in character.Weapons) { Console.WriteLine($"{i++}. {weapon}"); }
-            Console.WriteLine("|\"Potions\" |");
+            Console.WriteLine("| 3. \"Potions\" |");
             i = 1;
             foreach (Consumables potion in character.Consumables) { Console.WriteLine($"{i++}. {potion}"); }
             Console.WriteLine("| ---------------------- |");
@@ -843,7 +843,7 @@ namespace TextRPG
                 Converters = {
                     new CharacterConverter(), new ArmorConverter(),
                     new WeaponConverter(), new ConsumableConverter(),
-                    new ImportantItemConverter(),
+                    new ImportantItemConverter(), new SkillConverter(),
                 },
                 WriteIndented = true
             };
@@ -906,7 +906,7 @@ namespace TextRPG
                 Converters = {
                     new CharacterConverter(), new ArmorConverter(),
                     new WeaponConverter(), new ConsumableConverter(),
-                    new ImportantItemConverter(),
+                    new ImportantItemConverter(), new SkillConverter(),
                 },
                 WriteIndented = true
             };

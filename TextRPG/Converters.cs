@@ -197,7 +197,36 @@ namespace TextRPG
         }
     }
 
+    /// <summary>
+    /// Converter for Skill Class
+    /// </summary>
+    class SkillConverter : JsonConverter<Skill>
+    {
+        public override Skill? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            using var doc = JsonDocument.ParseValue(ref reader);
+            var json = doc.RootElement;
 
+            string? typeName = json.GetProperty("Type").GetString();
+            var data = json.GetProperty("SkillData").GetRawText();
+
+            return typeName switch
+            {
+                "ActiveSkill" => JsonSerializer.Deserialize<ActiveSkill>(data, options)!,
+                "BuffSkill" => JsonSerializer.Deserialize<BuffSkill>(data, options)!,
+                _ => throw new NotSupportedException($"Unknown character type: {typeName}")
+            };
+        }
+
+        public override void Write(Utf8JsonWriter writer, Skill value, JsonSerializerOptions options)
+        {
+            writer.WriteStartObject();
+            writer.WriteString("Type", value.GetType().Name);
+            writer.WritePropertyName("SkillData");
+            JsonSerializer.Serialize(writer, value, value.GetType(), options);
+            writer.WriteEndObject();
+        }
+    }
 
     /// <summary>
     /// Converter for Armor Class Array -> perhaps needed
