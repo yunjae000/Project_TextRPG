@@ -78,11 +78,9 @@ namespace TextRPG
         /// Called when the quest is contracted.
         /// </summary>
         /// <param name="character"></param>
-        public virtual void OnContracted(Character character)
+        public virtual void OnContracted()
         {
             IsContracted = true;
-            IsCompleted = false;
-            QuestProgress = 0;
             Console.WriteLine($"\n| Quest '{Name}' contracted! |");
         }
 
@@ -96,7 +94,6 @@ namespace TextRPG
         /// <param name="character"></param>
         public virtual void OnCompleted(Character character)
         {
-            IsCompleted = true;
             IsContracted = false;
             character.OnEarnExp(RewardExp);
             character.Currency += RewardGold;
@@ -128,6 +125,7 @@ namespace TextRPG
                            int questGoal, int rewardExp, int rewardGold)
             : base(name, description, difficulty, questType, questGoal, rewardExp, rewardGold) { IsSpecial = false; }
         public NormalQuest(NormalQuest quest) : base(quest) { IsSpecial = false; }
+        
         [JsonConstructor]
         public NormalQuest(string name, string description, QuestDifficulty difficulty, QuestType questType,
                            int questProgress, int questGoal, int rewardExp, int rewardGold,
@@ -144,7 +142,12 @@ namespace TextRPG
             IsCompleted = false;
             QuestProgress = 0;
         }
-        public virtual new string Tostring()
+
+        /// <summary>
+        /// Describe the quest.
+        /// </summary>
+        /// <returns></returns>
+        public virtual new string ToString()
         {
             StringBuilder sb = new();
             _ = IsSpecial == true ? sb.Append("| [★]") : sb.Append("| []");
@@ -182,9 +185,9 @@ namespace TextRPG
         /// Called when the quest is contracted.
         /// </summary>
         /// <param name="character"></param>
-        public override void OnContracted(Character character)
+        public override void OnContracted()
         {
-            base.OnContracted(character);
+            base.OnContracted();
         }
 
         /// <summary>
@@ -208,13 +211,14 @@ namespace TextRPG
             base.OnCompleted(character);
         }
 
-        public override string Tostring()
+        /// <summary>
+        /// Des
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
         {
-            StringBuilder sb = new(base.Tostring());
-            if(IsContracted)
-            {
-                sb.AppendLine($"| Progress : {QuestProgress}/{QuestGoal} |");
-            }
+            StringBuilder sb = new(base.ToString());
+            if(IsContracted) sb.AppendLine($"| Progress : '{QuestProgress}/{QuestGoal}' |");
             return sb.ToString();
         }
     }
@@ -241,9 +245,9 @@ namespace TextRPG
             base.OnCompleted(character);
             // TODO: Add special quest completion logic here
         }
-        public override void OnContracted(Character character)
+        public override void OnContracted()
         {
-            base.OnContracted(character);
+            base.OnContracted();
             // TODO: Add special quest contracting logic here
         }
     }
