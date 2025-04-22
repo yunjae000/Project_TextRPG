@@ -35,14 +35,26 @@ namespace TextRPG
 
     interface IContractable
     {
+        public void OnContracted();
         public void OnContracted(Character character);
+        public void OnProgress();
+        public void OnProgress(Character character);
         public void OnCompleted(Character character);
-        public void OnCompletable();
-        public void OnNotCompletable();
     }
 
     interface ICancelable
     {
         public void OnCanceled(Character character);
+    }
+
+    interface ISkillActive
+    {
+        public void OnActive(Character character, Monster target);
+    }
+
+    interface ISkillBuff
+    {
+        public void OnActive(Character character);
+        public void OnDeBuffed(Character character);
     }
 }

@@ -13,7 +13,7 @@ namespace TextRPG
     
     public enum BattleOptions
     {
-        Attack, Inventory, Status, Escape,
+        Attack, Skill, Inventory, Status, Escape,
     }
 
     public enum SettingOptions
@@ -63,10 +63,22 @@ namespace TextRPG
     }
     #endregion
 
-    #region Quest Difficulty
+    #region Quests
     public enum QuestDifficulty
     {
         Easy, Normal, Hard,
+    }
+    public enum QuestType
+    {
+        KillMonster,
+        CollectItem,
+    }
+    public enum QuestStatus
+    {
+        NotStarted,
+        InProgress,
+        Completable,
+        Completed,
     }
     #endregion
 
