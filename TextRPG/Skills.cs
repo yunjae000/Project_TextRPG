@@ -114,14 +114,11 @@ namespace TextRPG
             IsActive = true;
         }
 
-        public void OnDeBuffed(Character character)
+        public void OnBuffExpired(Character character)
         {
             if (!isActive) return;
-            if (GameManager.CurrentTurn - UsedTurn > turnInterval)
-            {
-                character.AttackStat = originalStat;
-                IsActive = false;
-            }
+            character.AttackStat = originalStat;
+            IsActive = false;
         }
 
         public override string ToString()

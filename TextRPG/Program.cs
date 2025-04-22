@@ -2,7 +2,7 @@ namespace TextRPG
 {
     class InGame
     {
-        // Field
+        // Property
         public GameManager GameManager { get; private set; }
         public SpawnManager SpawnManager { get; private set; }
         public QuestManager QuestManager { get; private set; }
@@ -462,7 +462,7 @@ namespace TextRPG
             // Choices
             if (opt >= 0 && opt < 4) { InDungeon_MonsterEncounter((DungeonOptions)opt); }
             else if(opt == 4) { InInventory(); }
-            else if(opt == 5) { InStatus();}
+            else if(opt == 5) { InStatus(); }
             else { InDungeon_ReturnToTown(); }
         }
 
@@ -522,9 +522,12 @@ namespace TextRPG
 
             // Check if all monsters are dead
             if (SpawnManager.GetMonsterCount() <= 0) { 
+                RemoveAllBuffSkills();
+                
                 Console.WriteLine("\n| All Monsters eliminated! |");
                 Console.Write("| Press any key to continue... |");
                 Console.ReadKey(true);
+
                 GameManager.CurrentTurn = 1;
                 GameManager.GameState = GameState.Dungeon; 
                 return; 
@@ -611,9 +614,19 @@ namespace TextRPG
                              where skill.GetType().Equals(typeof(BuffSkill))
                              select (BuffSkill)skill;
             foreach (BuffSkill skill in buffSkills)
-            {
-                if (GameManager.CurrentTurn - skill.UsedTurn >= skill.TurnInterval) { skill.OnDeBuffed(GameManager.SelectedCharacter); }
-            }
+                if (GameManager.CurrentTurn - skill.UsedTurn >= skill.TurnInterval) { skill.OnBuffExpired(GameManager.SelectedCharacter); }
+        }
+
+        /// <summary>
+        /// Removes all buffs from character.
+        /// </summary>
+        private void RemoveAllBuffSkills()
+        {
+            var buffSkills = from skill in GameManager.SelectedCharacter.Skills
+                             where skill.GetType().Equals(typeof(BuffSkill))
+                             select (BuffSkill)skill;
+            foreach (BuffSkill skill in buffSkills)
+                skill.OnBuffExpired(GameManager.SelectedCharacter);
         }
         #endregion
 

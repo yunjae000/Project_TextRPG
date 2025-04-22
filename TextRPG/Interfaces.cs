@@ -55,6 +55,6 @@ namespace TextRPG
     interface ISkillBuff
     {
         public void OnActive(Character character);
-        public void OnDeBuffed(Character character);
+        public void OnBuffExpired(Character character);
     }
 }
