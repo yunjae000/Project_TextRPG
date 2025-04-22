@@ -1,3 +1,5 @@
+using System.Reflection.Metadata.Ecma335;
+
 namespace TextRPG
 {
     class InGame
@@ -314,7 +316,7 @@ namespace TextRPG
                     GameManager.SelectedCharacter.Consumables[ind - 1].OnSold(GameManager.SelectedCharacter); break;
             }
         }
-        
+      
         /// <summary>
         /// Gives interface what player can do in quest.
         /// </summary>
@@ -397,7 +399,7 @@ namespace TextRPG
             Console.WriteLine("\n| Press any key to continue... |");
             Console.ReadKey(true);
         }
-        
+
         /// <summary>
         /// Gives interface what player can do in town(Shop, Rest, Dungeon, Inventory, Status, Option).
         /// </summary>
