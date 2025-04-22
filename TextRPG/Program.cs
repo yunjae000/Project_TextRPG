@@ -470,9 +470,6 @@ namespace TextRPG
         /// Mechanism of Monster Encounter in dungeon.
         /// </summary>
         /// <param name="option"></param>
-        /// <param name="random"></param>
-        /// <param name="spawnManager"></param>
-        /// <param name="gameManager"></param>
         private void InDungeon_MonsterEncounter(DungeonOptions option)
         {
             int random = new Random().Next(0, 10);
@@ -488,7 +485,6 @@ namespace TextRPG
         /// <summary>
         /// Exit from dungeon and return to town.
         /// </summary>
-        /// <param name="gameManager"></param>
         private void InDungeon_ReturnToTown()
         {
             GameManager.GameState = GameState.Town;
@@ -504,9 +500,7 @@ namespace TextRPG
         private void InBattle()
         {
             Console.Clear();
-            CheckBuffSkillsExpired();
             UIManager.BaseUI(GameManager.SelectedCharacter, "Kill the monsters", typeof(BattleOptions));
-
             if (!int.TryParse(Console.ReadLine(), out int opt)) { Console.WriteLine("| Invalid Input! |"); return; }
 
             // Player Options
@@ -516,20 +510,16 @@ namespace TextRPG
                 case BattleOptions.Skill: InBattle_Skill(); break;
                 case BattleOptions.Inventory: InInventory(); return;
                 case BattleOptions.Status: InStatus(); return;
-                case BattleOptions.Escape: SpawnManager.RemoveAllMonsters(); GameManager.GameState = GameState.Dungeon; return;
+                case BattleOptions.Escape: 
+                    SpawnManager.RemoveAllMonsters(); 
+                    EscapeFromBattle("You escaped from the battle!");
+                    return;
                 default: Console.WriteLine("| Something is wrong! |"); return;
             }
 
             // Check if all monsters are dead
-            if (SpawnManager.GetMonsterCount() <= 0) { 
-                RemoveAllBuffSkills();
-                
-                Console.WriteLine("\n| All Monsters eliminated! |");
-                Console.Write("| Press any key to continue... |");
-                Console.ReadKey(true);
-
-                GameManager.CurrentTurn = 1;
-                GameManager.GameState = GameState.Dungeon; 
+            if (SpawnManager.GetMonsterCount() <= 0) {
+                EscapeFromBattle("All Monsters eliminated!");
                 return; 
             }
             
@@ -542,6 +532,7 @@ namespace TextRPG
             }
 
             GameManager.CurrentTurn++;
+            RemoveBuffSkills(true);
 
             Console.WriteLine("| Press any key to continue... |");
             Console.ReadKey(true);
@@ -606,27 +597,36 @@ namespace TextRPG
         }
 
         /// <summary>
-        /// Checks if the buffs are expired or not.
+        /// Removes buffs from character. 
+        /// If checkTurn is true, it checks if the buff is expired or not.
         /// </summary>
-        private void CheckBuffSkillsExpired()
+        /// <param name="checkTurn"></param>
+        private void RemoveBuffSkills(bool checkTurn)
         {
             var buffSkills = from skill in GameManager.SelectedCharacter.Skills
                              where skill.GetType().Equals(typeof(BuffSkill))
                              select (BuffSkill)skill;
             foreach (BuffSkill skill in buffSkills)
-                if (GameManager.CurrentTurn - skill.UsedTurn >= skill.TurnInterval) { skill.OnBuffExpired(GameManager.SelectedCharacter); }
+            {
+                if (checkTurn) { if (GameManager.CurrentTurn - skill.UsedTurn > skill.TurnInterval) skill.OnBuffExpired(GameManager.SelectedCharacter); }
+                else skill.OnBuffExpired(GameManager.SelectedCharacter);
+            }   
         }
 
         /// <summary>
-        /// Removes all buffs from character.
+        /// Escape from battle and return to dungeon.
         /// </summary>
-        private void RemoveAllBuffSkills()
+        /// <param name="headLine"></param>
+        private void EscapeFromBattle(string headLine)
         {
-            var buffSkills = from skill in GameManager.SelectedCharacter.Skills
-                             where skill.GetType().Equals(typeof(BuffSkill))
-                             select (BuffSkill)skill;
-            foreach (BuffSkill skill in buffSkills)
-                skill.OnBuffExpired(GameManager.SelectedCharacter);
+            RemoveBuffSkills(false);
+
+            Console.WriteLine($"\n| {headLine} |");
+            Console.Write("| Press any key to continue... |");
+            Console.ReadKey(true);
+
+            GameManager.CurrentTurn = 1;
+            GameManager.GameState = GameState.Dungeon;
         }
         #endregion
 

@@ -94,6 +94,11 @@ namespace TextRPG
             return new DefendStat(stat1.Defend - stat2.Defend, stat1.RangeDefend - stat2.RangeDefend, stat1.MagicDefend - stat2.MagicDefend);
         }
 
+        public static DefendStat operator *(DefendStat stat, float coef)
+        {
+            return new DefendStat(stat.Defend * coef, stat.RangeDefend * coef, stat.MagicDefend * coef);
+        }
+
         public override string ToString()
         {
             StringBuilder sb = new();

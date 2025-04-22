@@ -82,7 +82,8 @@ namespace TextRPG
     {
         // Field
         private bool isActive;
-        private AttackStat originalStat;
+        private AttackStat originalAttackStat;
+        private DefendStat originalDefendStat;
         private int turnInterval;
 
         // Property
@@ -108,8 +109,10 @@ namespace TextRPG
             if (IsActive) { character.MagicPoint -= ManaCost; UsedTurn = GameManager.CurrentTurn; return; }
 
             character.MagicPoint -= ManaCost;
-            originalStat = new(character.AttackStat);
+            originalAttackStat = new(character.AttackStat);
+            originalDefendStat = new(character.DefendStat);
             character.AttackStat *= Coefficient;
+            character.DefendStat *= Coefficient;
             UsedTurn = GameManager.CurrentTurn;
             IsActive = true;
         }
@@ -117,7 +120,8 @@ namespace TextRPG
         public void OnBuffExpired(Character character)
         {
             if (!isActive) return;
-            character.AttackStat = originalStat;
+            character.AttackStat = originalAttackStat;
+            character.DefendStat = originalDefendStat;
             IsActive = false;
         }
 
