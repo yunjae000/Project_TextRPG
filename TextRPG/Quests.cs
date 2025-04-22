@@ -73,38 +73,19 @@ namespace TextRPG
             IsCompleted = isCompleted;
             IsSpecial = isSpecial;
         }
-
+        
         /// <summary>
-        /// Called when the quest is contracted. -> For monster quests.
+        /// Called when the quest is contracted.
         /// </summary>
         /// <param name="character"></param>
         public virtual void OnContracted()
         {
             IsContracted = true;
-            QuestProgress = 0;
             Console.WriteLine($"\n| Quest '{Name}' contracted! |");
         }
 
-        /// <summary>
-        /// Called when the quest is contracted. -> For item quests.
-        /// </summary>
-        /// <param name="character"></param>
-        public virtual void OnContracted(Character character)
-        {
-            IsContracted = true;
-            QuestProgress = 0;
-            Console.WriteLine($"\n| Quest '{Name}' contracted! |");
-        }
+        public virtual void OnProgress() { } 
 
-        /// <summary>
-        /// Called when the quest is in progress. -> For monster quests.
-        /// </summary>
-        public virtual void OnProgress() { }
-
-        /// <summary>
-        /// Called when the quest is in progress. -> For item quests.
-        /// </summary>
-        /// <param name="character"></param>
         public virtual void OnProgress(Character character) { }
         
         /// <summary>
@@ -128,7 +109,10 @@ namespace TextRPG
             Console.WriteLine($"| Progress: {QuestProgress}/{QuestGoal} |");
         }
 
-        public abstract new string ToString();
+        internal void OnContracted()
+        {
+            throw new NotImplementedException();
+        }
     }
 
     /// <summary>
@@ -163,10 +147,10 @@ namespace TextRPG
         /// Describe the quest.
         /// </summary>
         /// <returns></returns>
-        public override string ToString()
+        public virtual new string ToString()
         {
             StringBuilder sb = new();
-            _ = IsSpecial == true ? sb.Append("| [★] ") : sb.Append("| [] ");
+            _ = IsSpecial == true ? sb.Append("| [★]") : sb.Append("| []");
             sb.AppendLine($"Quest : '{Name}' |")
               .AppendLine($"| Description : '{Description}' | ")
               .AppendLine($"| Diff. : '{Difficulty}', Type : '{QuestType}' |")
@@ -198,14 +182,23 @@ namespace TextRPG
             : base(name, description, difficulty, questType, questProgress, questGoal, rewardExp, rewardGold, isCompleted, isSpecial) { }
 
         /// <summary>
+        /// Called when the quest is contracted.
+        /// </summary>
+        /// <param name="character"></param>
+        public override void OnContracted()
+        {
+            base.OnContracted();
+        }
+
+        /// <summary>
         /// Called when the quest is in progress.
         /// </summary>
         /// <param name="character"></param>
         public override void OnProgress()
         {
             if(IsContracted && !IsCompleted) { 
-                QuestProgress++; 
-                if (QuestProgress >= QuestGoal) { IsCompleted = true; } 
+                if (QuestProgress < QuestGoal) QuestProgress++; 
+                else { IsCompleted = true; } 
             }
         }
 
@@ -219,7 +212,7 @@ namespace TextRPG
         }
 
         /// <summary>
-        /// Describe the quest.
+        /// Des
         /// </summary>
         /// <returns></returns>
         public override string ToString()
@@ -231,109 +224,31 @@ namespace TextRPG
     }
 
     /// <summary>
-    /// CollectItemQuest Class -> Collect an item.
+    /// SpecialQuest Class -> Only available in single day.
     /// </summary>
-    class CollectItemQuest : NormalQuest
+    class SpecialQuest : Quest
     {
-        // Field
-        private string itemName;
-
-        // Property
-        public string ItemName { get { return itemName; } set { itemName = value; } }
-
         // Constructor
-        public CollectItemQuest(CollectItemQuest quest) : base(quest)
-        {
-            IsSpecial = false;
-        }
-
-        public CollectItemQuest(string name, string description, QuestDifficulty difficulty,
-                                int questGoal, int rewardExp, int rewardGold) 
-            : base(name, description, difficulty, QuestType.CollectItem, questGoal, rewardExp, rewardGold)
-        {
-            IsSpecial = false;
-        }
-
+        public SpecialQuest(string name, string description, QuestDifficulty difficulty, QuestType questType, 
+                            int questGoal, int rewardExp, int rewardGold) 
+            : base(name, description, difficulty, questType, questGoal, rewardExp, rewardGold) { IsSpecial = true; }
+        public SpecialQuest(SpecialQuest quest) : base(quest) { IsSpecial = true; }
         [JsonConstructor]
-        public CollectItemQuest(string name, string description, QuestDifficulty difficulty, QuestType questType,
-                                int questProgress, int questGoal, int rewardExp, int rewardGold,
-                                bool isCompleted, bool isSpecial)
+        public SpecialQuest(string name, string description, QuestDifficulty difficulty, QuestType questType, 
+                            int questProgress, int questGoal, int rewardExp, int rewardGold, 
+                            bool isCompleted, bool isSpecial) 
             : base(name, description, difficulty, questType, questProgress, questGoal, rewardExp, rewardGold, isCompleted, isSpecial) { }
-
+        
         // Methods
-
-        /// <summary>
-        /// Called when the quest is contracted.
-        /// </summary>
-        public override void OnContracted(Character character)
-        {
-            base.OnContracted();
-            foreach (var item in character.ImportantItems)
-            {
-                if (item.Name.Contains(nameof(ItemName)))
-                {
-                    QuestProgress++;
-                    if (QuestProgress >= QuestGoal) { IsCompleted = true; break; }
-                }
-            }
-        }
-
-        /// <summary>
-        /// Called when the quest is in progress.
-        /// </summary>
-        /// <param name="character"></param>
-        public override void OnProgress(Character character)
-        {
-            if (IsContracted && !IsCompleted)
-            {
-                QuestProgress = 0;
-                foreach (var item in character.ImportantItems)
-                {
-                    if (item.Name.Contains(nameof(ItemName)))
-                    {
-                        QuestProgress++;
-                        if (QuestProgress >= QuestGoal) { IsCompleted = true; break; }
-                    }
-                }
-            }
-        }
-
-        /// <summary>
-        /// Called when the quest is completed.
-        /// </summary>
-        /// <param name="character"></param>
         public override void OnCompleted(Character character)
         {
             base.OnCompleted(character);
-            RemoveQuestItems(character);
+            // TODO: Add special quest completion logic here
         }
-
-        /// <summary>
-        /// Describe the quest.
-        /// </summary>
-        /// <returns></returns>
-        public override string ToString()
+        public override void OnContracted()
         {
-            StringBuilder sb = new(base.ToString());
-            if (IsContracted) sb.AppendLine($"| Progress : '{QuestProgress}/{QuestGoal}' |");
-            return sb.ToString();
-        }
-
-        /// <summary>
-        /// Remove quest items from the character's inventory.
-        /// </summary>
-        /// <param name="character"></param>
-        private void RemoveQuestItems(Character character)
-        {
-            int i = 0;
-            foreach (var item in character.ImportantItems)
-            {
-                if (item.Name.Contains(nameof(ItemName)))
-                {
-                    item.OnDropped(character); i++;
-                    if (i >= QuestGoal) break;
-                }
-            }
+            base.OnContracted();
+            // TODO: Add special quest contracting logic here
         }
     }
 }

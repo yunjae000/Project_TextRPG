@@ -13,7 +13,7 @@ namespace TextRPG
     
     public enum BattleOptions
     {
-        Attack, Skill, Inventory, Status, Escape,
+        Attack, Inventory, Status, Escape,
     }
 
     public enum SettingOptions
