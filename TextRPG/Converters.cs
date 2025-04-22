@@ -150,7 +150,7 @@ namespace TextRPG
 
             return typeName switch
             {
-                "NormalQuest" => JsonSerializer.Deserialize<NormalQuest>(data, options)!,
+                "KillMonsterQuest" => JsonSerializer.Deserialize<KillMonsterQuest>(data, options)!,
                 "SpecialQuest" => JsonSerializer.Deserialize<SpecialQuest>(data, options)!,
                 _ => throw new NotSupportedException($"Unknown character type: {typeName}")
             };
