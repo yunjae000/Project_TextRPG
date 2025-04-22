@@ -1141,6 +1141,93 @@ namespace TextRPG
     }
     #endregion
 
+    #region ImportantItem Class
+
+    /// <summary>
+    /// Base Important Item Class
+    /// </summary>
+    abstract class ImportantItem : IPickable, ISellable
+    {
+        // Field
+        private string name;
+        private int price;
+        private Rarity rarity;
+
+        // Property
+        public string Name { get { return name; } protected set { name = value; } }
+        public int Price { get { return price; } protected set { price = value; } }
+        public Rarity Rarity { get { return rarity; } protected set { rarity = value; } }
+
+        // Constructor
+        public ImportantItem(string name, int price, Rarity rarity)
+        {
+            this.name = name;
+            this.price = price;
+            this.rarity = rarity;
+        }
+
+        // Methods
+        public virtual void OnPicked(Character character)
+        {
+            Console.WriteLine($"| Picked {Name}! |");
+        }
+        
+        public void OnDropped(Character character)
+        {
+            character.ImportantItems.Remove(this);
+            var quests = QuestManager.GetContractedQuests_CollectItem(Name);
+            foreach (var quest in quests) { quest.OnProgress(character); }
+            Console.WriteLine($"| {Name} is dropped! |");
+        }
+
+        public void OnSold(Character character)
+        {
+            character.Currency += Price;
+            character.ImportantItems.Remove(this);
+            var quests = QuestManager.GetContractedQuests_CollectItem(Name);
+            foreach (var quest in quests) { quest.OnProgress(character); }
+            Console.WriteLine($"| {Name} is sold! |");
+        }
+    }
+
+    /// <summary>
+    /// Goblin Ear -> Important Item
+    /// </summary>
+    class GoblinEar : ImportantItem
+    {
+        [JsonConstructor]
+        public GoblinEar(string name, int price, Rarity rarity) : base(name, price, rarity) { }
+        public GoblinEar(GoblinEar goblinEar) : base(goblinEar.Name, goblinEar.Price, goblinEar.Rarity) { }
+
+        public override void OnPicked(Character character)
+        {
+            base.OnPicked(character);
+            character.ImportantItems.Add(new GoblinEar(this));
+            var quests = QuestManager.GetContractedQuests_CollectItem(Name);
+            foreach (var quest in quests) { quest.OnProgress(character); }
+        }
+    }
+
+    /// <summary>
+    /// Goblin Eye -> Important Item
+    /// </summary>
+    class GoblinEye : ImportantItem
+    {
+        [JsonConstructor]
+        public GoblinEye(string name, int price, Rarity rarity) : base(name, price, rarity) { }
+        public GoblinEye(GoblinEye goblinEye) : base(goblinEye.Name, goblinEye.Price, goblinEye.Rarity) { }
+
+        public override void OnPicked(Character character)
+        {
+            base.OnPicked(character);
+            character.ImportantItems.Add(new GoblinEye(this));
+            var quests = QuestManager.GetContractedQuests_CollectItem(Name);
+            foreach (var quest in quests) { quest.OnProgress(character); }
+        }
+    }
+
+    #endregion
+
     /// <summary>
     /// Lists of items
     /// </summary>
@@ -1177,6 +1264,12 @@ namespace TextRPG
             new AllBuffPotion("Rare Universal Potion", 10, 150, Rarity.Rare),
             new AllBuffPotion("Hero Universal Potion", 30, 350, Rarity.Hero),
             new AllBuffPotion("Legendary Universal Potion", 100, 1000, Rarity.Legend),
+        };
+
+        public static readonly ImportantItem[] ImportantItems =
+        {
+            new GoblinEar("Goblin Ear", 10, Rarity.Common),
+            new GoblinEye("Goblin Eye", 10, Rarity.Common),
         };
     }
 }

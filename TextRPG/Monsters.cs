@@ -42,14 +42,14 @@ namespace TextRPG
         public void OnDamage(AttackType type, float damage)
         {
             float calculatedDamage =
-                type == AttackType.Close ? Math.Min(1f, (damage * (1f - DefendStat.Defend / 100f))) :
-                (type == AttackType.Long ? Math.Min(1f, damage * (1f - DefendStat.RangeDefend / 100f)) :
-                Math.Min(1f, (damage * (1f - DefendStat.MagicDefend / 100f))));
+                type == AttackType.Close ? Math.Max(1f, (damage * (1f - DefendStat.Defend / 100f))) :
+                (type == AttackType.Long ? Math.Max(1f, damage * (1f - DefendStat.RangeDefend / 100f)) :
+                Math.Max(1f, (damage * (1f - DefendStat.MagicDefend / 100f))));
 
             Console.WriteLine($"| {Name} got {calculatedDamage:F2} damage! |");
             Health -= calculatedDamage;
 
-            if (Health <= 0 && IsAlive) Die();
+            if (Health < 1f && IsAlive) Die();
         }
 
         private void Die()
@@ -108,8 +108,8 @@ namespace TextRPG
     {
         public static Monster[] monsters = {
             new GoblinWarrior(new CharacterStat("Normal Goblin Warrior", 150, 10, 15, 160, 1, new AttackStat(20f, 1f, 1f), new DefendStat(18, 15, 3)), 20),
-            new GoblinArcher(new CharacterStat("Normal Goblin Archer", 120, 30, 15, 160, 1, new AttackStat(1f, 20f, 1f), new DefendStat(15, 18, 3)), 25),
-            new GoblinMage(new CharacterStat("Normal Goblin Mage", 100, 50, 15, 160, 1, new AttackStat(1f, 1f, 20f), new DefendStat(3, 15, 18)), 30),
+            new GoblinArcher(new CharacterStat("Normal Goblin Archer", 120, 30, 15, 160, 1, new AttackStat(1f, 20f, 1f), new DefendStat(15, 18, 3)), 20),
+            new GoblinMage(new CharacterStat("Normal Goblin Mage", 100, 50, 15, 160, 1, new AttackStat(1f, 1f, 20f), new DefendStat(3, 15, 18)), 20),
         };
     }
 }

@@ -43,8 +43,8 @@ namespace TextRPG
             CriticalHitChance = criticalHitChange;
             CriticalHitDamagePercentage = criticalHitDamagePercentage;
             Level = level;
-            AttackStat = attackStat;
-            DefendStat = defendStat;
+            AttackStat = new(attackStat);
+            DefendStat = new(defendStat);
         }
 
         public CharacterStat(CharacterStat characterStat)
@@ -69,9 +69,11 @@ namespace TextRPG
             Health = health;
             MaxMagicPoint = maxMagicPoint;
             MagicPoint = magicPoint;
+            CriticalHitChance = criticalHitChange;
+            CriticalHitDamagePercentage = criticalHitDamagePercentage;
             Level = level;
-            AttackStat = attackStat;
-            DefendStat = defendStat;
+            AttackStat = new(attackStat);
+            DefendStat = new(defendStat);
         }
     }
 
@@ -106,8 +108,9 @@ namespace TextRPG
         public List<Armor> Armors { get; set; } = new List<Armor>();
         public List<Weapon> Weapons { get; set; } = new List<Weapon>();
         public List<Consumables> Consumables { get; set; } = new List<Consumables>();
+        public List<ImportantItem> ImportantItems { get; set; } = new List<ImportantItem>();
 
-        public Armor?[] EquippedArmor { get; set; } = new Armor[Enum.GetValues((typeof(ArmorPosition))).Length];
+        public Armor?[] EquippedArmor { get; set; } = new Armor[Enum.GetValues(typeof(ArmorPosition)).Length];
         public Weapon? EquippedWeapon { get; set; } = null;
 
         public event Action? OnDeath;
@@ -181,7 +184,6 @@ namespace TextRPG
                                          DefendStat.MagicDefend * 0.15f);
         }
 
-        // TODO: Add Avoid Mechanism
         /// <summary>
         /// Calculate the damage taken by the monster.
         /// </summary>
@@ -190,14 +192,14 @@ namespace TextRPG
         public void OnDamage(AttackType type, float damage)
         {
             float calculatedDamage = 
-                type == AttackType.Close ? Math.Min(1f, damage * (1f - DefendStat.Defend / 100f)) : 
-                (type == AttackType.Long ? Math.Min(1f, damage * (1f - DefendStat.RangeDefend / 100f)) :
-                Math.Min(1f, damage * (1f - DefendStat.MagicDefend / 100f)));
+                type == AttackType.Close ? Math.Max(1f, damage * (1f - DefendStat.Defend / 100f)) : 
+                (type == AttackType.Long ? Math.Max(1f, damage * (1f - DefendStat.RangeDefend / 100f)) :
+                Math.Max(1f, damage * (1f - DefendStat.MagicDefend / 100f)));
 
             Console.WriteLine($"| {Name} got {calculatedDamage:F2} damage! |");
             Health -= calculatedDamage;
 
-            if (Health <= 0.9f && IsAlive) Die();
+            if (Health < 1f && IsAlive) Die();
         }
 
         /// <summary>
@@ -242,7 +244,9 @@ namespace TextRPG
             sb.AppendLine();
             foreach(Consumables consumable in Consumables) { sb.Append(consumable.ToString() + ", "); }
             sb.AppendLine();
-            foreach(Armor? equipped in EquippedArmor) { sb.Append(equipped?.ToString() + ", "); }
+            foreach (ImportantItem importantItem in ImportantItems) { sb.Append(importantItem.ToString() + ", "); }
+            sb.AppendLine();
+            foreach (Armor? equipped in EquippedArmor) { sb.Append(equipped?.ToString() + ", "); }
             sb.AppendLine();
             sb.Append(EquippedWeapon?.ToString());
             return sb.ToString();
@@ -266,16 +270,17 @@ namespace TextRPG
 
         [JsonConstructor]
         public Warrior(string name, float maxHealth, float health, float maxMagicPoint, float magicPoint, 
-            int criticalHitChange, int criticalHitDamagePercentage, int level, 
+            int criticalHitChance, int criticalHitDamagePercentage, int level, 
             AttackStat attackStat, DefendStat defendStat, int currency, int exp, bool isAlive, 
-            List<Armor> armors, List<Weapon> weapons, List<Consumables> consumables, 
+            List<Armor> armors, List<Weapon> weapons, List<Consumables> consumables,  List<ImportantItem> importantItems,
             Armor?[] equippedArmor, Weapon? equippedWeapon)
-            : base(name, maxHealth, health, maxMagicPoint, magicPoint, criticalHitChange, criticalHitDamagePercentage, level, attackStat, defendStat, currency, exp, isAlive)
+            : base(name, maxHealth, health, maxMagicPoint, magicPoint, criticalHitChance, criticalHitDamagePercentage, level, attackStat, defendStat, currency, exp, isAlive)
         {
             Job = Job.Warrior;
             Armors = armors ?? new List<Armor>();
             Weapons = weapons ?? new List<Weapon>();
             Consumables = consumables ?? new List<Consumables>();
+            ImportantItems = importantItems ?? new List<ImportantItem>();
             EquippedArmor = equippedArmor ?? new Armor[Enum.GetValues(typeof(ArmorPosition)).Length];
             EquippedWeapon = equippedWeapon;
         }
@@ -302,14 +307,19 @@ namespace TextRPG
         public Wizard(Wizard wizard) : base(wizard.CharacterStat, wizard.Currency, wizard.Exp) { job = Job.Wizard; }
 
         [JsonConstructor]
-        public Wizard(string name, float maxHealth, float health, float maxMagicPoint, float magicPoint, int criticalHitChange, int criticalHitDamagePercentage, int level, AttackStat attackStat, DefendStat defendStat, int currency, int exp, bool isAlive, List<Armor> armors, List<Weapon> weapons, List<Consumables> consumables, Armor?[] equippedArmor, Weapon? equippedWeapon)
-            : base(name, maxHealth, health, maxMagicPoint, magicPoint, criticalHitChange, criticalHitDamagePercentage, level, attackStat, defendStat, currency, exp, isAlive)
+        public Wizard(string name, float maxHealth, float health, float maxMagicPoint, 
+            float magicPoint, int criticalHitChance, int criticalHitDamagePercentage, int level, 
+            AttackStat attackStat, DefendStat defendStat, int currency, int exp, bool isAlive, 
+            List<Armor> armors, List<Weapon> weapons, List<Consumables> consumables, List<ImportantItem> importantItems, 
+            Armor?[] equippedArmor, Weapon? equippedWeapon)
+            : base(name, maxHealth, health, maxMagicPoint, magicPoint, criticalHitChance, criticalHitDamagePercentage, level, attackStat, defendStat, currency, exp, isAlive)
         {
             Job = Job.Wizard;
             IsAlive = isAlive;
             Armors = armors ?? new List<Armor>();
             Weapons = weapons ?? new List<Weapon>();
             Consumables = consumables ?? new List<Consumables>();
+            ImportantItems = importantItems ?? new List<ImportantItem>();
             EquippedArmor = equippedArmor ?? new Armor[Enum.GetValues(typeof(ArmorPosition)).Length];
             EquippedWeapon = equippedWeapon;
         }
@@ -336,14 +346,19 @@ namespace TextRPG
         public Archer(Archer archer) : base(archer.CharacterStat, archer.Currency, archer.Exp) { job = Job.Archer; }
 
         [JsonConstructor]
-        public Archer(string name, float maxHealth, float health, float maxMagicPoint, float magicPoint, int criticalHitChange, int criticalHitDamagePercentage, int level, AttackStat attackStat, DefendStat defendStat, int currency, int exp, bool isAlive, List<Armor> armors, List<Weapon> weapons, List<Consumables> consumables, Armor?[] equippedArmor, Weapon? equippedWeapon)
-            : base(name, maxHealth, health, maxMagicPoint, magicPoint, criticalHitChange, criticalHitDamagePercentage, level, attackStat, defendStat, currency, exp, isAlive)
+        public Archer(string name, float maxHealth, float health, float maxMagicPoint, 
+            float magicPoint, int criticalHitChance, int criticalHitDamagePercentage, int level, 
+            AttackStat attackStat, DefendStat defendStat, int currency, int exp, bool isAlive, 
+            List<Armor> armors, List<Weapon> weapons, List<Consumables> consumables, List<ImportantItem> importantItems, 
+            Armor?[] equippedArmor, Weapon? equippedWeapon)
+            : base(name, maxHealth, health, maxMagicPoint, magicPoint, criticalHitChance, criticalHitDamagePercentage, level, attackStat, defendStat, currency, exp, isAlive)
         {
             Job = Job.Archer;
             IsAlive = isAlive;
             Armors = armors ?? new List<Armor>();
             Weapons = weapons ?? new List<Weapon>();
             Consumables = consumables ?? new List<Consumables>();
+            ImportantItems = importantItems ?? new List<ImportantItem>();
             EquippedArmor = equippedArmor ?? new Armor[Enum.GetValues(typeof(ArmorPosition)).Length];
             EquippedWeapon = equippedWeapon;
         }

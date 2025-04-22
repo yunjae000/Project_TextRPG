@@ -104,6 +104,37 @@ namespace TextRPG
     }
 
     /// <summary>
+    /// Converter for ImportantItem Class
+    /// </summary>
+    class ImportantItemConverter : JsonConverter<ImportantItem>
+    {
+        public override ImportantItem? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            using var doc = JsonDocument.ParseValue(ref reader);
+            var json = doc.RootElement;
+
+            string? typeName = json.GetProperty("Type").GetString();
+            var data = json.GetProperty("ImportantItemData").GetRawText();
+
+            return typeName switch
+            {
+                "GoblinEar" => JsonSerializer.Deserialize<GoblinEar>(data, options)!,
+                "GoblinEye" => JsonSerializer.Deserialize<GoblinEye>(data, options)!,
+                _ => throw new NotSupportedException($"Unknown item type: {typeName}")
+            };
+        }
+
+        public override void Write(Utf8JsonWriter writer, ImportantItem value, JsonSerializerOptions options)
+        {
+            writer.WriteStartObject();
+            writer.WriteString("Type", value.GetType().Name);
+            writer.WritePropertyName("ImportantItemData");
+            JsonSerializer.Serialize(writer, value, value.GetType(), options);
+            writer.WriteEndObject();
+        }
+    }
+
+    /// <summary>
     /// Converter for Character Class
     /// </summary>
     class CharacterConverter : JsonConverter<Character>
@@ -151,7 +182,7 @@ namespace TextRPG
             return typeName switch
             {
                 "KillMonsterQuest" => JsonSerializer.Deserialize<KillMonsterQuest>(data, options)!,
-                "SpecialQuest" => JsonSerializer.Deserialize<SpecialQuest>(data, options)!,
+                "CollectItemQuest" => JsonSerializer.Deserialize<CollectItemQuest>(data, options)!,
                 _ => throw new NotSupportedException($"Unknown character type: {typeName}")
             };
         }
@@ -167,7 +198,7 @@ namespace TextRPG
     }
 
     /// <summary>
-    /// Converter for Armor Class Array
+    /// Converter for Armor Class Array -> perhaps needed
     /// </summary>
     class EquippedArmorConverter : JsonConverter<Armor[]>
     {
@@ -178,6 +209,22 @@ namespace TextRPG
         }
 
         public override void Write(Utf8JsonWriter writer, Armor[] value, JsonSerializerOptions options)
+        {
+            JsonSerializer.Serialize(writer, value.ToList(), options);
+        }
+    }
+
+    /// <summary>
+    /// Converter for Weapon Class Array -> perhaps needed
+    /// </summary>
+    class QuestListConverter : JsonConverter<Quest[]>
+    {
+        public override Quest[] Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            var list = JsonSerializer.Deserialize<List<Quest>>(ref reader, options);
+            return list?.ToArray() ?? Array.Empty<Quest>();
+        }
+        public override void Write(Utf8JsonWriter writer, Quest[] value, JsonSerializerOptions options)
         {
             JsonSerializer.Serialize(writer, value.ToList(), options);
         }
