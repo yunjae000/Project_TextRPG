@@ -428,10 +428,27 @@ namespace TextRPG
     class QuestManager
     {
         // Methods
+
+        public static IEnumerable<Quest> GetContractedQuests_CollectItem()
+        {
+            var contracted = from quest in Quests
+                             where quest.IsContracted == true && quest.IsCompleted == false && quest.QuestType == QuestType.CollectItem
+                             select quest;
+            return contracted;
+        }   
+
+        public static IEnumerable<Quest> GetContractedQuests_KillMonster()
+        {
+            var contracted = from quest in Quests
+                             where quest.IsContracted == true && quest.IsCompleted == false && quest.QuestType == QuestType.KillMonster
+                             select quest;
+            return contracted;
+        }
+
         /// <summary>
         /// Get Contracted Quests
         /// </summary>
-        /// <returns></returns>
+        /// <returns> IEnumerable Array of Contracted Quests </returns>
         public static IEnumerable<Quest> GetContractedQuests()
         {
             Console.WriteLine("\n| Contracted Quests |");
@@ -447,7 +464,7 @@ namespace TextRPG
         /// <summary>
         /// Get Contractable Quests
         /// </summary>
-        /// <returns></returns>
+        /// <returns> IEnumerable Array of Contractable Quests </returns>
         public static IEnumerable<Quest> GetContractableQuests()
         {
             Console.WriteLine("\n| Contractable Quests |");
@@ -463,7 +480,7 @@ namespace TextRPG
         /// <summary>
         /// Get Completed Quests
         /// </summary>
-        /// <returns></returns>
+        /// <returns> IEnumerable Array of Completed Quests </returns>
         public static IEnumerable<Quest> GetCompletedQuests()
         {
             Console.WriteLine("\n| Completed Quests |");
@@ -479,7 +496,7 @@ namespace TextRPG
         /// <summary>
         /// Get Completable Quests
         /// </summary>
-        /// <returns></returns>
+        /// <returns> IEnumerable Array of Completable Quests </returns>
         public static IEnumerable<Quest> GetCompletableQuests()
         {
             Console.WriteLine("\n| Completable Quests |");
@@ -495,7 +512,7 @@ namespace TextRPG
         /// <summary>
         /// Get all quests
         /// </summary>
-        /// <returns></returns>
+        /// <returns> IEnumerable Array of Quests </returns>
         public static IEnumerable<Quest> GetQuests() { return Quests; }
 
         /// <summary>
