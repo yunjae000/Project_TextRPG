@@ -142,8 +142,8 @@ namespace TextRPG
             Console.WriteLine("| 2. Contract Quest |");
             Console.WriteLine("| 3. Complete Quest |");
             Console.WriteLine("| 4. Show Contractable Quests |");
-            Console.WriteLine("| 4. Show Contracted Quests |");
-            Console.WriteLine("| 5. Show Completed Quests |");
+            Console.WriteLine("| 5. Show Contracted Quests |");
+            Console.WriteLine("| 6. Show Completed Quests |");
             Console.WriteLine("| ------------------------------------------ |");
             Console.Write("\nChoose Action : ");
         }
