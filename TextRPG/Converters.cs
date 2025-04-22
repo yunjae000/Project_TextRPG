@@ -197,6 +197,8 @@ namespace TextRPG
         }
     }
 
+
+
     /// <summary>
     /// Converter for Armor Class Array -> perhaps needed
     /// </summary>

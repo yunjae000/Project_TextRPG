@@ -42,6 +42,11 @@ namespace TextRPG
             return new AttackStat(stat1.Attack - stat2.Attack, stat1.RangeAttack - stat2.RangeAttack, stat1.MagicAttack - stat2.MagicAttack);
         }
 
+        public static AttackStat operator *(AttackStat stat, float coef)
+        {
+            return new AttackStat(stat.Attack * coef, stat.RangeAttack * coef, stat.MagicAttack * coef);
+        }
+
         public override string ToString()
         {
             StringBuilder sb = new();

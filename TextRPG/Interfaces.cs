@@ -46,4 +46,15 @@ namespace TextRPG
     {
         public void OnCanceled(Character character);
     }
+
+    interface ISkillActive
+    {
+        public void OnActive(Character character, Monster target);
+    }
+
+    interface ISkillBuff
+    {
+        public void OnActive(Character character);
+        public void OnDeBuffed(Character character);
+    }
 }

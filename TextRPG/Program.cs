@@ -502,20 +502,31 @@ namespace TextRPG
         private void InBattle()
         {
             Console.Clear();
+            CheckBuffSkillsExpired();
             UIManager.BaseUI(GameManager.SelectedCharacter, "Kill the monsters", typeof(BattleOptions));
 
             if (!int.TryParse(Console.ReadLine(), out int opt)) { Console.WriteLine("| Invalid Input! |"); return; }
 
+            // Player Options
             switch ((BattleOptions)(Math.Clamp(opt - 1, 0, Enum.GetValues(typeof(BattleOptions)).Length - 1)))
             {
                 case BattleOptions.Attack: InBattle_Attack(); break;
+                case BattleOptions.Skill: InBattle_Skill(); break;
                 case BattleOptions.Inventory: InInventory(); return;
                 case BattleOptions.Status: InStatus(); return;
                 case BattleOptions.Escape: SpawnManager.RemoveAllMonsters(); GameManager.GameState = GameState.Dungeon; return;
                 default: Console.WriteLine("| Something is wrong! |"); return;
             }
-            
-            if (SpawnManager.GetMonsterCount() <= 0) { GameManager.GameState = GameState.Dungeon; return; }
+
+            // Check if all monsters are dead
+            if (SpawnManager.GetMonsterCount() <= 0) { 
+                Console.WriteLine("\n| All Monsters eliminated! |");
+                Console.Write("| Press any key to continue... |");
+                Console.ReadKey(true);
+                GameManager.CurrentTurn = 1;
+                GameManager.GameState = GameState.Dungeon; 
+                return; 
+            }
             
             // Monster Attack Mechanism
             foreach(Monster monster in SpawnManager.spawnedMonsters)
@@ -524,6 +535,8 @@ namespace TextRPG
                 else if(monster.AttackType == AttackType.Long) GameManager.SelectedCharacter.OnDamage(AttackType.Long, monster.AttackStat.RangeAttack);
                 else GameManager.SelectedCharacter.OnDamage(AttackType.Magic, monster.AttackStat.MagicAttack);
             }
+
+            GameManager.CurrentTurn++;
 
             Console.WriteLine("| Press any key to continue... |");
             Console.ReadKey(true);
@@ -546,12 +559,59 @@ namespace TextRPG
                 switch (type)
                 {
                     case AttackType.Close: SpawnManager.spawnedMonsters[opt - 1].OnDamage(AttackType.Close, GameManager.SelectedCharacter.AttackStat.Attack); break;
-                    case AttackType.Long: SpawnManager.spawnedMonsters[opt - 1].OnDamage(AttackType.Close, GameManager.SelectedCharacter.AttackStat.RangeAttack); break;
-                    case AttackType.Magic: SpawnManager.spawnedMonsters[opt - 1].OnDamage(AttackType.Close, GameManager.SelectedCharacter.AttackStat.MagicAttack); break;
+                    case AttackType.Long: SpawnManager.spawnedMonsters[opt - 1].OnDamage(AttackType.Long, GameManager.SelectedCharacter.AttackStat.RangeAttack); break;
+                    case AttackType.Magic: SpawnManager.spawnedMonsters[opt - 1].OnDamage(AttackType.Magic, GameManager.SelectedCharacter.AttackStat.MagicAttack); break;
                     default: SpawnManager.spawnedMonsters[opt - 1].OnDamage(AttackType.Close, GameManager.SelectedCharacter.AttackStat.Attack); break;
                 }
             }
             else { Console.WriteLine("| Invalid Input! |"); return; }
+        }
+
+        /// <summary>
+        /// Skill Mechanism of player
+        /// </summary>
+        private void InBattle_Skill()
+        {
+            UIManager.ShowSkillList(GameManager.SelectedCharacter);
+            int skillOpt;
+            while (true)
+            { 
+                if (!int.TryParse(Console.ReadLine(), out int ind)) Console.WriteLine("| Invalid Input! |"); 
+                else { skillOpt = Math.Clamp(ind, 1, GameManager.SelectedCharacter.Skills.Count); break; } 
+            }
+
+            var skill = GameManager.SelectedCharacter.Skills[skillOpt - 1];
+            if (skill.GetType().Equals(typeof(ActiveSkill)))
+            {
+                UIManager.ShowMonsterList(SpawnManager);
+                int monsterOpt;
+                while (true)
+                {
+                    if (!int.TryParse(Console.ReadLine(), out int ind)) Console.WriteLine("| Invalid Input! |");
+                    else { monsterOpt = Math.Clamp(ind, 1, SpawnManager.GetMonsterCount()); break; }
+                }
+
+                if (monsterOpt > 0 && monsterOpt <= SpawnManager.GetMonsterCount())
+                {
+                    ((ActiveSkill)skill).OnActive(GameManager.SelectedCharacter, SpawnManager.spawnedMonsters[monsterOpt - 1]);
+                }
+                else { Console.WriteLine("| Invalid Input! |"); return; }
+            }
+            else if (skill.GetType().Equals(typeof(BuffSkill))) ((BuffSkill)skill).OnActive(GameManager.SelectedCharacter);
+        }
+
+        /// <summary>
+        /// Checks if the buffs are expired or not.
+        /// </summary>
+        private void CheckBuffSkillsExpired()
+        {
+            var buffSkills = from skill in GameManager.SelectedCharacter.Skills
+                             where skill.GetType().Equals(typeof(BuffSkill))
+                             select (BuffSkill)skill;
+            foreach (BuffSkill skill in buffSkills)
+            {
+                if (GameManager.CurrentTurn - skill.UsedTurn >= skill.TurnInterval) { skill.OnDeBuffed(GameManager.SelectedCharacter); }
+            }
         }
         #endregion
 

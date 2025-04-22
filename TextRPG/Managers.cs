@@ -105,6 +105,24 @@ namespace TextRPG
             Console.Write("\nWhat do you want to sell? ( Type [ Category,Index ] ) : ");
         }
 
+        public static void ShowSkillList(Character character)
+        {
+            Console.WriteLine("\n| ----- Skills ----- |");
+            Console.WriteLine("| \"Active Skills\" |");
+            var activeSkills = from skill in character.Skills
+                               where skill.GetType().Equals(typeof(ActiveSkill))
+                               select skill;
+            foreach (ActiveSkill skill in activeSkills) Console.WriteLine($"| {skill.ToString()} |");
+            Console.WriteLine("| \"Buff Skills\" |");
+            var buffSkills = from skill in character.Skills
+                             where skill.GetType().Equals(typeof(BuffSkill))
+                             select skill;
+            foreach (BuffSkill skill in buffSkills) Console.WriteLine($"| {skill.ToString()} |");
+            Console.WriteLine("| ------------------ |");
+
+            Console.Write("\nChoose Skill : ");
+        }
+
         public static void ShowMonsterList(SpawnManager spawnManager)
         {
             Console.WriteLine("\n| ----- Battle ----- |");
@@ -268,7 +286,7 @@ namespace TextRPG
         {
             Console.WriteLine($"\n| ----- {headLine} ----- |");
             Console.WriteLine($"| Current Time : {GameManager.GameTime} |");
-            Console.WriteLine($"| Health : {character.Health} |");
+            Console.WriteLine($"| Health : {character.Health} | MagicPoint : {character.MagicPoint} |");
             Console.WriteLine($"| Currency : {character.Currency} |");
             Console.WriteLine();
             int i = 1;
@@ -733,6 +751,7 @@ namespace TextRPG
         // Static Field
         public static GameState GameState = GameState.MainMenu;
         public static GameTime GameTime = GameTime.Afternoon;
+        public static int CurrentTurn = 1;
         public static Queue<Consumables> Exposables = new();
 
         // Property
@@ -765,22 +784,23 @@ namespace TextRPG
                 case Job.Warrior:
                     Console.WriteLine("| You selected Warrior! |");
                     Console.Write("Type the name of your warrior : ");
-                    SelectedCharacter = new Warrior(new CharacterStat(Console.ReadLine(), 150, 50, 15, 160, 1, new AttackStat(30f, 6f, 1f), new DefendStat(25, 15, 5)), 100, 0);
+                    SelectedCharacter = new Warrior(new CharacterStat(Console.ReadLine(), 150, 50, 15, 1.6f, 1, new AttackStat(30f, 6f, 1f), new DefendStat(25, 15, 5)), 100, 0);
                     break;
                 case Job.Wizard:
                     Console.WriteLine("| You selected Wizard! |");
                     Console.Write("Type the name of your wizard : ");
-                    SelectedCharacter = new Wizard(new CharacterStat(Console.ReadLine(), 100, 65, 15, 160, 1, new AttackStat(1f, 6f, 30f), new DefendStat(5, 10, 30)), 100, 0);
+                    SelectedCharacter = new Wizard(new CharacterStat(Console.ReadLine(), 100, 65, 15, 1.6f, 1, new AttackStat(1f, 6f, 30f), new DefendStat(5, 10, 30)), 100, 0);
                     break;
                 case Job.Archer:
                     Console.WriteLine("| You selected Archer! |");
                     Console.Write("Type the name of your archer : ");
-                    SelectedCharacter = new Archer(new CharacterStat(Console.ReadLine(), 120, 80, 15, 160, 1, new AttackStat(6f, 30f, 1f), new DefendStat(15, 25, 5)), 100, 0);
+                    SelectedCharacter = new Archer(new CharacterStat(Console.ReadLine(), 120, 80, 15, 1.6f, 1, new AttackStat(6f, 30f, 1f), new DefendStat(15, 25, 5)), 100, 0);
                     break;
             }
 
-            SelectedCharacter.OnDeath += GameOver;
             GiveBasicItems(SelectedCharacter);
+            GiveBasicSkills(SelectedCharacter);
+            SelectedCharacter.OnDeath += GameOver;
         }
 
         /// <summary>
@@ -971,6 +991,23 @@ namespace TextRPG
 
             if (basicHealthPotions.Count() > 0) { character.Consumables.Add(new HealthPotion((HealthPotion)basicHealthPotions.First())); }
             if (basicMagicPotions.Count() > 0) { character.Consumables.Add(new MagicPotion((MagicPotion)basicMagicPotions.First())); }
+        }
+
+        /// <summary>
+        /// Give basic skills to the character.
+        /// </summary>
+        /// <param name="character"></param>
+        private void GiveBasicSkills(Character character)
+        {
+            // Active Skills
+            if (character.GetType().Equals(typeof(Warrior))) 
+                character.Skills.Add(new ActiveSkill((ActiveSkill)SkillLists.ActiveSkills[0]));
+            else if(character.GetType().Equals(typeof(Archer))) 
+                character.Skills.Add(new ActiveSkill((ActiveSkill)SkillLists.ActiveSkills[1]));
+            else character.Skills.Add(new ActiveSkill((ActiveSkill)SkillLists.ActiveSkills[2]));
+
+            // Buff Skills
+            character.Skills.Add(new BuffSkill((BuffSkill)SkillLists.BuffSkills[0]));
         }
 
         /// <summary>
