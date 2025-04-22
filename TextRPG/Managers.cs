@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Text;
 using System.Text.Json;
 
@@ -11,25 +10,24 @@ namespace TextRPG
     {
         public static void StartUI()
         {
-            foreach(string line in Miscs.GameStart) Console.WriteLine(line);
+            foreach (string line in Miscs.GameStart) Console.WriteLine(line);
             Console.ReadKey();
         }
 
         public static void JobSelectionUI()
         {
             Console.WriteLine();
-            foreach(string line in Miscs.CharacterSelection) Console.WriteLine(line);
+            foreach (string line in Miscs.CharacterSelection) Console.WriteLine(line);
             Console.WriteLine("\n| 1. Choose Job |");
             Console.Write("Choose Action : ");
         }
 
         public static void InventoryUI(Character character)
         {
-            Console.Clear();
             Console.WriteLine("| ----- Inventory ----- |");
             Console.WriteLine("|\"Armors\" |");
             int i = 1;
-            foreach(Armor armor in character.Armors) { Console.WriteLine($"{i++}. {armor}"); }
+            foreach (Armor armor in character.Armors) { Console.WriteLine($"{i++}. {armor}"); }
             Console.WriteLine("\n|\"Weapons\" |");
             i = 1;
             foreach (Weapon weapon in character.Weapons) { Console.WriteLine($"{i++}. {weapon}"); }
@@ -63,12 +61,11 @@ namespace TextRPG
 
         public static void ShopUI(Character character)
         {
-            Console.Clear();
             Console.WriteLine("| ----- Welcome to Henry's Shop! ----- |");
-            foreach(string line in Miscs.Henry) Console.WriteLine(line);
+            foreach (string line in Miscs.Henry) Console.WriteLine(line);
             Console.WriteLine("| ---------------------------------- |");
 
-            Console.WriteLine($"\n| Currency : {character.Currency} |");    
+            Console.WriteLine($"\n| Currency : {character.Currency} |");
             Console.WriteLine("| Actions |");
             Console.WriteLine("| 1. Back |");
             Console.WriteLine("| 2. Buy |");
@@ -80,13 +77,13 @@ namespace TextRPG
         {
             int i = 1;
             Console.WriteLine("\n| ----- Buy Items ----- |");
-            Console.WriteLine("|\"Armors\" |");
+            Console.WriteLine("| 1. \"Armors\" |");
             foreach (Armor armor in ItemLists.Armors) { Console.WriteLine($"{i++}. {armor}"); }
             i = 1;
-            Console.WriteLine("|\"Weapons\" |");
+            Console.WriteLine("| 2. \"Weapons\" |");
             foreach (Weapon weapon in ItemLists.Weapons) { Console.WriteLine($"{i++}. {weapon}"); }
             i = 1;
-            Console.WriteLine("|\"Potions\" |");
+            Console.WriteLine("| 3. \"Potions\" |");
             foreach (Consumables potion in ItemLists.Consumables) { Console.WriteLine($"{i++}. {potion}"); }
             Console.WriteLine("| --------------------- |");
             Console.Write("\nWhat do you want to buy? ( Type [ Category,Index ] ) : ");
@@ -96,16 +93,34 @@ namespace TextRPG
         {
             int i = 1;
             Console.WriteLine("\n| ----- Sell Items ----- |");
-            Console.WriteLine("|\"Armors\" |");
+            Console.WriteLine("| 1. \"Armors\" |");
             foreach (Armor armor in character.Armors) { Console.WriteLine($"{i++}. {armor}"); }
-            Console.WriteLine("|\"Weapons\" |");
+            Console.WriteLine("| 2. \"Weapons\" |");
             i = 1;
             foreach (Weapon weapon in character.Weapons) { Console.WriteLine($"{i++}. {weapon}"); }
-            Console.WriteLine("|\"Potions\" |");
+            Console.WriteLine("| 3. \"Potions\" |");
             i = 1;
             foreach (Consumables potion in character.Consumables) { Console.WriteLine($"{i++}. {potion}"); }
             Console.WriteLine("| ---------------------- |");
             Console.Write("\nWhat do you want to sell? ( Type [ Category,Index ] ) : ");
+        }
+
+        public static void ShowSkillList(Character character)
+        {
+            Console.WriteLine("\n| ----- Skills ----- |");
+            Console.WriteLine("| \"Active Skills\" |");
+            var activeSkills = from skill in character.Skills
+                               where skill.GetType().Equals(typeof(ActiveSkill))
+                               select skill;
+            foreach (ActiveSkill skill in activeSkills) Console.WriteLine($"| {skill.ToString()} |");
+            Console.WriteLine("| \"Buff Skills\" |");
+            var buffSkills = from skill in character.Skills
+                             where skill.GetType().Equals(typeof(BuffSkill))
+                             select skill;
+            foreach (BuffSkill skill in buffSkills) Console.WriteLine($"| {skill.ToString()} |");
+            Console.WriteLine("| ------------------ |");
+
+            Console.Write("\nChoose Skill : ");
         }
 
         public static void ShowMonsterList(SpawnManager spawnManager)
@@ -121,9 +136,8 @@ namespace TextRPG
 
         public static void CabinUI()
         {
-            Console.Clear();
             Console.WriteLine("| ----- Welcome to Alby's Cabin! ----- |");
-            foreach(string line in Miscs.Alby) Console.WriteLine(line);
+            foreach (string line in Miscs.Alby) Console.WriteLine(line);
             Console.WriteLine("\n| Room Options |");
             Console.WriteLine("| 1. Back |");
             Console.WriteLine("| 2. Normal Room (Heals 50% of your Max Health, 20G) |");
@@ -135,7 +149,6 @@ namespace TextRPG
 
         public static void QuestUI()
         {
-            Console.Clear();
             Console.WriteLine("| ----- Welcome to Adventurers' Guild ----- |");
             Console.WriteLine("\n| Actions |");
             Console.WriteLine("| 1. Back |");
@@ -148,9 +161,28 @@ namespace TextRPG
             Console.Write("\nChoose Action : ");
         }
 
+        public static void QuestUI_Contract()
+        {
+            var questList = QuestManager.GetContractableQuests();
+            Console.WriteLine("\n| ----- Contractable Quests ----- |");
+            if (questList == null) { Console.WriteLine("| There is no Contractable Quests |"); return; }
+
+            foreach (var quest in questList) Console.WriteLine($"{quest.ToString()}");
+            Console.Write("\nSelect Quest: ");
+        }
+
+        public static void QuestUI_Complete()
+        {
+            var questList = QuestManager.GetCompletableQuests();
+            Console.WriteLine("\n| ----- Completable Quests ----- |");
+            if (questList == null) { Console.WriteLine("| There is no Completable Quests |"); return; }
+
+            foreach (var quest in questList) Console.WriteLine($"{quest.ToString()}");
+            Console.Write("\nSelect Quest: ");
+        }
+
         public static void StatusUI(Character character)
         {
-            Console.Clear();
             Console.WriteLine("| ----- \"Character Info.\" ----- |");
             Console.WriteLine($"\n| \"Name\" : {character.Name} |");
             Console.WriteLine($"| \"Lv {character.Level:D2}\" |");
@@ -172,7 +204,7 @@ namespace TextRPG
             Console.WriteLine("| ----- \"Weapons\" ----- |");
             foreach (Weapon weapon in character.Weapons) { Console.WriteLine($"| {weapon} |"); }
             Console.WriteLine("| ----- \"Potions\" ----- |");
-            foreach(Consumables consumable in character.Consumables) { Console.WriteLine($"| {consumable} |"); }
+            foreach (Consumables consumable in character.Consumables) { Console.WriteLine($"| {consumable} |"); }
             Console.WriteLine("\n| Press any key to continue... |");
             Console.ReadKey();
         }
@@ -191,13 +223,13 @@ namespace TextRPG
 
             Console.WriteLine("\n| ---------------------------------- |");
             Console.ForegroundColor = ConsoleColor.Green;
-            foreach(Monster monster in spawnManager.spawnedMonsters)
+            foreach (Monster monster in spawnManager.spawnedMonsters)
             {
-                if(i != 0) sb.Append(", ");
+                if (i != 0) sb.Append(", ");
                 sb.Append(monster.Name); i++;
 
-                if(monster.AttackType == AttackType.Close) foreach (string line in Miscs.Goblin) Console.WriteLine(line);
-                else if(monster.AttackType == AttackType.Long) foreach (string line in Miscs.GoblinArcher) Console.WriteLine(line);
+                if (monster.AttackType == AttackType.Close) foreach (string line in Miscs.Goblin) Console.WriteLine(line);
+                else if (monster.AttackType == AttackType.Long) foreach (string line in Miscs.GoblinArcher) Console.WriteLine(line);
                 else foreach (string line in Miscs.GoblinWizard) Console.WriteLine(line);
             }
             Console.ResetColor();
@@ -220,7 +252,7 @@ namespace TextRPG
         {
             Console.WriteLine();
             Console.ForegroundColor = ConsoleColor.Red;
-            foreach(string line in Miscs.GameOver) Console.WriteLine(line);
+            foreach (string line in Miscs.GameOver) Console.WriteLine(line);
             Console.ResetColor();
 
             Console.WriteLine("\nPress any key to revive(Loses 100G)...");
@@ -254,7 +286,7 @@ namespace TextRPG
         {
             Console.WriteLine($"\n| ----- {headLine} ----- |");
             Console.WriteLine($"| Current Time : {GameManager.GameTime} |");
-            Console.WriteLine($"| Health : {character.Health} |");
+            Console.WriteLine($"| Health : {character.Health} | MagicPoint : {character.MagicPoint} |");
             Console.WriteLine($"| Currency : {character.Currency} |");
             Console.WriteLine();
             int i = 1;
@@ -427,104 +459,101 @@ namespace TextRPG
     /// </summary>
     class QuestManager
     {
-    // Methods
+        // Methods
+        /// <summary>
+        /// Get Contracted Quests of collecting item
+        /// </summary>
+        /// <param name="itemName"></param>
+        /// <returns></returns>
+        public static IEnumerable<CollectItemQuest> GetContractedQuests_CollectItem(string itemName)
+        {
+            var contracted = from quest in Quests
+                             where quest.IsContracted == true && quest.IsCompleted == false && quest.GetType().Equals(typeof(CollectItemQuest))
+                             where ((CollectItemQuest)quest).ItemName == itemName
+                             select (CollectItemQuest)quest;
+            return contracted;
+        }
 
-    public static IEnumerable<Quest> GetContractedQuests_CollectItem()
-    {
-        var contracted = from quest in Quests
-                         where quest.IsContracted == true && quest.IsCompleted == false && quest.QuestType == QuestType.CollectItem
-                         select quest;
-        return contracted;
-    }   
+        /// <summary>
+        /// Get Contracted Quests of killing monster
+        /// </summary>
+        /// <returns></returns>
+        public static IEnumerable<KillMonsterQuest> GetContractedQuests_KillMonster()
+        {
+            var contracted = from quest in Quests
+                             where quest.IsContracted == true && quest.IsCompleted == false && quest.QuestType == QuestType.KillMonster
+                             select (KillMonsterQuest)quest;
+            return contracted;
+        }
 
-    public static IEnumerable<Quest> GetContractedQuests_KillMonster()
-    {
-        var contracted = from quest in Quests
-                         where quest.IsContracted == true && quest.IsCompleted == false && quest.QuestType == QuestType.KillMonster
-                         select quest;
-        return contracted;
-    }
+        /// <summary>
+        /// Get Contracted Quests
+        /// </summary>
+        /// <returns> IEnumerable Array of Contracted Quests </returns>
+        public static IEnumerable<Quest> GetContractedQuests()
+        {
+            var contracted = from quest in Quests
+                             where quest.IsContracted == true && quest.IsCompleted == false
+                             select quest;
+            return contracted;
+        }
 
-    /// <summary>
-    /// Get Contracted Quests
-    /// </summary>
-    /// <returns> IEnumerable Array of Contracted Quests </returns>
-    public static IEnumerable<Quest> GetContractedQuests()
-    {
-        Console.WriteLine("\n| Contracted Quests |");
-        var contracted = from quest in Quests
-                            where quest.IsContracted == true && quest.IsCompleted == false
+        /// <summary>
+        /// Get Contractable Quests
+        /// </summary>
+        /// <returns> IEnumerable Array of Contractable Quests </returns>
+        public static IEnumerable<Quest> GetContractableQuests()
+        {
+            var contractables = from quest in Quests
+                                where quest.IsContracted == false && quest.IsCompleted == false
+                                select quest;
+            return contractables;
+        }
+
+        /// <summary>
+        /// Get Completed Quests
+        /// </summary>
+        /// <returns> IEnumerable Array of Completed Quests </returns>
+        public static IEnumerable<Quest> GetCompletedQuests()
+        {
+            var completed = from quest in Quests
+                            where quest.IsCompleted == true && quest.IsContracted == false
                             select quest;
-        if (contracted.Count() < 1)
-            Console.WriteLine("| There are no quests available! |");
-        else Console.WriteLine($"| There are {contracted.Count()} quests available! |");
-        return contracted;
+            return completed;
+        }
+
+        /// <summary>
+        /// Get Completable Quests
+        /// </summary>
+        /// <returns> IEnumerable Array of Completable Quests </returns>
+        public static IEnumerable<Quest> GetCompletableQuests()
+        {
+            var completables = from quest in Quests
+                               where quest.IsCompleted == true && quest.IsContracted == true
+                               select quest;
+            return completables;
+        }
+
+        /// <summary>
+        /// Get all quests
+        /// </summary>
+        /// <returns> IEnumerable Array of Quests </returns>
+        public static IEnumerable<Quest> GetQuests() { return Quests; }
+
+        public static void SetQuests(Quest[] quests)
+        {
+            Quests = quests;
+        }
+
+        /// <summary>
+        /// Quest List
+        /// </summary>
+        private static Quest[] Quests =
+        {
+            new KillMonsterQuest("Please save us from monsters' attack", "Kill 1 Goblins", QuestDifficulty.Normal, 1, 120,300),
+            new CollectItemQuest("Please bring me some goblin's ears", "Collect 1 Goblin's Ears", QuestDifficulty.Easy, 1, 100,300),
+        };
     }
-
-    /// <summary>
-    /// Get Contractable Quests
-    /// </summary>
-    /// <returns> IEnumerable Array of Contractable Quests </returns>
-    public static IEnumerable<Quest> GetContractableQuests()
-    {
-        Console.WriteLine("\n| Contractable Quests |");
-        var contractables = from quest in Quests
-                            where quest.IsContracted == false && quest.IsCompleted == false
-                            select quest;
-        if (contractables.Count() < 1)
-            Console.WriteLine("| There are no quests available! |");
-        else Console.WriteLine($"| There are {contractables.Count()} quests available! |");
-        return contractables;
-    }
-
-    /// <summary>
-    /// Get Completed Quests
-    /// </summary>
-    /// <returns> IEnumerable Array of Completed Quests </returns>
-    public static IEnumerable<Quest> GetCompletedQuests()
-    {
-        Console.WriteLine("\n| Completed Quests |");
-        var completed = from quest in Quests
-                         where quest.IsCompleted == true && quest.IsContracted == false
-                         select quest;
-        if (completed.Count() < 1)
-            Console.WriteLine("| There are no quests available! |");
-        else Console.WriteLine($"| There are {completed.Count()} quests available! |");
-        return completed;
-    }
-
-    /// <summary>
-    /// Get Completable Quests
-    /// </summary>
-    /// <returns> IEnumerable Array of Completable Quests </returns>
-    public static IEnumerable<Quest> GetCompletableQuests()
-    {
-        Console.WriteLine("\n| Completable Quests |");
-        var completables = from quest in Quests
-                         where quest.IsCompleted == true && quest.IsContracted == true
-                         select quest;
-        if (completables.Count() < 1)
-            Console.WriteLine("| There are no quests available! |");
-        else Console.WriteLine($"| There are {completables.Count()} quests available! |");
-        return completables;
-    }
-
-    /// <summary>
-    /// Get all quests
-    /// </summary>
-    /// <returns> IEnumerable Array of Quests </returns>
-    public static IEnumerable<Quest> GetQuests() { return Quests; }
-
-    /// <summary>
-    /// Quest List
-    /// </summary>
-    private static Quest[] Quests =
-    {
-        new KillMonsterQuest("Please save us from monsters' attack", "Kill 5 Goblins", QuestDifficulty.Hard, 5, 120,300),
-        
-    };
-}
-
 
     /// <summary>
     /// Manage spawning monsters
@@ -542,26 +571,26 @@ namespace TextRPG
         public void SpawnMonsters(Character character, int groundLevel)
         {
             int count = new Random().Next(1, 5);
-            for(int i = 0; i < count; i++)
+            for (int i = 0; i < count; i++)
             {
                 int type = new Random().Next(MonsterLists.monsters.Length);
 
                 if (MonsterLists.monsters[type].AttackType == AttackType.Close)
                 {
                     GoblinWarrior monster = new GoblinWarrior((GoblinWarrior)MonsterLists.monsters[type]);
-                    SetMonster(monster, groundLevel, character, 50);
+                    SetMonster(monster, character, groundLevel, 50);
                     AddMonster(monster);
                 }
                 else if (MonsterLists.monsters[type].AttackType == AttackType.Long)
                 {
                     GoblinArcher monster = new GoblinArcher((GoblinArcher)MonsterLists.monsters[type]);
-                    SetMonster(monster, groundLevel, character, 65);
+                    SetMonster(monster, character, groundLevel, 65);
                     AddMonster(monster);
                 }
                 else if (MonsterLists.monsters[type].AttackType == AttackType.Magic)
                 {
                     GoblinMage monster = new GoblinMage((GoblinMage)MonsterLists.monsters[type]);
-                    SetMonster(monster, groundLevel, character, 80);
+                    SetMonster(monster, character, groundLevel, 80);
                     AddMonster(monster);
                 }
             }
@@ -571,11 +600,10 @@ namespace TextRPG
         public void RemoveAllMonsters() { spawnedMonsters.Clear(); }
 
         // Private Methods
-        // TODO: Increase monster stat based on ground level
         // Set monster
-        private void SetMonster(Monster monster, int groundLevel, Character character, int currency)
+        private void SetMonster(Monster monster, Character character, int groundLevel,  int currency)
         {
-            monster.Level = character.Level;
+            monster.Level = groundLevel;
             monster.AttackStat += new AttackStat(monster.AttackStat.Attack * 0.1f * monster.Level,
                                                  monster.AttackStat.RangeAttack * 0.1f * monster.Level,
                                                  monster.AttackStat.MagicAttack * 0.1f * monster.Level);
@@ -586,11 +614,12 @@ namespace TextRPG
             {
                 RemoveMonster(character, monster, currency);
                 var quests = QuestManager.GetContractedQuests_KillMonster();
-                foreach (KillMonsterQuest quest in quests) quest.OnProgress();
+                foreach(var quest in quests) { quest.OnProgress(); }
             };
         }
         private void AddMonster(Monster monster) { spawnedMonsters.Add(monster); }
-        private void RemoveMonster(Character character, Monster monster, int currency) {
+        private void RemoveMonster(Character character, Monster monster, int currency)
+        {
             Console.WriteLine($"| {monster.Name} is dead! |");
             Console.WriteLine($"| {character.Name} gets {currency}G |");
             KilledMonsterCount++;
@@ -598,11 +627,11 @@ namespace TextRPG
             character.OnEarnExp(monster.Exp);
 
             // Randomly drop items
-            int ind = new Random().Next(0, 3);
+            int ind = new Random().Next(0, 4);
             if (ind == 0) GetRandomArmor(monster.Level)?.OnPicked(character);
-            else if (ind == 1) GetRandomWeapon(monster.Level)?.OnPicked(character);
-            else GetRandomConsumable(monster.Level)?.OnPicked(character);
-
+            else if (ind <= 1) GetRandomWeapon(monster.Level)?.OnPicked(character);
+            else if(ind <= 2) GetRandomConsumable(monster.Level)?.OnPicked(character);
+            else GetRandomImportantItem()?.OnPicked(character);
             spawnedMonsters.Remove(monster);
         }
 
@@ -675,19 +704,19 @@ namespace TextRPG
             if (new Random().Next(1, 101) % 2 != 0) return null;
 
             IEnumerable<Consumables> filteredItems;
-            if(level > 0 && level <= 15)
+            if (level > 0 && level <= 15)
             {
                 filteredItems = from item in ItemLists.Consumables
                                 where item.Rarity == Rarity.Common || item.Rarity == Rarity.Exclusive
                                 select item;
             }
-            else if(level > 15 && level <= 30)
+            else if (level > 15 && level <= 30)
             {
                 filteredItems = from item in ItemLists.Consumables
                                 where item.Rarity == Rarity.Exclusive || item.Rarity == Rarity.Rare
                                 select item;
             }
-            else if(level > 30 && level <= 50)
+            else if (level > 30 && level <= 50)
             {
                 filteredItems = from item in ItemLists.Consumables
                                 where item.Rarity == Rarity.Exclusive || item.Rarity == Rarity.Rare || item.Rarity == Rarity.Hero
@@ -702,6 +731,16 @@ namespace TextRPG
             int ind = new Random().Next(filteredItems.Count());
             return filteredItems.ElementAt(ind);
         }
+        private ImportantItem? GetRandomImportantItem()
+        {
+            if (new Random().Next(1, 101) % 2 != 0) return null;
+
+            var filteredItems = from item in ItemLists.ImportantItems
+                                 where item.Rarity == Rarity.Common
+                                 select item;
+            int ind = new Random().Next(filteredItems.Count());
+            return filteredItems.ElementAt(ind);
+        }
     }
 
     /// <summary>
@@ -712,6 +751,7 @@ namespace TextRPG
         // Static Field
         public static GameState GameState = GameState.MainMenu;
         public static GameTime GameTime = GameTime.Afternoon;
+        public static int CurrentTurn = 1;
         public static Queue<Consumables> Exposables = new();
 
         // Property
@@ -744,22 +784,23 @@ namespace TextRPG
                 case Job.Warrior:
                     Console.WriteLine("| You selected Warrior! |");
                     Console.Write("Type the name of your warrior : ");
-                    SelectedCharacter = new Warrior(new CharacterStat(Console.ReadLine(), 150, 50, 15, 160, 1, new AttackStat(30f, 6f, 1f), new DefendStat(25, 15, 5)), 100, 0);
+                    SelectedCharacter = new Warrior(new CharacterStat(Console.ReadLine(), 150, 50, 15, 1.6f, 1, new AttackStat(30f, 6f, 1f), new DefendStat(25, 15, 5)), 100, 0);
                     break;
                 case Job.Wizard:
                     Console.WriteLine("| You selected Wizard! |");
                     Console.Write("Type the name of your wizard : ");
-                    SelectedCharacter = new Wizard(new CharacterStat(Console.ReadLine(), 100, 65, 15, 160, 1, new AttackStat(1f, 6f, 30f), new DefendStat(5, 10, 30)), 100, 0);
+                    SelectedCharacter = new Wizard(new CharacterStat(Console.ReadLine(), 100, 65, 15, 1.6f, 1, new AttackStat(1f, 6f, 30f), new DefendStat(5, 10, 30)), 100, 0);
                     break;
                 case Job.Archer:
                     Console.WriteLine("| You selected Archer! |");
                     Console.Write("Type the name of your archer : ");
-                    SelectedCharacter = new Archer(new CharacterStat(Console.ReadLine(), 120, 80, 15, 160, 1, new AttackStat(6f, 30f, 1f), new DefendStat(15, 25, 5)), 100, 0);
+                    SelectedCharacter = new Archer(new CharacterStat(Console.ReadLine(), 120, 80, 15, 1.6f, 1, new AttackStat(6f, 30f, 1f), new DefendStat(15, 25, 5)), 100, 0);
                     break;
             }
 
-            SelectedCharacter.OnDeath += GameOver;
             GiveBasicItems(SelectedCharacter);
+            GiveBasicSkills(SelectedCharacter);
+            SelectedCharacter.OnDeath += GameOver;
         }
 
         /// <summary>
@@ -769,7 +810,7 @@ namespace TextRPG
         {
             if (Exposables.Count <= 0) return;
 
-            while(Exposables.Count > 0)
+            while (Exposables.Count > 0)
             {
                 Consumables consumable = Exposables.Dequeue();
                 if (consumable == null) continue;
@@ -795,13 +836,14 @@ namespace TextRPG
         public void SaveGame()
         {
             if (!Directory.Exists("data")) Directory.CreateDirectory("data");
-            
 
+            // Saving Character Data
             var characterOptions = new JsonSerializerOptions
             {
-                Converters = { 
-                    new CharacterConverter(), new ArmorConverter(), 
+                Converters = {
+                    new CharacterConverter(), new ArmorConverter(),
                     new WeaponConverter(), new ConsumableConverter(),
+                    new ImportantItemConverter(), new SkillConverter(),
                 },
                 WriteIndented = true
             };
@@ -809,14 +851,13 @@ namespace TextRPG
             string characterJson = JsonSerializer.Serialize(SelectedCharacter, characterOptions);
             File.WriteAllText("data/character.json", characterJson, new UTF8Encoding(true));
 
-            var gameData = new GameData {
+            // Saving Game Data
+            var gameData = new GameData
+            {
                 GroundLevel = GroundLevel,
                 Quota = Quota,
                 GameState = GameState,
                 GameTime = GameTime,
-                
-                // TODO : Add Quest list
-
                 Exposables = Exposables.ToList()
             };
 
@@ -824,14 +865,27 @@ namespace TextRPG
             {
                 Converters = {
                     new ConsumableConverter(),
-                    new QuestConverter(),
                 },
                 WriteIndented = true
             };
             string gameJson = JsonSerializer.Serialize(gameData, gameOptions);
             File.WriteAllText("data/game.json", gameJson, new UTF8Encoding(true));
 
+            //Saving Quest Data
+            var questOptions = new JsonSerializerOptions
+            {
+                Converters = {
+                     new QuestConverter(),
+                },
+                WriteIndented = true
+            };
+
+            string questJson = JsonSerializer.Serialize(QuestManager.GetQuests(), questOptions);
+            File.WriteAllText("data/quest.json", questJson, new UTF8Encoding(true));
+
             Console.WriteLine("| Game Saved Successfully! |");
+            Console.WriteLine("| Press any key to continue... |");
+            Console.ReadKey();
         }
 
         /// <summary>
@@ -840,56 +894,53 @@ namespace TextRPG
         /// <exception cref="InvalidOperationException"></exception>
         public void LoadGame()
         {
-            if(!File.Exists("data/character.json") || !File.Exists("data/game.json"))
+            if (!File.Exists("data/character.json") || !File.Exists("data/game.json") || !File.Exists("data/quest.json"))
             {
                 Console.WriteLine("| No saved data found! |");
                 return;
             }
 
+            // Loading Character Data
             var options = new JsonSerializerOptions
             {
                 Converters = {
                     new CharacterConverter(), new ArmorConverter(),
                     new WeaponConverter(), new ConsumableConverter(),
+                    new ImportantItemConverter(), new SkillConverter(),
                 },
                 WriteIndented = true
             };
-
             string characterJson = File.ReadAllText("data/character.json", Encoding.UTF8);
             var obj = JsonSerializer.Deserialize<Character>(characterJson, options);
-            // Console.WriteLine(obj?.ToString());
             SelectedCharacter = obj ?? throw new InvalidOperationException("Failed to load character data.");
 
+            // Loading Game Data
             var gameOptions = new JsonSerializerOptions
             {
                 Converters = {
                     new ConsumableConverter(),
+                },
+                WriteIndented = true
+            };
+            string gameJson = File.ReadAllText("data/game.json", Encoding.UTF8);
+            var gameData = JsonSerializer.Deserialize<GameData>(gameJson, gameOptions) ?? throw new InvalidOperationException("Failed to load game data.");
+            SetGameData(gameData);
+
+            // Loading Quest Data
+            var questOptions = new JsonSerializerOptions
+            {
+                Converters = {
                     new QuestConverter(),
                 },
                 WriteIndented = true
             };
-
-            string gameJson = File.ReadAllText("data/game.json", Encoding.UTF8);
-            var gameObj = JsonSerializer.Deserialize<GameData>(gameJson, gameOptions);
-            
-            if(gameObj == null) throw new InvalidOperationException("Failed to load game data.");
-            
-            /*
-            Console.Write(gameObj.GroundLevel + ", " + gameObj.Quota + ", " + gameObj.GameState + ", " + gameObj.GameTime + "\n");
-            foreach(var item in gameObj.Exposables)
-            {
-                Console.Write(item.ToString() + ", ");
-            }
-            Console.WriteLine();
-            */
-
-            GroundLevel = gameObj.GroundLevel;
-            Quota = gameObj.Quota;
-            GameState = gameObj.GameState;
-            GameTime = gameObj.GameTime;
-            Exposables = new Queue<Consumables>(gameObj.Exposables);
+            string questJson = File.ReadAllText("data/quest.json", Encoding.UTF8);
+            var quests = JsonSerializer.Deserialize<Quest[]>(questJson, questOptions) ?? throw new InvalidOperationException("Failed to load quest data.");
+            QuestManager.SetQuests(quests);
 
             Console.WriteLine("| Game Loaded Successfully! |");
+            Console.WriteLine("| Press any key to continue... |");
+            Console.ReadKey();
         }
 
         /// <summary>
@@ -905,7 +956,7 @@ namespace TextRPG
             var basicChestArmors = from armor in ItemLists.Armors
                                    where armor.GetType().Equals(typeof(ChestArmor)) && armor.Rarity == Rarity.Common
                                    select armor;
-            
+
             var basicHealthPotions = from item in ItemLists.Consumables
                                      where item.GetType().Equals(typeof(HealthPotion)) && item.Rarity == Rarity.Common
                                      select item;
@@ -915,7 +966,7 @@ namespace TextRPG
 
             if (basicHelmets.Count() > 0) { character.Armors.Add(new Helmet((Helmet)basicHelmets.First())); }
             if (basicChestArmors.Count() > 0) { character.Armors.Add(new ChestArmor((ChestArmor)basicChestArmors.First())); }
-            
+
             if (character.GetType().Equals(typeof(Warrior)))
             {
                 var basicSwords = from sword in ItemLists.Weapons
@@ -940,6 +991,36 @@ namespace TextRPG
 
             if (basicHealthPotions.Count() > 0) { character.Consumables.Add(new HealthPotion((HealthPotion)basicHealthPotions.First())); }
             if (basicMagicPotions.Count() > 0) { character.Consumables.Add(new MagicPotion((MagicPotion)basicMagicPotions.First())); }
+        }
+
+        /// <summary>
+        /// Give basic skills to the character.
+        /// </summary>
+        /// <param name="character"></param>
+        private void GiveBasicSkills(Character character)
+        {
+            // Active Skills
+            if (character.GetType().Equals(typeof(Warrior))) 
+                character.Skills.Add(new ActiveSkill((ActiveSkill)SkillLists.ActiveSkills[0]));
+            else if(character.GetType().Equals(typeof(Archer))) 
+                character.Skills.Add(new ActiveSkill((ActiveSkill)SkillLists.ActiveSkills[1]));
+            else character.Skills.Add(new ActiveSkill((ActiveSkill)SkillLists.ActiveSkills[2]));
+
+            // Buff Skills
+            character.Skills.Add(new BuffSkill((BuffSkill)SkillLists.BuffSkills[0]));
+        }
+
+        /// <summary>
+        /// Set GameManager data from GameData.
+        /// </summary>
+        /// <param name="gameData"></param>
+        private void SetGameData(GameData gameData)
+        {
+            GroundLevel = gameData.GroundLevel;
+            Quota = gameData.Quota;
+            GameState = gameData.GameState;
+            GameTime = gameData.GameTime;
+            Exposables = new Queue<Consumables>(gameData.Exposables);
         }
 
         /// <summary>

@@ -1,5 +1,3 @@
-using System.Reflection.Metadata.Ecma335;
-
 namespace TextRPG
 {
     class InGame
@@ -26,9 +24,10 @@ namespace TextRPG
             int option;
             while (true)
             {
+                Console.Clear();
                 UIManager.GameOptionUI();
-                if (!int.TryParse(Console.ReadLine(), out int opt)) { Console.WriteLine("| Invalid Input! |"); }
-                else if(opt < 1 || opt > Enum.GetValues(typeof(GameOption)).Length) { Console.WriteLine("| Invalid Input! |");  }
+                if (!int.TryParse(Console.ReadLine(), out int opt)) { Console.WriteLine("| Invalid Input! -> Press any key to continue... |"); Console.ReadKey(true); }
+                else if(opt < 1 || opt > Enum.GetValues(typeof(GameOption)).Length) { Console.WriteLine("| Invalid Input! -> Press any key to continue... |"); Console.ReadKey(true); }
                 else { option = Math.Clamp(opt, 1, Enum.GetValues(typeof(GameOption)).Length); break; }
             }
 
@@ -53,6 +52,7 @@ namespace TextRPG
 
             while(!isSelected)
             {
+                Console.Clear();
                 UIManager.CabinUI();
 
                 if(!int.TryParse(Console.ReadLine(), out int opt)) { Console.WriteLine("| Invalid Input! |"); continue; }
@@ -91,6 +91,7 @@ namespace TextRPG
             while (true)
             {
                 // Prints Inventory UI
+                Console.Clear();
                 UIManager.InventoryUI(GameManager.SelectedCharacter);
 
                 // Get Input from user
@@ -103,6 +104,7 @@ namespace TextRPG
                 // Select Category and Index of Item
                 Console.Write("Type item category and index ( Type [ Category,Index ] ) : ");
                 string[] vals = Console.ReadLine().Split(new char[] { ',', ' ', '|' });
+                if(vals == null) { Console.WriteLine("| Invalid Input! |"); break; }
                 if (!int.TryParse(vals[0].Trim(new char[] { '[', ']', ' ', ',' }), out int cat)) { Console.WriteLine("| Invalid Input! |"); break; }
                 if (!int.TryParse(vals[1].Trim(new char[] { '[', ']', ' ', ',' }), out int ind)) { Console.WriteLine("| Invalid Input! |"); break; }
                 
@@ -183,7 +185,7 @@ namespace TextRPG
                 switch (Math.Clamp(index, 1, 2))
                 {
                     case 1: break;
-                    case 2: useable.OnUsed(GameManager.SelectedCharacter); break;
+                    case 2: useable?.OnUsed(GameManager.SelectedCharacter); break;
                 }
             }
             return true;
@@ -194,6 +196,7 @@ namespace TextRPG
         /// </summary>
         private void InStatus() 
         {
+            Console.Clear();
             UIManager.StatusUI(GameManager.SelectedCharacter);
         }
 
@@ -204,9 +207,10 @@ namespace TextRPG
         {
             while (true)
             {
+                Console.Clear();
                 UIManager.SettingOptionUI();
 
-                if (!int.TryParse(Console.ReadLine(), out int opt)) { Console.WriteLine("| Invalid Input! |"); continue; }
+                if (!int.TryParse(Console.ReadLine(), out int opt)) { Console.WriteLine("| Invalid Input! -> Press any key to continue... |"); Console.ReadKey(true); continue; }
             
                 switch ((SettingOptions)(opt - 1))
                 {
@@ -214,7 +218,7 @@ namespace TextRPG
                     case SettingOptions.Save: GameManager.SaveGame(); break;
                     case SettingOptions.Load: GameManager.LoadGame(); break;
                     case SettingOptions.EndGame: GameManager.GameState = GameState.MainMenu; Console.WriteLine(); return;
-                    default: Console.WriteLine("Invalid Input"); continue;
+                    default: Console.WriteLine("| Invalid Input! -> Press any key to continue... |"); Console.ReadKey(true); continue;
                 }
             }
         }
@@ -228,6 +232,7 @@ namespace TextRPG
 
             while (true)
             {
+                Console.Clear();
                 UIManager.ShopUI(character);
                 if (!int.TryParse(Console.ReadLine(), out int opt)) { Console.WriteLine("| Invalid Input! |"); continue; }
                 else if(opt < 1 || opt > 3) { Console.WriteLine("| Invalid Input! |"); continue; }
@@ -239,7 +244,8 @@ namespace TextRPG
                         // Buy Item in shop
                         case 2:
                             UIManager.ShowShopList();
-                            string[] vals1 = Console.ReadLine().Split(new char[] { ',', ' ', '|' });
+                            string[]? vals1 = Console.ReadLine()?.Split(new char[] { ',', ' ', '|' });
+                            if (vals1 == null) { Console.WriteLine("| Invalid Input! |"); break; }
                             if (!int.TryParse(vals1[0].Trim(new char[] { '[', ']', ' ', ',' }), out int cat1)) { Console.WriteLine("| Invalid Input! |"); break; }
                             if (!int.TryParse(vals1[1].Trim(new char[] { '[', ']', ' ', ',' }), out int ind1)) { Console.WriteLine("| Invalid Input! |"); break; }
                             InShop_Buy((ItemCategory)(cat1 - 1), ind1);
@@ -248,7 +254,8 @@ namespace TextRPG
                         // Sell Item in inventory
                         case 3:
                             UIManager.ShowItemList(character);
-                            string[] vals2 = Console.ReadLine().Split(new char[] { ',', ' ', '|' });
+                            string[]? vals2 = Console.ReadLine()?.Split(new char[] { ',', ' ', '|' });
+                            if (vals2 == null) { Console.WriteLine("| Invalid Input! |"); break; }
                             if (!int.TryParse(vals2[0].Trim(new char[] { '[', ']', ' ', ',' }), out int cat2)) { Console.WriteLine("| Invalid Input! |"); break; }
                             if (!int.TryParse(vals2[1].Trim(new char[] { '[', ']', ' ', ',' }), out int ind2)) { Console.WriteLine("| Invalid Input! |"); break; }
                             InShop_Sell((ItemCategory)(cat2 - 1), ind2);
@@ -324,6 +331,7 @@ namespace TextRPG
         {
             while (true)
             {
+                Console.Clear();
                 UIManager.QuestUI();
                 if(!int.TryParse(Console.ReadLine(), out int opt)) { Console.WriteLine("| Invalid Input! |"); continue; }
                 else if (opt < 1 || opt > 6) { Console.WriteLine("| Invalid Input! |"); continue; }
@@ -345,22 +353,24 @@ namespace TextRPG
         /// </summary>
         private void ContractQuest()
         {
-            ShowQuests(QuestStatus.NotStarted);
-            Console.Write("\nSelect Quest: ");
+            UIManager.QuestUI_Contract();           
+
             if (!int.TryParse(Console.ReadLine(), out int opt)) { Console.WriteLine("| Invalid Input! |"); return; }
             else if (opt < 1 || opt > QuestManager.GetContractableQuests().Count()) { Console.WriteLine("| Invalid Input! |"); return; }
 
             while (true)
             {
                 Console.Write("Do you really want to contract this Quest? (Y/N) : ");
-                char key = Console.ReadKey(true).KeyChar;
-                if (key.Equals('N')) return;
-                else if (key.Equals('Y')) break;
+                char key = char.ToLower(Console.ReadKey(true).KeyChar);
+                
+                if (key.Equals('n')) return;
+                else if (key.Equals('y')) break;
                 else { Console.WriteLine("| Invalid Input! |"); }
             }
             
-            Quest quest = QuestManager.GetContractableQuests().ElementAt(opt - 1);
-            quest.OnContracted();
+            var quest = QuestManager.GetContractableQuests().ElementAt(opt - 1);
+            if(quest.GetType().Equals(typeof(KillMonsterQuest))) quest.OnContracted();
+            else quest.OnContracted(GameManager.SelectedCharacter);
         }
 
         /// <summary>
@@ -369,8 +379,8 @@ namespace TextRPG
         /// <param name="character"></param>
         private void CompleteQuest(Character character)
         {
-            ShowQuests(QuestStatus.Completable);
-            Console.Write("\nSelect Quest: ");
+            UIManager.QuestUI_Complete();
+
             if (!int.TryParse(Console.ReadLine(), out int opt)) { Console.WriteLine("| Invalid Input! |"); return; }
             else if (opt < 1 || opt > QuestManager.GetCompletableQuests().Count()) { Console.WriteLine("| Invalid Input! |"); return; }
 
@@ -383,7 +393,7 @@ namespace TextRPG
                 else { Console.WriteLine("| Invalid Input! |"); }
             }
 
-            Quest quest = QuestManager.GetContractableQuests().ElementAt(opt - 1);
+            var quest = QuestManager.GetCompletableQuests().ElementAt(opt - 1);
             quest.OnCompleted(character);
         }
 
@@ -392,11 +402,11 @@ namespace TextRPG
         /// </summary>
         private void ShowQuests(QuestStatus type)
         {
-            if(type == QuestStatus.NotStarted) { foreach (var quest in QuestManager.GetContractableQuests()) Console.WriteLine($"{quest}"); }
-            else if(type == QuestStatus.InProgress) { foreach (var quest in QuestManager.GetContractedQuests()) Console.WriteLine($"{quest}"); }
-            else if(type == QuestStatus.Completable) { foreach (var quest in QuestManager.GetCompletableQuests()) Console.WriteLine($"{quest}"); }
-            else { foreach (var quest in QuestManager.GetCompletedQuests()) Console.WriteLine($"{quest}"); }
-            Console.WriteLine("\n| Press any key to continue... |");
+            if(type == QuestStatus.NotStarted) { foreach (var quest in QuestManager.GetContractableQuests()) Console.WriteLine($"{quest.ToString()}"); }
+            else if(type == QuestStatus.InProgress) { foreach (var quest in QuestManager.GetContractedQuests()) Console.WriteLine($"{quest.ToString()}"); }
+            else if(type == QuestStatus.Completable) { foreach (var quest in QuestManager.GetCompletableQuests()) Console.WriteLine($"{quest.ToString()}"); }
+            else { foreach (var quest in QuestManager.GetCompletedQuests()) Console.WriteLine($"{quest.ToString()}"); }
+            Console.WriteLine("| Press any key to continue... |");
             Console.ReadKey(true);
         }
 
@@ -405,21 +415,23 @@ namespace TextRPG
         /// </summary>
         private void InTown()
         {
+            Console.Clear();
+
             UIManager.BaseUI(GameManager.SelectedCharacter, "The Town of Adventurers", typeof(IdleOptions));
 
             if (!int.TryParse(Console.ReadLine(), out int opt)) { Console.WriteLine("| Invalid Input! |"); return; }
             else if(opt < 1 || opt > Enum.GetValues(typeof(IdleOptions)).Length) { Console.WriteLine("| Invalid Input! |"); return; }
-                switch ((IdleOptions)(Math.Clamp(opt - 1, 0, Enum.GetValues(typeof(IdleOptions)).Length - 1)))
-                {
-                    case IdleOptions.Shop: InShop(); break;
-                    case IdleOptions.Quest: InQuest(); break;
-                    case IdleOptions.Dungeon: GameManager.GameState = GameState.Dungeon; break;
-                    case IdleOptions.Rest: InRest(); break;
-                    case IdleOptions.Inventory: InInventory(); break;
-                    case IdleOptions.Status: InStatus(); break;
-                    case IdleOptions.Option: InOption(); break;
-                    default: Console.WriteLine("| Something is wrong! |"); break;
-                }
+            switch ((IdleOptions)(Math.Clamp(opt - 1, 0, Enum.GetValues(typeof(IdleOptions)).Length - 1)))
+            {
+                case IdleOptions.Shop: InShop(); break;
+                case IdleOptions.Quest: InQuest(); break;
+                case IdleOptions.Dungeon: GameManager.GameState = GameState.Dungeon; break;
+                case IdleOptions.Rest: InRest(); break;
+                case IdleOptions.Inventory: InInventory(); break;
+                case IdleOptions.Status: InStatus(); break;
+                case IdleOptions.Option: InOption(); break;
+                default: Console.WriteLine("| Something is wrong! |"); break;
+            }
         }
         #endregion
 
@@ -437,6 +449,8 @@ namespace TextRPG
             }
 
             // Print UI of Kill Count and Player Options
+            Console.Clear();
+            // TODO: Insert Dungeon Path UI
             UIManager.KillCountUI(SpawnManager.KilledMonsterCount, GameManager.Quota);
             UIManager.BaseUI(GameManager.SelectedCharacter, $"The Dungeon Lv{GameManager.GroundLevel}", typeof(DungeonOptions));
 
@@ -489,20 +503,32 @@ namespace TextRPG
         /// </summary>
         private void InBattle()
         {
+            Console.Clear();
+            CheckBuffSkillsExpired();
             UIManager.BaseUI(GameManager.SelectedCharacter, "Kill the monsters", typeof(BattleOptions));
 
             if (!int.TryParse(Console.ReadLine(), out int opt)) { Console.WriteLine("| Invalid Input! |"); return; }
 
+            // Player Options
             switch ((BattleOptions)(Math.Clamp(opt - 1, 0, Enum.GetValues(typeof(BattleOptions)).Length - 1)))
             {
                 case BattleOptions.Attack: InBattle_Attack(); break;
+                case BattleOptions.Skill: InBattle_Skill(); break;
                 case BattleOptions.Inventory: InInventory(); return;
                 case BattleOptions.Status: InStatus(); return;
                 case BattleOptions.Escape: SpawnManager.RemoveAllMonsters(); GameManager.GameState = GameState.Dungeon; return;
                 default: Console.WriteLine("| Something is wrong! |"); return;
             }
-            
-            if (SpawnManager.GetMonsterCount() <= 0) { GameManager.GameState = GameState.Dungeon; return; }
+
+            // Check if all monsters are dead
+            if (SpawnManager.GetMonsterCount() <= 0) { 
+                Console.WriteLine("\n| All Monsters eliminated! |");
+                Console.Write("| Press any key to continue... |");
+                Console.ReadKey(true);
+                GameManager.CurrentTurn = 1;
+                GameManager.GameState = GameState.Dungeon; 
+                return; 
+            }
             
             // Monster Attack Mechanism
             foreach(Monster monster in SpawnManager.spawnedMonsters)
@@ -511,6 +537,11 @@ namespace TextRPG
                 else if(monster.AttackType == AttackType.Long) GameManager.SelectedCharacter.OnDamage(AttackType.Long, monster.AttackStat.RangeAttack);
                 else GameManager.SelectedCharacter.OnDamage(AttackType.Magic, monster.AttackStat.MagicAttack);
             }
+
+            GameManager.CurrentTurn++;
+
+            Console.WriteLine("| Press any key to continue... |");
+            Console.ReadKey(true);
         }
 
         /// <summary>
@@ -530,12 +561,59 @@ namespace TextRPG
                 switch (type)
                 {
                     case AttackType.Close: SpawnManager.spawnedMonsters[opt - 1].OnDamage(AttackType.Close, GameManager.SelectedCharacter.AttackStat.Attack); break;
-                    case AttackType.Long: SpawnManager.spawnedMonsters[opt - 1].OnDamage(AttackType.Close, GameManager.SelectedCharacter.AttackStat.RangeAttack); break;
-                    case AttackType.Magic: SpawnManager.spawnedMonsters[opt - 1].OnDamage(AttackType.Close, GameManager.SelectedCharacter.AttackStat.MagicAttack); break;
+                    case AttackType.Long: SpawnManager.spawnedMonsters[opt - 1].OnDamage(AttackType.Long, GameManager.SelectedCharacter.AttackStat.RangeAttack); break;
+                    case AttackType.Magic: SpawnManager.spawnedMonsters[opt - 1].OnDamage(AttackType.Magic, GameManager.SelectedCharacter.AttackStat.MagicAttack); break;
                     default: SpawnManager.spawnedMonsters[opt - 1].OnDamage(AttackType.Close, GameManager.SelectedCharacter.AttackStat.Attack); break;
                 }
             }
             else { Console.WriteLine("| Invalid Input! |"); return; }
+        }
+
+        /// <summary>
+        /// Skill Mechanism of player
+        /// </summary>
+        private void InBattle_Skill()
+        {
+            UIManager.ShowSkillList(GameManager.SelectedCharacter);
+            int skillOpt;
+            while (true)
+            { 
+                if (!int.TryParse(Console.ReadLine(), out int ind)) Console.WriteLine("| Invalid Input! |"); 
+                else { skillOpt = Math.Clamp(ind, 1, GameManager.SelectedCharacter.Skills.Count); break; } 
+            }
+
+            var skill = GameManager.SelectedCharacter.Skills[skillOpt - 1];
+            if (skill.GetType().Equals(typeof(ActiveSkill)))
+            {
+                UIManager.ShowMonsterList(SpawnManager);
+                int monsterOpt;
+                while (true)
+                {
+                    if (!int.TryParse(Console.ReadLine(), out int ind)) Console.WriteLine("| Invalid Input! |");
+                    else { monsterOpt = Math.Clamp(ind, 1, SpawnManager.GetMonsterCount()); break; }
+                }
+
+                if (monsterOpt > 0 && monsterOpt <= SpawnManager.GetMonsterCount())
+                {
+                    ((ActiveSkill)skill).OnActive(GameManager.SelectedCharacter, SpawnManager.spawnedMonsters[monsterOpt - 1]);
+                }
+                else { Console.WriteLine("| Invalid Input! |"); return; }
+            }
+            else if (skill.GetType().Equals(typeof(BuffSkill))) ((BuffSkill)skill).OnActive(GameManager.SelectedCharacter);
+        }
+
+        /// <summary>
+        /// Checks if the buffs are expired or not.
+        /// </summary>
+        private void CheckBuffSkillsExpired()
+        {
+            var buffSkills = from skill in GameManager.SelectedCharacter.Skills
+                             where skill.GetType().Equals(typeof(BuffSkill))
+                             select (BuffSkill)skill;
+            foreach (BuffSkill skill in buffSkills)
+            {
+                if (GameManager.CurrentTurn - skill.UsedTurn >= skill.TurnInterval) { skill.OnDeBuffed(GameManager.SelectedCharacter); }
+            }
         }
         #endregion
 
