@@ -130,6 +130,19 @@ namespace TextRPG
             Console.Write("\nChoose Room Option : ");
         }
 
+        public static void QuestUI()
+        {
+            Console.WriteLine("\n| ----- Quest Menu ----- |");
+            Console.WriteLine("| 1. Back |");
+            Console.WriteLine("| 2. Contract Quest |");
+            Console.WriteLine("| 3. Complete Quest |");
+            Console.WriteLine("| 4. Show Contracted Quests |");
+            Console.WriteLine("| 5. Show Completed Quests |");
+            Console.WriteLine("| -----------------------------------|");
+            Console.WriteLine("\n| Choose Action : ");
+        }
+
+
         public static void StatusUI(Character character)
         {
             Console.WriteLine("\n| ----- \"Character Info.\" ----- |");
