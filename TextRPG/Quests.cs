@@ -108,6 +108,11 @@ namespace TextRPG
             Console.WriteLine($"\n| Quest '{Name}' |");
             Console.WriteLine($"| Progress: {QuestProgress}/{QuestGoal} |");
         }
+
+        internal void OnContracted()
+        {
+            throw new NotImplementedException();
+        }
     }
 
     /// <summary>
@@ -116,15 +121,15 @@ namespace TextRPG
     class NormalQuest : Quest, ICancelable
     {
         // Constructor
-        public NormalQuest(string name, string description, QuestDifficulty difficulty, QuestType questType, 
-                           int questGoal, int rewardExp, int rewardGold) 
+        public NormalQuest(string name, string description, QuestDifficulty difficulty, QuestType questType,
+                           int questGoal, int rewardExp, int rewardGold)
             : base(name, description, difficulty, questType, questGoal, rewardExp, rewardGold) { IsSpecial = false; }
         public NormalQuest(NormalQuest quest) : base(quest) { IsSpecial = false; }
         
         [JsonConstructor]
-        public NormalQuest(string name, string description, QuestDifficulty difficulty, QuestType questType, 
-                           int questProgress, int questGoal, int rewardExp, int rewardGold, 
-                           bool isCompleted, bool isSpecial) 
+        public NormalQuest(string name, string description, QuestDifficulty difficulty, QuestType questType,
+                           int questProgress, int questGoal, int rewardExp, int rewardGold,
+                           bool isCompleted, bool isSpecial)
             : base(name, description, difficulty, questType, questProgress, questGoal, rewardExp, rewardGold, isCompleted, isSpecial) { }
 
         /// <summary>
