@@ -137,6 +137,7 @@ namespace TextRPG
         public static void QuestUI()
         {
             Console.Clear();
+            foreach (string line in Miscs.Quest) Console.WriteLine(line);
             Console.WriteLine("| ----- Welcome to Adventurers' Guild ----- |");
             Console.WriteLine("\n| Actions |");
             Console.WriteLine("| 1. Back |");
