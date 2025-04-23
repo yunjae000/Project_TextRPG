@@ -200,7 +200,7 @@ namespace TextRPG
         /// <param name="damage"></param>
         public void OnDamage(AttackType type, float damage, bool isSkill)
         {
-            if (IsEvaded() && !isSkill) return;
+            if (IsEvaded() && !isSkill) { Console.WriteLine($"| {Name}이 공격을 회피하였습니다! |"); return; }
 
             StringBuilder sb = new();
             sb.Append($"| {Name}이 ");

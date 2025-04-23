@@ -236,34 +236,34 @@ namespace TextRPG
     class CollectItemQuest : NormalQuest
     {
         // Field
-        private string itemName;
+        private Type itemType;
 
         // Property
-        public string ItemName { get { return itemName; } set { itemName = value; } }
+        public Type ItemType { get { return itemType; } set { itemType = value; } }
 
         // Constructor
         public CollectItemQuest(CollectItemQuest quest) : base(quest)
         {
-            ItemName = quest.ItemName;
+            ItemType = quest.ItemType;
             IsSpecial = false;
         }
 
-        public CollectItemQuest(string name, string itemName, string description, QuestDifficulty difficulty,
+        public CollectItemQuest(string name, Type itemName, string description, QuestDifficulty difficulty,
                                 int questGoal, int rewardExp, int rewardGold)
             : base(name, description, difficulty, QuestType.CollectItem, questGoal, rewardExp, rewardGold)
         {
             IsSpecial = false;
-            ItemName = itemName;
+            ItemType = itemName;
         }
 
         [JsonConstructor]
-        public CollectItemQuest(string name, string itemName, string description, QuestDifficulty difficulty, QuestType questType,
+        public CollectItemQuest(string name, Type itemName, string description, QuestDifficulty difficulty, QuestType questType,
                                 int questProgress, int questGoal, int rewardExp, int rewardGold,
                                 bool isCompleted, bool isSpecial)
             : base(name, description, difficulty, questType, questProgress, questGoal, rewardExp, rewardGold, isCompleted, isSpecial)
         {
             IsSpecial = isSpecial;
-            ItemName = itemName;
+            ItemType = itemName;
         }
 
         // Methods
@@ -276,11 +276,9 @@ namespace TextRPG
             base.OnContracted();
             foreach (var item in character.ImportantItems)
             {
-                if (nameof(item).Equals(ItemName))
-                {
-                    QuestProgress++;
-                    if (QuestProgress >= QuestGoal) { IsCompleted = true; break; }
-                }
+                if (!item.GetType().Equals(ItemType)) continue;
+                QuestProgress++;
+                if (QuestProgress >= QuestGoal) { IsCompleted = true; break; }
             }
         }
 
@@ -295,11 +293,9 @@ namespace TextRPG
             QuestProgress = 0;
             foreach (var item in character.ImportantItems)
             {
-                if (nameof(item).Equals(ItemName))
-                {
-                    QuestProgress++;
-                    if (QuestProgress >= QuestGoal) { IsCompleted = true; break; }
-                }
+                if (!item.GetType().Equals(ItemType)) continue;
+                QuestProgress++;
+                if (QuestProgress >= QuestGoal) { IsCompleted = true; break; }
             }
         }
 
@@ -333,7 +329,7 @@ namespace TextRPG
             int i = 0;
             foreach (var item in character.ImportantItems)
             {
-                if (nameof(item).Equals(ItemName))
+                if (nameof(item).Equals(ItemType))
                 {
                     item.OnDropped(character); i++;
                     if (i >= QuestGoal) break;

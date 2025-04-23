@@ -519,7 +519,6 @@ namespace TextRPG
         /// </summary>
         private void InDungeon()
         {
-            
             // Check for Quota completion
             if (GameManager.KilledMonsterCount >= GameManager.Quota)
             {
@@ -528,14 +527,9 @@ namespace TextRPG
 
             // Print UI of Kill Count and Player Options
             Console.Clear();
-            if (GameManager.GroundLevel < 50)
-            {
-                foreach (string line in Miscs.EasyEntrance) Console.WriteLine(line);
-            }
-            else
-            {
-                foreach (string line in Miscs.HardEntrance) Console.WriteLine(line);
-            }
+            if (GameManager.GroundLevel < 50) foreach (string line in Miscs.EasyEntrance) Console.WriteLine(line);
+            else foreach (string line in Miscs.HardEntrance) Console.WriteLine(line);
+            
             int[] pathOptions = RandomPathOption();
             UIManager.KillCountUI(GameManager.KilledMonsterCount, GameManager.Quota);
             UIManager.DungeonUI(GameManager.SelectedCharacter, GameManager, pathOptions);
