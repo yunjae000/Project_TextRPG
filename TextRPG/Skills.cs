@@ -47,10 +47,10 @@ namespace TextRPG
     {
         // Constructor
         [JsonConstructor]
-        public ActiveSkill(string name, string description, float coefficient, 
-                           int manaCost, bool isTargetable) 
+        public ActiveSkill(string name, string description, float coefficient,
+                           int manaCost, bool isTargetable)
             : base(name, description, coefficient, manaCost, isTargetable) { }
-        public ActiveSkill(ActiveSkill skill) 
+        public ActiveSkill(ActiveSkill skill)
             : base(skill.Name, skill.Description, skill.Coefficient, skill.ManaCost, skill.IsTargetable) { }
 
         // Methods
@@ -70,7 +70,7 @@ namespace TextRPG
             
             character.OnMagicPointConsume(ManaCost);
             Console.WriteLine($"| 스킬_{Name}을 {target.Name}에 시전하였습니다! |");
-            
+
             AttackType? type = character.EquippedWeapon?.AttackType;
             switch (type)
             {
@@ -176,14 +176,13 @@ namespace TextRPG
 
             character.OnMagicPointConsume(ManaCost);
             Console.WriteLine($"| 스킬_{Name}을 시전하였습니다! |");
-            
+
             originalAttackStat = new(character.AttackStat);
             originalDefendStat = new(character.DefendStat);
             character.AttackStat *= Coefficient;
             character.DefendStat *= Coefficient;
             UsedTurn = GameManager.CurrentTurn;
             IsActive = true;
-
             return true;
         }
 

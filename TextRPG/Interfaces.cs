@@ -4,7 +4,7 @@ namespace TextRPG
     {
         public void OnDamage(AttackType type, float damage);
     }
-    
+
     interface IWearable
     {
         public void OnEquipped(Character character);

@@ -176,7 +176,6 @@ namespace TextRPG
             var questList = QuestManager.GetContractableQuests();
             Console.WriteLine("\n| ----- 수주 가능한 Quest 목록 ----- |");
             if (questList == null) { Console.WriteLine("| 수주 가능한 Quest가 없습니다! |"); return; }
-
             foreach (var quest in questList) 
                 if(quest is KillMonsterQuest) Console.WriteLine($"{((KillMonsterQuest)quest).ToString()}");
                 else if(quest is CollectItemQuest) Console.WriteLine($"{((CollectItemQuest)quest).ToString()}");
@@ -188,7 +187,6 @@ namespace TextRPG
             var questList = QuestManager.GetCompletableQuests();
             Console.WriteLine("\n| ----- 완료 가능한 Quest 목록 ----- |");
             if (questList == null) { Console.WriteLine("| 완료 가능한 Quest가 없습니다! |"); return; }
-
             foreach (var quest in questList) 
                 if(quest is KillMonsterQuest) Console.WriteLine($"{((KillMonsterQuest)quest).ToString()}");
                 else if (quest is CollectItemQuest) Console.WriteLine($"{((CollectItemQuest)quest).ToString()}");
@@ -197,6 +195,18 @@ namespace TextRPG
 
         public static void StatusUI(Character character)
         {
+            if (character.GetType().Equals(typeof(Warrior)))
+            {
+                foreach (string line in Miscs.WarriorDesign) Console.WriteLine(line);
+            }
+            else if (character.GetType().Equals(typeof(Archer)))
+            {
+                foreach (string line in Miscs.ArcherDesign) Console.WriteLine(line);
+            }
+            else if (character.GetType().Equals(typeof(Wizard)))
+            {
+                foreach (string line in Miscs.MazeDesign) Console.WriteLine(line);
+            }
             Console.WriteLine("| ----- \"캐릭터 정보\" ----- |");
             Console.WriteLine($"\n| \"Name\" : {character.Name} |");
             Console.WriteLine($"| \"Lv {character.Level:D2}\" |");
@@ -270,9 +280,9 @@ namespace TextRPG
             Console.ForegroundColor = ConsoleColor.Red;
             foreach (string line in Miscs.GameOver) Console.WriteLine(line);
             Console.ResetColor();
-            
             Console.WriteLine($"\nGold : {character.Currency}");
             if(character.Currency >= 100)
+
             {
                 Console.WriteLine("100G를 지불하면 부활할 수 있습니다...");
                 Console.Write("부활하겠습니까? (Y/N) : ");
@@ -283,8 +293,6 @@ namespace TextRPG
                 Console.WriteLine("메인 화면으로 돌아갑니다...");
             }
         }
-
-        
 
         public static void GameOptionUI()
         {
@@ -316,6 +324,7 @@ namespace TextRPG
             Console.WriteLine($"| HP : {character.Health} | MP : {character.MagicPoint} |");
             Console.WriteLine($"| Gold : {character.Currency} |");
             Console.WriteLine();
+
             for(int i = 1; i <= pathOptions.Length; i++)
             {
                 Console.WriteLine($"| {i}. {(DungeonOptions)pathOptions[i - 1]} |");
@@ -396,6 +405,7 @@ namespace TextRPG
             "|LLL|  |LLL|______________|  |  |LLLLL|  |LLL|",
             "|LLL|__|L|______________|____|__|LLLLL|__|LLL|"
         };
+      
         public static string[] Town = {
             "                                                           |>>>",
             "                   _                      _                |",
@@ -420,6 +430,7 @@ namespace TextRPG
             "   |       |  [ === =] /.::::::;;::::::::::::::;;;:::::::.\\ [===  =]   |",
             "___|_______|__[ == ==]/.::::::;;;:::::::::::::::;;;:::::::.\\[=  == ]___|_____"
         };
+      
         public static string[] Rest1 = {
             "       _____",
             "      /      \\",
@@ -443,6 +454,7 @@ namespace TextRPG
             "  _/  ( / OUuuu    \\",
             " `----'(____________)"
         };
+      
         public static string[] Rest2 = {
             "                           ||||||",
             "                           | o o |",
@@ -464,7 +476,8 @@ namespace TextRPG
             "    |______________|_____________||_______________|/",
             "_______________________________________________________"
         };
-       public static string[] Rest3 = {
+      
+        public static string[] Rest3 = {
             "                  __..-----')",
             "        ,.--._ .-'_..--...-'",
             "       '-\"'. _/_ /  ..--''\"\"'-.",
@@ -497,7 +510,7 @@ namespace TextRPG
             "     \"\"\"--...  ___\"\"\"\"\"-----......._______......----\"\"\"     --\"\"\"",
             "                   \"\"\"\"       ---.....   ___....----"
         };
-
+      
         public static string[] Quest = {
             "   ______________________________",
             " / \\          -Quest-            \\.",
@@ -778,7 +791,7 @@ namespace TextRPG
 |                                                                                     | 
 |                                                                          PARK_DOUN  | 
 |                                                                         CHO_YUNJAE  | 
-|                                                                         BAG_JIHWAN  | 
+|                                                                         PARK_JIHWAN | 
 |                                                                        KIM_KONGSIK  | 
 |                                                                      BANG_EUNSEONG  | 
 |                                                                                     | 
@@ -981,6 +994,126 @@ namespace TextRPG
 +==================================================================================+
 
                "};
+        public static string[] WarriorDesign = new string[]
+        {
+    "   |\\                     /)",
+    " /\\_\\\\__               (_//",
+    "|   `>\\-`     _._       //`)",
+    " \\ /` \\\\  _.-`:::`-._  //",
+    "  `    \\|`    :::    `|/",
+    "        |     :::     |",
+    "        |.....:::.....|",
+    "        |:::::::::::::|",
+    "        |     :::     |",
+    "        \\     :::     /",
+    "         \\    :::    /",
+    "          `-. ::: .-'",
+    "           //`:::`\\\\",
+    "          //   '   \\\\",
+    "         |/         \\\\"
+        };
+
+
+        public static string[] PotionDesign = new string[]
+{
+    "         @@@@@@@@         ",
+    "         @@@@@@@@         ",
+    "        @@@    @@@        ",
+    "         @@@  @@@         ",
+    "         @@@  @@@         ",
+    "         @@@  @@@         ",
+    "        @@@    @@@        ",
+    "       @@@  @@@@@@@       ",
+    "      @@@@@@@    @@@      ",
+    "      @@@         @@      ",
+    "     @@@@          @@     ",
+    "    @@@@            @@    ",
+    "     @@            @@@    ",
+    "      @@@@@@@@@@@@@@ "
+};
+
+
+        public static string[] ArcherDesign = new string[]
+{
+    "#####                              ##",
+    "%%%%#                          ##### ",
+    "%%%%####################    #######  ",
+    "@@%%%%%%%%%%%%%%%%%%%%####   #####   ",
+    "@@   %%%%%%%%%%%%%%%%%%%##%### ##    ",
+    "@@                 %%%%%%###         ",
+    " @@                  %%%#######%     ",
+    " @@                  %##%%%%%%###    ",
+    " @@                 ###%%%%%%%%##%   ",
+    "  @               ###      %%%%%##   ",
+    "  @@            ###        %%%%%##   ",
+    "  @@          ###           %%%%##   ",
+    "  @@        ####            %%%%##   ",
+    "  @@   %% ###*              %%%%#%   ",
+    "   @  %%%###                %%%%#    ",
+    "   @%%%##%%%                %%%##    ",
+    "   %%%##%%%                 %%%##    ",
+    "   @@%%%%@                   %%######",
+    "      %%@@@@@@@@@@@@@@@       %%%%%##",
+    "                       @@@@@@@@@%%%%#"
+};
+
+        public static string[] MazeDesign = new string[]
+{
+    "                                   ",
+    "                   #########       ",
+    "                ##############     ",
+    "               #####*******#####   ",
+    "              ####***+++++**#####  ",
+    "             ####****+**+****####  ",
+    "             ####*************###  ",
+    "             ####************####  ",
+    "              ####**********#####  ",
+    "             #######*******####    ",
+    "           #########               ",
+    "         #########                 ",
+    "        #########                  ",
+    "      ########                     ",
+    "    #########                      ",
+    "  #########                        ",
+    "  #######                          ",
+    "   ####                           "
+};
+        public static string[] Inventory = new string[]
+ {
+    "               ##% ###               ",
+    "               ##   #%               ",
+    "          #################          ",
+    "        ##########%##########        ",
+    "       #########     #########       ",
+    "      ###########% ############      ",
+    "      #########################      ",
+    "      #########################      ",
+    "      #### ############### ####      ",
+    "  %## ####                 #### ###  ",
+    "  ### #### ############### #### #### ",
+    "      #### ############### ####      ",
+    "  ### #### ############### #### #### ",
+    "  ### ####################%#### #### ",
+    "  ### ######################### #### ",
+    "  ###                           #### ",
+    "  %## ######################### ###  ",
+    "      %########################      ",
+    "        %###################%        "
+ };
+
+
+        public static string[] ArmorDesign = new string[]
+ {
+    "==09조==!====!=====!=====!====!===!===!=====!===!===!====",
+    "      /`\\__/`\\   /`\\   /`\\  |~| |~|  /)=I=(\\  /`\"\"\"`\\",
+    "     |        | |   `\"`   | | | | |  |  :  | |   :   |",
+    "     '-|    |-' '-|     |-' )/\\ )/\\  |  T  \\ '-| : |-'",
+    "       |    |     |     |  / \\// \\/  (  |\\  |  '---'",
+    "       '.__.'     '.___.'  \\_/ \\_/   |  |/  /",
+    "                                     |  /  /",
+    "                                     |  \\ /",
+    "                                     '--'`"
+ };
     }
 
     /// <summary>
@@ -1161,7 +1294,7 @@ namespace TextRPG
             {
                 RemoveMonster(character, monster, currency);
                 var quests = QuestManager.GetContractedQuests_KillMonster();
-                foreach(var quest in quests) { quest.OnProgress(); }
+                foreach (var quest in quests) { quest.OnProgress(); }
             };
         }
 
@@ -1189,7 +1322,7 @@ namespace TextRPG
             int ind = new Random().Next(0, 4);
             if (ind == 0) GetRandomArmor(monster.Level)?.OnPicked(character);
             else if (ind <= 1) GetRandomWeapon(monster.Level)?.OnPicked(character);
-            else if(ind <= 2) GetRandomConsumable(monster.Level)?.OnPicked(character);
+            else if (ind <= 2) GetRandomConsumable(monster.Level)?.OnPicked(character);
             else GetRandomImportantItem()?.OnPicked(character);
             spawnedMonsters.Remove(monster);
         }
@@ -1295,8 +1428,8 @@ namespace TextRPG
             if (new Random().Next(1, 101) % 2 != 0) return null;
 
             var filteredItems = from item in ItemLists.ImportantItems
-                                 where item.Rarity == Rarity.Common
-                                 select item;
+                                where item.Rarity == Rarity.Common
+                                select item;
             int ind = new Random().Next(filteredItems.Count());
             return filteredItems.ElementAt(ind);
         }
@@ -1343,6 +1476,8 @@ namespace TextRPG
             
             if (option <= 0) return;
 
+            if (option <= 0) return;
+
             switch ((Job)(option - 1))
             {
                 case Job.Warrior:
@@ -1368,7 +1503,7 @@ namespace TextRPG
 
             GameManager.GameState = GameState.Town;
         }
-        
+      
         /// <summary>
         /// Give basic items to the character.
         /// </summary>
@@ -1394,7 +1529,6 @@ namespace TextRPG
             if (basicChestArmors.Count() > 0) { character.Armors.Add(new ChestArmor(basicChestArmors.First())); }
             if (basicHealthPotions.Count() > 0) { character.Consumables.Add(new HealthPotion(basicHealthPotions.First())); }
             if (basicMagicPotions.Count() > 0) { character.Consumables.Add(new MagicPotion(basicMagicPotions.First())); }
-            
             if (character is Warrior)
             {
                 var basicSwords = from sword in ItemLists.Weapons
@@ -1434,7 +1568,7 @@ namespace TextRPG
             // Buff Skills
             character.Skills.Add(new BuffSkill((BuffSkill)SkillLists.BuffSkills[0]));
         }
-        
+
         /// <summary>
         /// Game Over UI will be displayed.
         /// </summary>
@@ -1455,7 +1589,7 @@ namespace TextRPG
             GameState = GameState.Town;
             GameTime = GameTime.Afternoon;
         }
- 
+
         /// <summary>
         /// Reset the game to initial state.
         /// </summary>

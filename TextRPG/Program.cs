@@ -69,15 +69,27 @@ namespace TextRPG
                     case 1: Console.WriteLine("| 좋은 하루 되세요! |"); return;
                     case 2:
                         if (GameManager.SelectedCharacter.Currency < 40) { Console.WriteLine("| 돈이 부족합니다! |"); }
-                        else { isSelected = true; }
+                        else 
+                        {
+                            foreach (string line in Miscs.Rest1) Console.WriteLine(line);
+                            isSelected = true; 
+                        }
                         break;
                     case 3:
                         if (GameManager.SelectedCharacter.Currency < 60) { Console.WriteLine("| 돈이 부족합니다! |"); }
-                        else { isSelected = true; }
+                        else 
+                        { 
+                            foreach(string line in Miscs.Rest2) Console.WriteLine(line);
+                            isSelected = true; 
+                        }
                         break;
                     case 4:
                         if (GameManager.SelectedCharacter.Currency < 80) { Console.WriteLine("| 돈이 부족합니다! |"); }
-                        else { isSelected = true; }
+                        else 
+                        { 
+                            foreach (string line in Miscs.Rest3) Console.WriteLine(line);
+                            isSelected = true;
+                        }
                         break;
                 }
             }
@@ -323,6 +335,7 @@ namespace TextRPG
             switch (category)
             {
                 case ItemCategory.Armor:
+                    foreach (string line in Miscs.ArmorDesign) Console.WriteLine(line);
                     if (ItemLists.Armors.Length < ind || ind < 1)
                     {
                         Console.WriteLine("| 아이템이 존재하지 않습니다! |"); break;
@@ -335,6 +348,7 @@ namespace TextRPG
                     }
                     ItemLists.Weapons[ind - 1].OnPurchased(GameManager.SelectedCharacter); break;
                 case ItemCategory.Consumable:
+                    foreach(string line in Miscs.PotionDesign) Console.WriteLine(line);
                     if (ItemLists.Consumables.Length < ind || ind < 1)
                     {
                         Console.WriteLine("| 아이템이 존재하지 않습니다! |"); break;
@@ -389,6 +403,7 @@ namespace TextRPG
             while (true)
             {
                 Console.Clear();
+                foreach (string line in Miscs.Quest) Console.WriteLine(line);
                 UIManager.QuestUI();
                 if (!int.TryParse(Console.ReadLine(), out int opt)) { Console.WriteLine("| 잘못된 입력입니다! |"); continue; }
                 else if (opt < 1 || opt > 6) { Console.WriteLine("| 잘못된 입력입니다! |"); continue; }
@@ -481,7 +496,7 @@ namespace TextRPG
         private void InTown()
         {
             Console.Clear();
-
+            foreach (string line in Miscs.Town) Console.WriteLine(line);
             UIManager.BaseUI(GameManager.SelectedCharacter, "The Town of Adventurers", typeof(IdleOptions));
 
             if (!int.TryParse(Console.ReadLine(), out int opt)) { Console.WriteLine("| 잘못된 입력입니다! |"); return; }
@@ -506,6 +521,7 @@ namespace TextRPG
         /// </summary>
         private void InDungeon()
         {
+            
             // Check for Quota completion
             if (GameManager.KilledMonsterCount >= GameManager.Quota)
             {
@@ -514,6 +530,14 @@ namespace TextRPG
 
             // Print UI of Kill Count and Player Options
             Console.Clear();
+            if (GameManager.GroundLevel < 50)
+            {
+                foreach (string line in Miscs.EasyEntrance) Console.WriteLine(line);
+            }
+            else
+            {
+                foreach (string line in Miscs.HardEntrance) Console.WriteLine(line);
+            }
             int[] pathOptions = RandomPathOption();
             UIManager.KillCountUI(GameManager.KilledMonsterCount, GameManager.Quota);
             UIManager.DungeonUI(GameManager.SelectedCharacter, GameManager, pathOptions);
@@ -712,7 +736,6 @@ namespace TextRPG
                     }
                     return isSuccess;
                 }
-                    
 
                 UIManager.ShowMonsterList(SpawnManager);
                 int monsterOpt;
