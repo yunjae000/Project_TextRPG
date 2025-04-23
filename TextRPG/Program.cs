@@ -512,13 +512,7 @@ namespace TextRPG
 
             // TODO: Insert Dungeon Path UI
 
-            Random rand = new Random();
-            int index = rand.Next(Miscs.path.Length);
-
-            foreach (string line in Miscs.path[index].Split('\n'))
-            {
-                Console.WriteLine(line);
-            }
+            
             // Try parsing, if successed clamp Parsed Input
             if (!int.TryParse(Console.ReadLine(), out int opt)) { Console.WriteLine("| 잘못된 입력입니다! |"); return; }
             else if (opt < 1 || opt > (pathOptions.Length + Enum.GetValues(typeof(DungeonOptions)).Length - 4)) { Console.WriteLine("| 잘못된 입력입니다! |"); return; }
@@ -540,9 +534,14 @@ namespace TextRPG
             int random = new Random().Next(0, 7);
             while(random == GameManager.prevPath) { random = new Random().Next(0, 7); }
             GameManager.prevPath = random;
-            
+
             // TODO: Print Path UI
 
+
+            foreach (string line in Miscs.path[random].Split('\n'))
+            {
+                Console.WriteLine(line);
+            }
             return random switch
             {
                 0 => new int[] { (int)DungeonOptions.Forward, (int)DungeonOptions.Backward },
