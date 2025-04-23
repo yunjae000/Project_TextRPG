@@ -44,7 +44,7 @@ namespace TextRPG
         /// </summary>
         /// <param name="type"></param>
         /// <param name="damage"></param>
-        public void OnDamage(AttackType type, float damage)
+        public void OnDamage(AttackType type, float damage, bool isSkill)
         {
             if (IsEvaded()) return;
 

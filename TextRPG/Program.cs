@@ -644,9 +644,9 @@ namespace TextRPG
             // Monster Attack Mechanism
             foreach (Monster monster in SpawnManager.spawnedMonsters)
             {
-                if (monster.AttackType == AttackType.Close) GameManager.SelectedCharacter.OnDamage(AttackType.Close, monster.AttackStat.Attack);
-                else if (monster.AttackType == AttackType.Long) GameManager.SelectedCharacter.OnDamage(AttackType.Long, monster.AttackStat.RangeAttack);
-                else GameManager.SelectedCharacter.OnDamage(AttackType.Magic, monster.AttackStat.MagicAttack);
+                if (monster.AttackType == AttackType.Close) GameManager.SelectedCharacter.OnDamage(AttackType.Close, monster.AttackStat.Attack, false);
+                else if (monster.AttackType == AttackType.Long) GameManager.SelectedCharacter.OnDamage(AttackType.Long, monster.AttackStat.RangeAttack, false);
+                else GameManager.SelectedCharacter.OnDamage(AttackType.Magic, monster.AttackStat.MagicAttack, false);
             }
 
             GameManager.CurrentTurn++;
@@ -677,10 +677,10 @@ namespace TextRPG
                 AttackType? type = GameManager.SelectedCharacter.EquippedWeapon?.AttackType;
                 switch (type)
                 {
-                    case AttackType.Close: SpawnManager.spawnedMonsters.ElementAt(opt - 1).OnDamage(AttackType.Close, GameManager.SelectedCharacter.AttackStat.Attack); break;
-                    case AttackType.Long: SpawnManager.spawnedMonsters.ElementAt(opt - 1).OnDamage(AttackType.Long, GameManager.SelectedCharacter.AttackStat.RangeAttack); break;
-                    case AttackType.Magic: SpawnManager.spawnedMonsters.ElementAt(opt - 1).OnDamage(AttackType.Magic, GameManager.SelectedCharacter.AttackStat.MagicAttack); break;
-                    default: SpawnManager.spawnedMonsters.ElementAt(opt - 1).OnDamage(AttackType.Close, GameManager.SelectedCharacter.AttackStat.Attack); break;
+                    case AttackType.Close: SpawnManager.spawnedMonsters.ElementAt(opt - 1).OnDamage(AttackType.Close, GameManager.SelectedCharacter.AttackStat.Attack, false); break;
+                    case AttackType.Long: SpawnManager.spawnedMonsters.ElementAt(opt - 1).OnDamage(AttackType.Long, GameManager.SelectedCharacter.AttackStat.RangeAttack, false); break;
+                    case AttackType.Magic: SpawnManager.spawnedMonsters.ElementAt(opt - 1).OnDamage(AttackType.Magic, GameManager.SelectedCharacter.AttackStat.MagicAttack, false); break;
+                    default: SpawnManager.spawnedMonsters.ElementAt(opt - 1).OnDamage(AttackType.Close, GameManager.SelectedCharacter.AttackStat.Attack, false); break;
                 }
             }
             return true;
