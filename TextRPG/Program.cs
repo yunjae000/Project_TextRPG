@@ -560,8 +560,8 @@ namespace TextRPG
         /// <returns></returns>
         private int[] RandomPathOption()
         {
-            int random = new Random().Next(0, 7);
-            while(random == GameManager.prevPath) { random = new Random().Next(0, 7); }
+            int random = new Random().Next(0, Miscs.path.Length);
+            while(random == GameManager.prevPath) { random = new Random().Next(0, Miscs.path.Length); }
             GameManager.prevPath = random;
 
             string path = Miscs.path[random];

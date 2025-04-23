@@ -146,7 +146,7 @@ namespace TextRPG
                         defendStat.MagicDefend + ((int)rarity >= (int)Rarity.Hero ? defendStat.MagicDefend * ((int)rarity - (int)Rarity.Rare) * 0.05f : 0f));
                     this.defendStat = newStat;
                 }
-                else this.defendStat = defendStat;
+                else this.defendStat = new(defendStat);
             }
             else this.defendStat = new(1, 1, 1);
         }
@@ -489,7 +489,7 @@ namespace TextRPG
                     };
                     this.attackStat = newStat;
                 }
-                else this.attackStat = attackStat;
+                else this.attackStat = new(attackStat);
             }
             else this.attackStat = new(1, 1, 1);
         }
@@ -953,7 +953,7 @@ namespace TextRPG
         }
         public AttackBuffPotion(AttackBuffPotion potion) : base(potion.Name, potion.Coefficient, potion.Price, potion.ConsumableCategory, potion.Rarity)
         {
-            attackStat = potion.AttackStat;
+            attackStat = new(potion.AttackStat);
         }
 
         [JsonConstructor]
@@ -1035,7 +1035,7 @@ namespace TextRPG
         }
         public DefendBuffPotion(DefendBuffPotion potion) : base(potion.Name, potion.Coefficient, potion.Price, potion.ConsumableCategory, potion.Rarity)
         {
-            defendStat = potion.DefendStat;
+            defendStat = new(potion.DefendStat);
         }
 
         [JsonConstructor]
@@ -1119,8 +1119,8 @@ namespace TextRPG
         }
         public AllBuffPotion(AllBuffPotion potion) : base(potion.Name, potion.Coefficient, potion.Price, potion.ConsumableCategory, potion.Rarity)
         {
-            attackStat = potion.AttackStat;
-            defendStat = potion.DefendStat;
+            attackStat = new(potion.AttackStat);
+            defendStat = new(potion.DefendStat);
         }
 
         [JsonConstructor]

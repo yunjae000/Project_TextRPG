@@ -200,21 +200,12 @@ namespace TextRPG
         /// <param name="damage"></param>
         public void OnDamage(AttackType type, float damage)
         {
-            Random rand = new Random();
-            float EvasionPercent = rand.Next(0, 100);
+            if (IsEvaded()) return;
 
-            float CriticalPercent = rand.Next(0, 100);
-
-            if (EvasionPercent < 10)
+            if (IsCriticalHit())
             {
-                Console.WriteLine("아무일도 일어나지 않았습니다");
-                return;
-            }
-
-            if (CriticalPercent < 15)
-            {
-                damage *= 1.6f;
-                Console.WriteLine("치명타 공격 !!");
+                damage *= CriticalHitDamagePercentage;
+                Console.WriteLine($"| {Name}이 치명타를 맞았습니다! |");
             }
             float calculatedDamage =
                 type == AttackType.Close ? Math.Max(1f, damage * (1f - DefendStat.Defend / 100f)) :
@@ -241,6 +232,28 @@ namespace TextRPG
             Health = MaxHealth;
             MagicPoint = MaxMagicPoint;
             return true;
+        }
+
+        /// <summary>
+        /// Check if the character evaded the attack.
+        /// </summary>
+        /// <returns></returns>
+        private bool IsEvaded()
+        {
+            Random rand = new Random();
+            float EvasionPercent = rand.Next(0, 100);
+            return EvasionPercent < 10;
+        }
+
+        /// <summary>
+        /// Check if the character's attack is a critical hit.
+        /// </summary>
+        /// <returns></returns>
+        private bool IsCriticalHit()
+        {
+            Random rand = new Random();
+            float CriticalPercent = rand.Next(0, 100);
+            return CriticalPercent < CriticalHitChance;
         }
 
         /// <summary>

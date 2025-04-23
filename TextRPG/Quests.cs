@@ -203,7 +203,7 @@ namespace TextRPG
         /// <param name="character"></param>
         public override void OnProgress()
         {
-            if(!IsContracted || IsCompleted) return;
+            if (!IsContracted || IsCompleted) return;
 
             QuestProgress++;
             if (QuestProgress >= QuestGoal) { IsCompleted = true; }
@@ -225,7 +225,7 @@ namespace TextRPG
         public override string ToString()
         {
             StringBuilder sb = new(base.ToString());
-            if(IsContracted) sb.AppendLine($"| 진행도 : '{QuestProgress}/{Qu
+            if (IsContracted) sb.AppendLine($"| 진행도 : '{QuestProgress}/{QuestGoal}' |");
             return sb.ToString();
         }
     }
@@ -249,7 +249,7 @@ namespace TextRPG
         }
 
         public CollectItemQuest(string name, string itemName, string description, QuestDifficulty difficulty,
-                                int questGoal, int rewardExp, int rewardGold) 
+                                int questGoal, int rewardExp, int rewardGold)
             : base(name, description, difficulty, QuestType.CollectItem, questGoal, rewardExp, rewardGold)
         {
             IsSpecial = false;
