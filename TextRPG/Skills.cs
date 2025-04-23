@@ -74,9 +74,9 @@ namespace TextRPG
             AttackType? type = character.EquippedWeapon?.AttackType;
             switch (type)
             {
-                case AttackType.Close: target.OnDamage(AttackType.Close, Coefficient * character.AttackStat.Attack); break;
-                case AttackType.Long: target.OnDamage(AttackType.Long, Coefficient * character.AttackStat.RangeAttack); break;
-                case AttackType.Magic: target.OnDamage(AttackType.Magic, Coefficient * character.AttackStat.MagicAttack); break;
+                case AttackType.Close: target.OnDamage(AttackType.Close, Coefficient * character.AttackStat.Attack, true); break;
+                case AttackType.Long: target.OnDamage(AttackType.Long, Coefficient * character.AttackStat.RangeAttack, true); break;
+                case AttackType.Magic: target.OnDamage(AttackType.Magic, Coefficient * character.AttackStat.MagicAttack, true); break;
             }
             return true;
         }
@@ -107,7 +107,7 @@ namespace TextRPG
                     {
                         var next = current.Next;
                         Monster target = current.Value;
-                        target.OnDamage(AttackType.Close, Coefficient * character.AttackStat.Attack);
+                        target.OnDamage(AttackType.Close, Coefficient * character.AttackStat.Attack, true);
                         current = next;
                     }
                     break;
@@ -117,7 +117,7 @@ namespace TextRPG
                     {
                         var next = current.Next;
                         Monster target = current.Value;
-                        target.OnDamage(AttackType.Long, Coefficient * character.AttackStat.RangeAttack);
+                        target.OnDamage(AttackType.Long, Coefficient * character.AttackStat.RangeAttack, true);
                         current = next;
                     }
                     break;
@@ -127,7 +127,7 @@ namespace TextRPG
                     {
                         var next = current.Next;
                         Monster target = current.Value;
-                        target.OnDamage(AttackType.Magic, Coefficient * character.AttackStat.MagicAttack);
+                        target.OnDamage(AttackType.Magic, Coefficient * character.AttackStat.MagicAttack, true);
                         current = next;
                     }
                     break;
