@@ -32,7 +32,7 @@ namespace TextRPG
         [JsonInclude] public bool IsSpecial { get; protected set; } = false;
 
         // Constructor
-        public Quest(string name, string description, QuestDifficulty difficulty, QuestType questType, 
+        public Quest(string name, string description, QuestDifficulty difficulty, QuestType questType,
                      int questGoal, int rewardExp, int rewardGold)
         {
             this.name = name;
@@ -58,8 +58,8 @@ namespace TextRPG
         }
 
         [JsonConstructor]
-        public Quest(string name, string description, QuestDifficulty difficulty, QuestType questType, 
-                     int questProgress, int questGoal, int rewardExp, int rewardGold, 
+        public Quest(string name, string description, QuestDifficulty difficulty, QuestType questType,
+                     int questProgress, int questGoal, int rewardExp, int rewardGold,
                      bool isCompleted, bool isSpecial)
         {
             this.name = name;
@@ -73,21 +73,40 @@ namespace TextRPG
             IsCompleted = isCompleted;
             IsSpecial = isSpecial;
         }
-        
+
         /// <summary>
-        /// Called when the quest is contracted.
+        /// Called when the quest is contracted. -> For monster quests.
         /// </summary>
         /// <param name="character"></param>
         public virtual void OnContracted()
         {
             IsContracted = true;
-            Console.WriteLine($"\n| Quest '{Name}' contracted! |");
+            QuestProgress = 0;
+            Console.WriteLine($"\n| Quest '{Name}' 을 수주하였습니다! |");
         }
 
-        public virtual void OnProgress() { } 
+        /// <summary>
+        /// Called when the quest is contracted. -> For item quests.
+        /// </summary>
+        /// <param name="character"></param>
+        public virtual void OnContracted(Character character)
+        {
+            IsContracted = true;
+            QuestProgress = 0;
+            Console.WriteLine($"\n| Quest '{Name}' 을 수주하였습니다! |");
+        }
 
+        /// <summary>
+        /// Called when the quest is in progress. -> For monster quests.
+        /// </summary>
+        public virtual void OnProgress() { }
+
+        /// <summary>
+        /// Called when the quest is in progress. -> For item quests.
+        /// </summary>
+        /// <param name="character"></param>
         public virtual void OnProgress(Character character) { }
-        
+
         /// <summary>
         /// Called when the quest is completed.
         /// </summary>
@@ -97,7 +116,7 @@ namespace TextRPG
             IsContracted = false;
             character.OnEarnExp(RewardExp);
             character.Currency += RewardGold;
-            Console.WriteLine($"| Quest '{Name}' completed! |");
+            Console.WriteLine($"| Quest '{Name}' 을 완료하였습니다! |");
         }
 
         /// <summary>
@@ -106,13 +125,10 @@ namespace TextRPG
         public void ShowProgress()
         {
             Console.WriteLine($"\n| Quest '{Name}' |");
-            Console.WriteLine($"| Progress: {QuestProgress}/{QuestGoal} |");
+            Console.WriteLine($"| 진행도: {QuestProgress}/{QuestGoal} |");
         }
 
-        internal void OnContracted()
-        {
-            throw new NotImplementedException();
-        }
+        public abstract new string ToString();
     }
 
     /// <summary>
@@ -125,7 +141,7 @@ namespace TextRPG
                            int questGoal, int rewardExp, int rewardGold)
             : base(name, description, difficulty, questType, questGoal, rewardExp, rewardGold) { IsSpecial = false; }
         public NormalQuest(NormalQuest quest) : base(quest) { IsSpecial = false; }
-        
+
         [JsonConstructor]
         public NormalQuest(string name, string description, QuestDifficulty difficulty, QuestType questType,
                            int questProgress, int questGoal, int rewardExp, int rewardGold,
@@ -147,14 +163,14 @@ namespace TextRPG
         /// Describe the quest.
         /// </summary>
         /// <returns></returns>
-        public virtual new string ToString()
+        public override string ToString()
         {
             StringBuilder sb = new();
-            _ = IsSpecial == true ? sb.Append("| [★]") : sb.Append("| []");
+            _ = IsSpecial == true ? sb.Append("| [★] ") : sb.Append("| [] ");
             sb.AppendLine($"Quest : '{Name}' |")
-              .AppendLine($"| Description : '{Description}' | ")
-              .AppendLine($"| Diff. : '{Difficulty}', Type : '{QuestType}' |")
-              .AppendLine($"| Exp. : '{RewardExp}', Gold : '{RewardGold} |");
+              .AppendLine($"| 상세설명 : '{Description}' | ")
+              .AppendLine($"| 난이도 : '{Difficulty}', 타입 : '{QuestType}' |")
+              .AppendLine($"| Exp : '{RewardExp}', Gold : '{RewardGold} |");
             return sb.ToString();
         }
     }
@@ -166,29 +182,20 @@ namespace TextRPG
     {
         // Constructor
         public KillMonsterQuest(string name, string description, QuestDifficulty difficulty,
-                                int questGoal, int rewardExp, int rewardGold) 
-            : base(name, description, difficulty, QuestType.KillMonster, questGoal, rewardExp, rewardGold) 
-        { 
+                                int questGoal, int rewardExp, int rewardGold)
+            : base(name, description, difficulty, QuestType.KillMonster, questGoal, rewardExp, rewardGold)
+        {
             IsSpecial = false;
         }
-        public KillMonsterQuest(KillMonsterQuest quest) : base(quest) 
-        { 
+        public KillMonsterQuest(KillMonsterQuest quest) : base(quest)
+        {
             IsSpecial = false;
         }
         [JsonConstructor]
-        public KillMonsterQuest(string name, string description, QuestDifficulty difficulty, QuestType questType, 
-                                int questProgress, int questGoal, int rewardExp, int rewardGold, 
-                                bool isCompleted, bool isSpecial) 
+        public KillMonsterQuest(string name, string description, QuestDifficulty difficulty, QuestType questType,
+                                int questProgress, int questGoal, int rewardExp, int rewardGold,
+                                bool isCompleted, bool isSpecial)
             : base(name, description, difficulty, questType, questProgress, questGoal, rewardExp, rewardGold, isCompleted, isSpecial) { }
-
-        /// <summary>
-        /// Called when the quest is contracted.
-        /// </summary>
-        /// <param name="character"></param>
-        public override void OnContracted()
-        {
-            base.OnContracted();
-        }
 
         /// <summary>
         /// Called when the quest is in progress.
@@ -196,9 +203,10 @@ namespace TextRPG
         /// <param name="character"></param>
         public override void OnProgress()
         {
-            if(IsContracted && !IsCompleted) { 
-                if (QuestProgress < QuestGoal) QuestProgress++; 
-                else { IsCompleted = true; } 
+            if (IsContracted && !IsCompleted)
+            {
+                QuestProgress++;
+                if (QuestProgress >= QuestGoal) { IsCompleted = true; }
             }
         }
 
@@ -212,43 +220,121 @@ namespace TextRPG
         }
 
         /// <summary>
-        /// Des
+        /// Describe the quest.
         /// </summary>
         /// <returns></returns>
         public override string ToString()
         {
             StringBuilder sb = new(base.ToString());
-            if(IsContracted) sb.AppendLine($"| Progress : '{QuestProgress}/{QuestGoal}' |");
+            if (IsContracted) sb.AppendLine($"| 진행도 : '{QuestProgress}/{QuestGoal}' |");
             return sb.ToString();
         }
     }
 
     /// <summary>
-    /// SpecialQuest Class -> Only available in single day.
+    /// CollectItemQuest Class -> Collect an item.
     /// </summary>
-    class SpecialQuest : Quest
+    class CollectItemQuest : NormalQuest
     {
+        // Field
+        private string itemName;
+
+        // Property
+        public string ItemName { get { return itemName; } set { itemName = value; } }
+
         // Constructor
-        public SpecialQuest(string name, string description, QuestDifficulty difficulty, QuestType questType, 
-                            int questGoal, int rewardExp, int rewardGold) 
-            : base(name, description, difficulty, questType, questGoal, rewardExp, rewardGold) { IsSpecial = true; }
-        public SpecialQuest(SpecialQuest quest) : base(quest) { IsSpecial = true; }
+        public CollectItemQuest(CollectItemQuest quest) : base(quest)
+        {
+            IsSpecial = false;
+        }
+
+        public CollectItemQuest(string name, string description, QuestDifficulty difficulty,
+                                int questGoal, int rewardExp, int rewardGold)
+            : base(name, description, difficulty, QuestType.CollectItem, questGoal, rewardExp, rewardGold)
+        {
+            IsSpecial = false;
+        }
+
         [JsonConstructor]
-        public SpecialQuest(string name, string description, QuestDifficulty difficulty, QuestType questType, 
-                            int questProgress, int questGoal, int rewardExp, int rewardGold, 
-                            bool isCompleted, bool isSpecial) 
+        public CollectItemQuest(string name, string description, QuestDifficulty difficulty, QuestType questType,
+                                int questProgress, int questGoal, int rewardExp, int rewardGold,
+                                bool isCompleted, bool isSpecial)
             : base(name, description, difficulty, questType, questProgress, questGoal, rewardExp, rewardGold, isCompleted, isSpecial) { }
-        
+
         // Methods
+
+        /// <summary>
+        /// Called when the quest is contracted.
+        /// </summary>
+        public override void OnContracted(Character character)
+        {
+            base.OnContracted();
+            foreach (var item in character.ImportantItems)
+            {
+                if (item.Name.Contains(nameof(ItemName)))
+                {
+                    QuestProgress++;
+                    if (QuestProgress >= QuestGoal) { IsCompleted = true; break; }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Called when the quest is in progress.
+        /// </summary>
+        /// <param name="character"></param>
+        public override void OnProgress(Character character)
+        {
+            if (IsContracted && !IsCompleted)
+            {
+                QuestProgress = 0;
+                foreach (var item in character.ImportantItems)
+                {
+                    if (item.Name.Contains(nameof(ItemName)))
+                    {
+                        QuestProgress++;
+                        if (QuestProgress >= QuestGoal) { IsCompleted = true; break; }
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Called when the quest is completed.
+        /// </summary>
+        /// <param name="character"></param>
         public override void OnCompleted(Character character)
         {
             base.OnCompleted(character);
-            // TODO: Add special quest completion logic here
+            RemoveQuestItems(character);
         }
-        public override void OnContracted()
+
+        /// <summary>
+        /// Describe the quest.
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
         {
-            base.OnContracted();
-            // TODO: Add special quest contracting logic here
+            StringBuilder sb = new(base.ToString());
+            if (IsContracted) sb.AppendLine($"| 진행도 : '{QuestProgress}/{QuestGoal}' |");
+            return sb.ToString();
+        }
+
+        /// <summary>
+        /// Remove quest items from the character's inventory.
+        /// </summary>
+        /// <param name="character"></param>
+        private void RemoveQuestItems(Character character)
+        {
+            int i = 0;
+            foreach (var item in character.ImportantItems)
+            {
+                if (item.Name.Contains(nameof(ItemName)))
+                {
+                    item.OnDropped(character); i++;
+                    if (i >= QuestGoal) break;
+                }
+            }
         }
     }
 }
