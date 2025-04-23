@@ -280,8 +280,8 @@ namespace TextRPG
             {
                 Console.Clear();
                 UIManager.ShopUI(character);
-                if (!int.TryParse(Console.ReadLine(), out int opt)) { Console.WriteLine("| 잘못된 입력입니다! |"); continue; }
-                else if (opt < 0 || opt > 4) { Console.WriteLine("| 잘못된 입력입니다! |"); continue; }
+                if (!int.TryParse(Console.ReadLine(), out int opt)) { Console.WriteLine("| 잘못된 입력입니다! |"); Console.Write("Press any key to continue..."); Console.ReadKey(); continue; }
+                else if (opt < 0 || opt > 4) { Console.WriteLine("| 잘못된 입력입니다! |"); Console.Write("Press any key to continue..."); Console.ReadKey(); continue; }
                 switch (Math.Clamp(opt, 0, 4))
                 {
                     // Exit from shop
@@ -290,14 +290,14 @@ namespace TextRPG
                     // Buy Armor in shop
                     case 1:
                         UIManager.ShowShopList(ItemCategory.Armor);
-                        if (!int.TryParse(Console.ReadLine(), out int ind1)) { Console.WriteLine("| 잘못된 입력입니다! |"); break; }
+                        if (!int.TryParse(Console.ReadLine(), out int ind1)) { Console.WriteLine("| 잘못된 입력입니다! |"); Console.Write("Press any key to continue..."); Console.ReadKey(); break; }
                         else if (ind1 <= 0) break;
                         InShop_Buy(ItemCategory.Armor, ind1); break;
 
                     // Buy Weapon in shop
                     case 2:
                         UIManager.ShowShopList(ItemCategory.Weapon);
-                        if (!int.TryParse(Console.ReadLine(), out int ind2)) { Console.WriteLine("| 잘못된 입력입니다! |"); break; }
+                        if (!int.TryParse(Console.ReadLine(), out int ind2)) { Console.WriteLine("| 잘못된 입력입니다! |"); Console.Write("Press any key to continue..."); Console.ReadKey(); break; }
                         else if (ind2 <= 0) break;
                         InShop_Buy(ItemCategory.Weapon, ind2);
                         break;
@@ -305,7 +305,7 @@ namespace TextRPG
                     // Buy Consumable in shop
                     case 3:
                         UIManager.ShowShopList(ItemCategory.Consumable);
-                        if (!int.TryParse(Console.ReadLine(), out int ind3)) { Console.WriteLine("| 잘못된 입력입니다! |"); break; }
+                        if (!int.TryParse(Console.ReadLine(), out int ind3)) { Console.WriteLine("| 잘못된 입력입니다! |"); Console.Write("Press any key to continue..."); Console.ReadKey(); break; }
                         else if (ind3 <= 0) break;
                         InShop_Buy(ItemCategory.Consumable, ind3);
                         break;
