@@ -24,6 +24,7 @@ namespace TextRPG
 
         public static void InventoryUI(Character character)
         {
+            foreach (string line in Miscs.Inventory) Console.WriteLine(line);
             Console.WriteLine("\n| ----- Inventory ----- |");
             Console.WriteLine("|\"Armors\" |");
             int i = 1;
@@ -131,6 +132,18 @@ namespace TextRPG
 
         public static void StatusUI(Character character)
         {
+            if (character.GetType().Equals(typeof(Warrior)))
+            {
+                foreach (string line in Miscs.WarriorDesign) Console.WriteLine(line);
+            }
+            else if (character.GetType().Equals(typeof(Archer)))
+            {
+                foreach (string line in Miscs.ArcherDesign) Console.WriteLine(line);
+            }
+            else if(character.GetType().Equals(typeof(Wizard)))
+            {
+                foreach (string line in Miscs.MazeDesign) Console.WriteLine(line);
+            }
             Console.WriteLine("\n| ----- \"Character Info.\" ----- |");
             Console.WriteLine($"\n| \"Name\" : {character.Name} |");
             Console.WriteLine($"| \"Lv {character.Level:D2}\" |");
@@ -176,9 +189,12 @@ namespace TextRPG
                 if(i != 0) sb.Append(", ");
                 sb.Append(monster.Name); i++;
 
-                if(monster.AttackType == AttackType.Close) foreach (string line in Miscs.GoblinWarrior) Console.WriteLine(line);
-                else if(monster.AttackType == AttackType.Long) foreach (string line in Miscs.GoblinArcher) Console.WriteLine(line);
-                else foreach (string line in Miscs.GoblinMage) Console.WriteLine(line);
+                if (monster.AttackType == AttackType.Close && monster.Level < 50) foreach (string line in Miscs.GoblinWarrior) Console.WriteLine(line);
+                else if (monster.AttackType == AttackType.Close && monster.Level >= 50) foreach (string line in Miscs.HighLevelGoblinWarrior) Console.WriteLine(line);
+                else if (monster.AttackType == AttackType.Long && monster.Level < 50) foreach (string line in Miscs.GoblinArcher) Console.WriteLine(line);
+                else if (monster.AttackType == AttackType.Long && monster.Level >= 50) foreach (string line in Miscs.HighLevelGoblinArcher) Console.WriteLine(line);
+                else if (monster.AttackType == AttackType.Magic && monster.Level < 50 ) foreach (string line in Miscs.GoblinMage) Console.WriteLine(line);
+                else if (monster.AttackType == AttackType.Magic && monster.Level >= 50) foreach (string line in Miscs.HighLevelGoblinMaze) Console.WriteLine(line);
             }
             Console.ResetColor();
             Console.WriteLine("| ---------------------------------- |");
@@ -645,7 +661,7 @@ namespace TextRPG
             "@@@@@@   =@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@",
             "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" };
 
-        public static string[] HighLevelGoblinWizard = {
+        public static string[] HighLevelGoblinMaze = {
             "@@@@@@@@@@@@@*=@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@",
             "@@@@@@@@@         @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@",
             "@@@@@@@@            -@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@",
@@ -715,8 +731,128 @@ namespace TextRPG
             "@@@@@@@#+-==+###*###+=-.::+***+==+#@%%@%@@@@@@@@@@",
             "@@@@@@#**=**#+*#*#*#+---=+**#*==+*@@@@@@@@@@@@@@@@",
             "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@",
-            "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+            "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"             
         };
+        public static string[] WarriorDesign = new string[]
+        {
+    "   |\\                     /)",
+    " /\\_\\\\__               (_//",
+    "|   `>\\-`     _._       //`)",
+    " \\ /` \\\\  _.-`:::`-._  //",
+    "  `    \\|`    :::    `|/",
+    "        |     :::     |",
+    "        |.....:::.....|",
+    "        |:::::::::::::|",
+    "        |     :::     |",
+    "        \\     :::     /",
+    "         \\    :::    /",
+    "          `-. ::: .-'",
+    "           //`:::`\\\\",
+    "          //   '   \\\\",
+    "         |/         \\\\"
+        };
+
+
+        public static string[] PotionDesign = new string[]
+{
+    "         @@@@@@@@         ",
+    "         @@@@@@@@         ",
+    "        @@@    @@@        ",
+    "         @@@  @@@         ",
+    "         @@@  @@@         ",
+    "         @@@  @@@         ",
+    "        @@@    @@@        ",
+    "       @@@  @@@@@@@       ",
+    "      @@@@@@@    @@@      ",
+    "      @@@         @@      ",
+    "     @@@@          @@     ",
+    "    @@@@            @@    ",
+    "     @@            @@@    ",
+    "      @@@@@@@@@@@@@@ "
+};
+
+
+        public static string[] ArcherDesign = new string[]
+{
+    "#####                              ##",
+    "%%%%#                          ##### ",
+    "%%%%####################    #######  ",
+    "@@%%%%%%%%%%%%%%%%%%%%####   #####   ",
+    "@@   %%%%%%%%%%%%%%%%%%%##%### ##    ",
+    "@@                 %%%%%%###         ",
+    " @@                  %%%#######%     ",
+    " @@                  %##%%%%%%###    ",
+    " @@                 ###%%%%%%%%##%   ",
+    "  @               ###      %%%%%##   ",
+    "  @@            ###        %%%%%##   ",
+    "  @@          ###           %%%%##   ",
+    "  @@        ####            %%%%##   ",
+    "  @@   %% ###*              %%%%#%   ",
+    "   @  %%%###                %%%%#    ",
+    "   @%%%##%%%                %%%##    ",
+    "   %%%##%%%                 %%%##    ",
+    "   @@%%%%@                   %%######",
+    "      %%@@@@@@@@@@@@@@@       %%%%%##",
+    "                       @@@@@@@@@%%%%#"
+};
+
+        public static string[] MazeDesign = new string[]
+{
+    "                                   ",
+    "                   #########       ",
+    "                ##############     ",
+    "               #####*******#####   ",
+    "              ####***+++++**#####  ",
+    "             ####****+**+****####  ",
+    "             ####*************###  ",
+    "             ####************####  ",
+    "              ####**********#####  ",
+    "             #######*******####    ",
+    "           #########               ",
+    "         #########                 ",
+    "        #########                  ",
+    "      ########                     ",
+    "    #########                      ",
+    "  #########                        ",
+    "  #######                          ",
+    "   ####                           "
+};
+       public static string[] Inventory = new string[]
+{
+    "               ##% ###               ",
+    "               ##   #%               ",
+    "          #################          ",
+    "        ##########%##########        ",
+    "       #########     #########       ",
+    "      ###########% ############      ",
+    "      #########################      ",
+    "      #########################      ",
+    "      #### ############### ####      ",
+    "  %## ####                 #### ###  ",
+    "  ### #### ############### #### #### ",
+    "      #### ############### ####      ",
+    "  ### #### ############### #### #### ",
+    "  ### ####################%#### #### ",
+    "  ### ######################### #### ",
+    "  ###                           #### ",
+    "  %## ######################### ###  ",
+    "      %########################      ",
+    "        %###################%        "
+};
+
+
+       public static string[] ArmorDesign = new string[]
+{
+    "==09조==!====!=====!=====!====!===!===!=====!===!===!====",
+    "      /`\\__/`\\   /`\\   /`\\  |~| |~|  /)=I=(\\  /`\"\"\"`\\",
+    "     |        | |   `\"`   | | | | |  |  :  | |   :   |",
+    "     '-|    |-' '-|     |-' )/\\ )/\\  |  T  \\ '-| : |-'",
+    "       |    |     |     |  / \\// \\/  (  |\\  |  '---'",
+    "       '.__.'     '.___.'  \\_/ \\_/   |  |/  /",
+    "                                     |  /  /",
+    "                                     |  \\ /",
+    "                                     '--'`"
+};
     }
 
     /// <summary>

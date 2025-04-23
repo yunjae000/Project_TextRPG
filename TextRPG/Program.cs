@@ -53,15 +53,15 @@ namespace TextRPG
 
                 if(!int.TryParse(Console.ReadLine(), out int opt)) { Console.WriteLine("| Invalid Input! |"); continue; }
                 else if(opt < 1 || opt > 4) { Console.WriteLine("| Invalid Input! |"); continue; }
-                switch (Math.Clamp(option, 1, 4))
+                switch (opt)
                 {
-                    case 1: Console.WriteLine("| Have a great day! |");
+                    case 1:  Console.WriteLine("| Have a great day! |");
                              return;
                     case 2:
                         if (GameManager.SelectedCharacter.Currency < 20) { Console.WriteLine("| Not enough Money! |"); }
                         else 
                         {
-                            foreach (string line in Miscs.Rest1) ;
+                            foreach (string line in Miscs.Rest1) Console.WriteLine(line); ;
                             isSelected = true;                           
                         }
                         break;
@@ -69,7 +69,7 @@ namespace TextRPG
                         if (GameManager.SelectedCharacter.Currency < 40) { Console.WriteLine("| Not enough Money! |"); }
                         else
                         {
-                            foreach (string line in Miscs.Rest2) ;
+                            foreach (string line in Miscs.Rest2) Console.WriteLine(line); ;
                             isSelected = true;
                         }
                         break;
@@ -77,7 +77,7 @@ namespace TextRPG
                         if (GameManager.SelectedCharacter.Currency < 60) { Console.WriteLine("| Not enough Money! |"); }
                         else 
                         {
-                            foreach (string line in Miscs.Rest3) ;
+                            foreach (string line in Miscs.Rest3) Console.WriteLine(line); ;
                             isSelected = true;
                         }
                         break;
@@ -340,6 +340,7 @@ namespace TextRPG
         /// </summary>
         private void InTown()
         {
+            foreach (string line in Miscs.Town) Console.WriteLine(line); 
             UIManager.BaseUI(GameManager.SelectedCharacter, "The Town of Adventurers", typeof(IdleOptions));
 
             if (!int.TryParse(Console.ReadLine(), out int opt)) { Console.WriteLine("| Invalid Input! |"); return; }
@@ -364,6 +365,14 @@ namespace TextRPG
         /// </summary>
         private void InDungeon()
         {
+            if (GameManager.GroundLevel < 50)
+            {
+                foreach (string line in Miscs.EasyEntrance) Console.WriteLine(line);
+            }
+            else
+            {
+                foreach (string line in Miscs.HardEntrance) Console.WriteLine(line);
+            }
             // Check for Quota completion
             if (SpawnManager.KilledMonsterCount >= GameManager.Quota)
             {

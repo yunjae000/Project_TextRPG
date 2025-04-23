@@ -39,10 +39,25 @@ namespace TextRPG
 
         public void OnDamage(AttackType type, float damage)
         {
+            Random rand = new Random();
+            float EvasionPercent = rand.Next(1, 101);
+
+            float CriticalPercent = rand.Next(1, 101);
+
+            if (EvasionPercent < 10)
+            {
+                Console.WriteLine("아무일도 일어나지 않았습니다");
+                return;
+            }
+
+            if (CriticalPercent < 15)
+            {
+                damage *= 1.6f;
+            }
             float calculatedDamage =
-                type == AttackType.Close ? Math.Min(1f, (damage * (1f - DefendStat.Defend / 100f))) :
-                (type == AttackType.Long ? Math.Min(1f, damage * (1f - DefendStat.RangeDefend / 100f)) :
-                Math.Min(1f, (damage * (1f - DefendStat.MagicDefend / 100f))));
+                type == AttackType.Close ? Math.Max(1f, damage * (1f - DefendStat.Defend / 100f)) :
+                (type == AttackType.Long ? Math.Max(1f, damage * (1f - DefendStat.RangeDefend / 100f)) :
+                Math.Max(1f, damage * (1f - DefendStat.MagicDefend / 100f)));
 
             Console.WriteLine($"| {Name} got {calculatedDamage:F2} damage! |");
             Health -= calculatedDamage;
