@@ -334,8 +334,7 @@ namespace TextRPG
         {
             switch (category)
             {
-                case ItemCategory.Armor:
-                    foreach (string line in Miscs.ArmorDesign) Console.WriteLine(line);
+                case ItemCategory.Armor:                   
                     if (ItemLists.Armors.Length < ind || ind < 1)
                     {
                         Console.WriteLine("| 아이템이 존재하지 않습니다! |"); break;
@@ -348,7 +347,6 @@ namespace TextRPG
                     }
                     ItemLists.Weapons[ind - 1].OnPurchased(GameManager.SelectedCharacter); break;
                 case ItemCategory.Consumable:
-                    foreach(string line in Miscs.PotionDesign) Console.WriteLine(line);
                     if (ItemLists.Consumables.Length < ind || ind < 1)
                     {
                         Console.WriteLine("| 아이템이 존재하지 않습니다! |"); break;
