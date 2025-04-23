@@ -833,7 +833,7 @@ namespace TextRPG
             @"| ======================================================================== |",
         };
 
-        public static string[] WarriorDesign = new string[]
+        public static string[] WeaponDesign = new string[]
         {
             "   |\\                     /)",
             " /\\_\\\\__               (_//",
