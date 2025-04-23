@@ -276,9 +276,18 @@ namespace TextRPG
             base.OnContracted();
             foreach (var item in character.ImportantItems)
             {
-                if (!item.GetType().Equals(ItemType)) continue;
-                QuestProgress++;
-                if (QuestProgress >= QuestGoal) { IsCompleted = true; break; }
+                if(item is GoblinEar goblinEar)
+                {
+                    if (!goblinEar.GetType().Equals(ItemType)) continue;
+                    QuestProgress++;
+                    if (QuestProgress >= QuestGoal) { IsCompleted = true; break; }
+                }
+                else if(item is GoblinEye goblinEye)
+                {
+                    if (!goblinEye.GetType().Equals(ItemType)) continue;
+                    QuestProgress++;
+                    if (QuestProgress >= QuestGoal) { IsCompleted = true; break; }
+                }
             }
         }
 
@@ -293,9 +302,18 @@ namespace TextRPG
             QuestProgress = 0;
             foreach (var item in character.ImportantItems)
             {
-                if (!item.GetType().Equals(ItemType)) continue;
-                QuestProgress++;
-                if (QuestProgress >= QuestGoal) { IsCompleted = true; break; }
+                if (item is GoblinEar goblinEar)
+                {
+                    if (!goblinEar.GetType().Equals(ItemType)) continue;
+                    QuestProgress++;
+                    if (QuestProgress >= QuestGoal) { IsCompleted = true; break; }
+                }
+                else if (item is GoblinEye goblinEye)
+                {
+                    if (!goblinEye.GetType().Equals(ItemType)) continue;
+                    QuestProgress++;
+                    if (QuestProgress >= QuestGoal) { IsCompleted = true; break; }
+                }
             }
         }
 
