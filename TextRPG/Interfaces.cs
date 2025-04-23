@@ -50,7 +50,7 @@ namespace TextRPG
     interface ISkillActive
     {
         public bool OnActive(Character character, Monster target);
-        public bool OnActive(Character character, List<Monster> targets);
+        public bool OnActive(Character character, LinkedList<Monster> targets);
     }
 
     interface ISkillBuff

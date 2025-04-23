@@ -54,6 +54,12 @@ namespace TextRPG
             : base(skill.Name, skill.Description, skill.Coefficient, skill.ManaCost, skill.IsTargetable) { }
 
         // Methods
+        /// <summary>
+        /// Active Skill Method
+        /// </summary>
+        /// <param name="character"></param>
+        /// <param name="target"></param>
+        /// <returns></returns>
         public bool OnActive(Character character, Monster target)
         {
             if (character.MagicPoint < ManaCost)
@@ -74,7 +80,13 @@ namespace TextRPG
             return true;
         }
 
-        public bool OnActive(Character character, List<Monster> targets)
+        /// <summary>
+        /// Active Skill Method -> All Targets
+        /// </summary>
+        /// <param name="character"></param>
+        /// <param name="targets"></param>
+        /// <returns></returns>
+        public bool OnActive(Character character, LinkedList<Monster> targets)
         {
             if (character.MagicPoint < ManaCost)
             {
@@ -85,9 +97,36 @@ namespace TextRPG
             AttackType? type = character.EquippedWeapon?.AttackType;
             switch (type)
             {
-                case AttackType.Close: foreach(Monster target in targets) target.OnDamage(AttackType.Close, Coefficient * character.AttackStat.Attack); break;
-                case AttackType.Long: foreach (Monster target in targets) target.OnDamage(AttackType.Long, Coefficient * character.AttackStat.RangeAttack); break;
-                case AttackType.Magic: foreach (Monster target in targets) target.OnDamage(AttackType.Magic, Coefficient * character.AttackStat.MagicAttack); break;
+                case AttackType.Close:
+                    var current = targets.First;
+                    while(current != null)
+                    {
+                        var next = current.Next;
+                        Monster target = current.Value;
+                        target.OnDamage(AttackType.Close, Coefficient * character.AttackStat.Attack);
+                        current = next;
+                    }
+                    break;
+                case AttackType.Long:
+                    current = targets.First;
+                    while (current != null)
+                    {
+                        var next = current.Next;
+                        Monster target = current.Value;
+                        target.OnDamage(AttackType.Long, Coefficient * character.AttackStat.RangeAttack);
+                        current = next;
+                    }
+                    break;
+                case AttackType.Magic: 
+                    current = targets.First;
+                    while (current != null)
+                    {
+                        var next = current.Next;
+                        Monster target = current.Value;
+                        target.OnDamage(AttackType.Magic, Coefficient * character.AttackStat.MagicAttack);
+                        current = next;
+                    }
+                    break;
             }
             character.OnMagicPointConsume(ManaCost);
             Console.WriteLine($"| 스킬_{Name}을 모든 몬스터에 시전하였습니다! |");
@@ -116,8 +155,13 @@ namespace TextRPG
                          int manaCost, int turnInterval, bool isTargetable)
             : base(name, description, coefficient, manaCost, isTargetable) { this.turnInterval = turnInterval; }
         public BuffSkill(BuffSkill skill) : base(skill.Name, skill.Description, skill.Coefficient, skill.ManaCost, skill.IsTargetable) { turnInterval = skill.turnInterval; }
-        
+
         // Methods
+        /// <summary>
+        /// Buff Skill Method
+        /// </summary>
+        /// <param name="character"></param>
+        /// <returns></returns>
         public bool OnActive(Character character)
         {
             if (character.MagicPoint < ManaCost)
@@ -140,6 +184,10 @@ namespace TextRPG
             return true;
         }
 
+        /// <summary>
+        /// Buff Skill Method -> Buff Expired
+        /// </summary>
+        /// <param name="character"></param>
         public void OnBuffExpired(Character character)
         {
             if (!isActive) return;
@@ -149,6 +197,10 @@ namespace TextRPG
             Console.WriteLine($"| 스킬_{Name} 의 효과가 사라졌습니다! |");
         }
 
+        /// <summary>
+        /// Description of Buff Skill
+        /// </summary>
+        /// <returns></returns>
         public override string ToString()
         {
             StringBuilder sb = new(base.ToString());

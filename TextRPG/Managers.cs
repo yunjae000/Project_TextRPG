@@ -582,12 +582,17 @@ namespace TextRPG
     class SpawnManager
     {
         // Property
-        public List<Monster> spawnedMonsters = new();
+        public LinkedList<Monster> spawnedMonsters = new();
 
         // Constructor
         public SpawnManager() { }
 
         // Public Methods
+        /// <summary>
+        /// Spawn monsters
+        /// </summary>
+        /// <param name="character"></param>
+        /// <param name="groundLevel"></param>
         public void SpawnMonsters(Character character, int groundLevel)
         {
             int count = new Random().Next(1, 5);
@@ -615,11 +620,26 @@ namespace TextRPG
                 }
             }
         }
+
+        /// <summary>
+        /// Get all spawned monsters
+        /// </summary>
+        /// <returns>Returns spawned monster count</returns>
         public int GetMonsterCount() { return spawnedMonsters.Count; }
+
+        /// <summary>
+        /// Remove all spawned monsters
+        /// </summary>
         public void RemoveAllMonsters() { spawnedMonsters.Clear(); }
 
         // Private Methods
-        // Set monster
+        /// <summary>
+        /// Set monster's level and stats
+        /// </summary>
+        /// <param name="monster"></param>
+        /// <param name="character"></param>
+        /// <param name="groundLevel"></param>
+        /// <param name="currency"></param>
         private void SetMonster(Monster monster, Character character, int groundLevel,  int currency)
         {
             monster.Level = groundLevel;
@@ -636,7 +656,19 @@ namespace TextRPG
                 foreach(var quest in quests) { quest.OnProgress(); }
             };
         }
-        private void AddMonster(Monster monster) { spawnedMonsters.Add(monster); }
+
+        /// <summary>
+        /// Add monster to the linked list
+        /// </summary>
+        /// <param name="monster"></param>
+        private void AddMonster(Monster monster) { spawnedMonsters.AddLast(monster); }
+
+        /// <summary>
+        /// Remove monster from the linked list
+        /// </summary>
+        /// <param name="character"></param>
+        /// <param name="monster"></param>
+        /// <param name="currency"></param>
         private void RemoveMonster(Character character, Monster monster, int currency)
         {
             Console.WriteLine($"| {monster.Name} is dead! |");
@@ -812,12 +844,12 @@ namespace TextRPG
                 case Job.Wizard:
                     Console.WriteLine("| 법사를 선택하였습니다! |");
                     Console.Write("법사의 이름을 작성해주세요 : ");
-                    SelectedCharacter = new Wizard(new CharacterStat(Console.ReadLine(), 100, 65, 15, 1.6f, 1, new AttackStat(1f, 6f, 30f), new DefendStat(5, 10, 30)), 100, 0);
+                    SelectedCharacter = new Wizard(new CharacterStat(Console.ReadLine(), 100, 80, 15, 1.6f, 1, new AttackStat(1f, 6f, 30f), new DefendStat(5, 10, 30)), 100, 0);
                     break;
                 case Job.Archer:
                     Console.WriteLine("| 궁수를 선택하였습니다! |");
                     Console.Write("궁수의 이름을 작성해주세요 : ");
-                    SelectedCharacter = new Archer(new CharacterStat(Console.ReadLine(), 120, 80, 15, 1.6f, 1, new AttackStat(6f, 30f, 1f), new DefendStat(15, 25, 5)), 100, 0);
+                    SelectedCharacter = new Archer(new CharacterStat(Console.ReadLine(), 120, 65, 15, 1.6f, 1, new AttackStat(6f, 30f, 1f), new DefendStat(15, 25, 5)), 100, 0);
                     break;
             }
 
