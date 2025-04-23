@@ -512,14 +512,14 @@ namespace TextRPG
                 case BattleOptions.Status: InStatus(); return;
                 case BattleOptions.Escape: 
                     SpawnManager.RemoveAllMonsters(); 
-                    EscapeFromBattle("You escaped from the battle!");
+                    InBattle_EscapeFromBattle("You escaped from the battle!");
                     return;
                 default: Console.WriteLine("| Something is wrong! |"); return;
             }
 
             // Check if all monsters are dead
             if (SpawnManager.GetMonsterCount() <= 0) {
-                EscapeFromBattle("All Monsters eliminated!");
+                InBattle_EscapeFromBattle("All Monsters eliminated!");
                 return; 
             }
             
@@ -532,7 +532,7 @@ namespace TextRPG
             }
 
             GameManager.CurrentTurn++;
-            RemoveBuffSkills(true);
+            InBattle_RemoveBuffSkills(true);
 
             Console.WriteLine("| Press any key to continue... |");
             Console.ReadKey(true);
@@ -601,7 +601,7 @@ namespace TextRPG
         /// If checkTurn is true, it checks if the buff is expired or not.
         /// </summary>
         /// <param name="checkTurn"></param>
-        private void RemoveBuffSkills(bool checkTurn)
+        private void InBattle_RemoveBuffSkills(bool checkTurn)
         {
             var buffSkills = from skill in GameManager.SelectedCharacter.Skills
                              where skill.GetType().Equals(typeof(BuffSkill))
@@ -617,9 +617,9 @@ namespace TextRPG
         /// Escape from battle and return to dungeon.
         /// </summary>
         /// <param name="headLine"></param>
-        private void EscapeFromBattle(string headLine)
+        private void InBattle_EscapeFromBattle(string headLine)
         {
-            RemoveBuffSkills(false);
+            InBattle_RemoveBuffSkills(false);
 
             Console.WriteLine($"\n| {headLine} |");
             Console.Write("| Press any key to continue... |");
