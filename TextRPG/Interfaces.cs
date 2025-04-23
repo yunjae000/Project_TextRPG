@@ -49,12 +49,13 @@ namespace TextRPG
 
     interface ISkillActive
     {
-        public void OnActive(Character character, Monster target);
+        public bool OnActive(Character character, Monster target);
+        public bool OnActive(Character character, List<Monster> targets);
     }
 
     interface ISkillBuff
     {
-        public void OnActive(Character character);
+        public bool OnActive(Character character);
         public void OnBuffExpired(Character character);
     }
 }

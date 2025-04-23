@@ -54,24 +54,44 @@ namespace TextRPG
             : base(skill.Name, skill.Description, skill.Coefficient, skill.ManaCost, skill.IsTargetable) { }
 
         // Methods
-        public void OnActive(Character character, Monster target)
+        public bool OnActive(Character character, Monster target)
         {
             if (character.MagicPoint < ManaCost)
             {
-                Console.WriteLine($"| {character.Name} doesn't have enough magic point! |");
-                return;
+                Console.WriteLine($"| {character.Name}가 시전하기엔 MP가 부족합니다! |");
+                return false;
             }
             
-            character.MagicPoint -= ManaCost;
             AttackType? type = character.EquippedWeapon?.AttackType;
-            if (type == null) { target.OnDamage(AttackType.Close, Coefficient * character.AttackStat.Attack); return; }
-            
             switch (type)
             {
                 case AttackType.Close: target.OnDamage(AttackType.Close, Coefficient * character.AttackStat.Attack); break;
                 case AttackType.Long: target.OnDamage(AttackType.Long, Coefficient * character.AttackStat.RangeAttack); break;
                 case AttackType.Magic: target.OnDamage(AttackType.Magic, Coefficient * character.AttackStat.MagicAttack); break;
             }
+            character.OnMagicPointConsume(ManaCost);
+            Console.WriteLine($"| 스킬_{Name}을 {target.Name}에 시전하였습니다! |");
+            return true;
+        }
+
+        public bool OnActive(Character character, List<Monster> targets)
+        {
+            if (character.MagicPoint < ManaCost)
+            {
+                Console.WriteLine($"| {character.Name}가 시전하기엔 MP가 부족합니다! |");
+                return false;
+            }
+
+            AttackType? type = character.EquippedWeapon?.AttackType;
+            switch (type)
+            {
+                case AttackType.Close: foreach(Monster target in targets) target.OnDamage(AttackType.Close, Coefficient * character.AttackStat.Attack); break;
+                case AttackType.Long: foreach (Monster target in targets) target.OnDamage(AttackType.Long, Coefficient * character.AttackStat.RangeAttack); break;
+                case AttackType.Magic: foreach (Monster target in targets) target.OnDamage(AttackType.Magic, Coefficient * character.AttackStat.MagicAttack); break;
+            }
+            character.OnMagicPointConsume(ManaCost);
+            Console.WriteLine($"| 스킬_{Name}을 모든 몬스터에 시전하였습니다! |");
+            return true;
         }
     }
 
@@ -98,23 +118,26 @@ namespace TextRPG
         public BuffSkill(BuffSkill skill) : base(skill.Name, skill.Description, skill.Coefficient, skill.ManaCost, skill.IsTargetable) { turnInterval = skill.turnInterval; }
         
         // Methods
-        public void OnActive(Character character)
+        public bool OnActive(Character character)
         {
             if (character.MagicPoint < ManaCost)
             {
-                Console.WriteLine($"| {character.Name} doesn't have enough magic point! |");
-                return;
+                Console.WriteLine($"| {character.Name}가 시전하기엔 MP가 부족합니다! |");
+                return false;
             }
 
-            if (IsActive) { character.MagicPoint -= ManaCost; UsedTurn = GameManager.CurrentTurn; return; }
+            if (IsActive) { character.OnMagicPointConsume(ManaCost); UsedTurn = GameManager.CurrentTurn; return true; }
 
-            character.MagicPoint -= ManaCost;
+            character.OnMagicPointConsume(ManaCost);
             originalAttackStat = new(character.AttackStat);
             originalDefendStat = new(character.DefendStat);
             character.AttackStat *= Coefficient;
             character.DefendStat *= Coefficient;
             UsedTurn = GameManager.CurrentTurn;
             IsActive = true;
+
+            Console.WriteLine($"| 스킬_{Name}을 시전하였습니다! |");
+            return true;
         }
 
         public void OnBuffExpired(Character character)
@@ -123,12 +146,13 @@ namespace TextRPG
             character.AttackStat = originalAttackStat;
             character.DefendStat = originalDefendStat;
             IsActive = false;
+            Console.WriteLine($"| 스킬_{Name} 의 효과가 사라졌습니다! |");
         }
 
         public override string ToString()
         {
             StringBuilder sb = new(base.ToString());
-            sb.Append($", Interval : {TurnInterval} turn");
+            sb.Append($", 지속 턴 : {TurnInterval}턴");
             return sb.ToString();
         }
     }
@@ -140,14 +164,14 @@ namespace TextRPG
     {
         public static Skill[] ActiveSkills =
         {
-            new ActiveSkill("Power Strike","Give single target massive damage", 2.0f, 20, true),
-            new ActiveSkill("Fire Arrow", "Give all target increased damage", 1.5f, 15, false),
-            new ActiveSkill("Thunder Bolt", "Give all target massive damage", 1.8f, 25, false),
+            new ActiveSkill("파워 스트라이크","단일 타겟에 매우 큰 데미지를 입힌다.", 2.0f, 20, true),
+            new ActiveSkill("파이어 에로우", "모든 타켓에 데미지를 입힌다.", 1.5f, 15, false),
+            new ActiveSkill("썬더 볼트", "모든 타겟에 매우 큰 데미지를 입힌다.", 1.8f, 25, false),
         };
 
         public static Skill[] BuffSkills =
         {
-            new BuffSkill("Meditation", "Increase Attack Stat.", 1.8f, 20, 3, false),
+            new BuffSkill("명상", "모든 스텟을 증가시킨다.", 1.8f, 20, 3, false),
         };
     }
 }

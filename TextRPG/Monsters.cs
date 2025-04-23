@@ -46,7 +46,7 @@ namespace TextRPG
                 (type == AttackType.Long ? Math.Max(1f, damage * (1f - DefendStat.RangeDefend / 100f)) :
                 Math.Max(1f, (damage * (1f - DefendStat.MagicDefend / 100f))));
 
-            Console.WriteLine($"| {Name} got {calculatedDamage:F2} damage! |");
+            Console.WriteLine($"| {Name}이 {calculatedDamage:F2}의 데미지를 받았습니다! |");
             Health -= calculatedDamage;
 
             if (Health < 1f && IsAlive) Die();

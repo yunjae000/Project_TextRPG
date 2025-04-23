@@ -30,7 +30,7 @@ namespace TextRPG
 
     public enum ItemCategory
     {
-        Armor, Weapon, Consumable
+        Armor, Weapon, Consumable, Misc,
     }
 
     public enum ConsumableCategory

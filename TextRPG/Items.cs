@@ -187,7 +187,7 @@ namespace TextRPG
         {
             if (character.Currency < Price) { Console.WriteLine("| Not enough Money! |"); return; }
             character.Currency -= Price;
-            Console.WriteLine($"| {name} is purchased! |"); 
+            Console.WriteLine($"| {name}을 구매하였습니다! |"); 
         }
 
         /// <summary>

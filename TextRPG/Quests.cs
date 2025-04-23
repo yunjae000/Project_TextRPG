@@ -82,7 +82,7 @@ namespace TextRPG
         {
             IsContracted = true;
             QuestProgress = 0;
-            Console.WriteLine($"\n| Quest '{Name}' contracted! |");
+            Console.WriteLine($"\n| Quest '{Name}' 을 수주하였습니다! |");
         }
 
         /// <summary>
@@ -93,7 +93,7 @@ namespace TextRPG
         {
             IsContracted = true;
             QuestProgress = 0;
-            Console.WriteLine($"\n| Quest '{Name}' contracted! |");
+            Console.WriteLine($"\n| Quest '{Name}' 을 수주하였습니다! |");
         }
 
         /// <summary>
@@ -116,7 +116,7 @@ namespace TextRPG
             IsContracted = false;
             character.OnEarnExp(RewardExp);
             character.Currency += RewardGold;
-            Console.WriteLine($"| Quest '{Name}' completed! |");
+            Console.WriteLine($"| Quest '{Name}' 을 완료하였습니다! |");
         }
 
         /// <summary>
@@ -125,7 +125,7 @@ namespace TextRPG
         public void ShowProgress()
         {
             Console.WriteLine($"\n| Quest '{Name}' |");
-            Console.WriteLine($"| Progress: {QuestProgress}/{QuestGoal} |");
+            Console.WriteLine($"| 진행도: {QuestProgress}/{QuestGoal} |");
         }
 
         public abstract new string ToString();
@@ -168,9 +168,9 @@ namespace TextRPG
             StringBuilder sb = new();
             _ = IsSpecial == true ? sb.Append("| [★] ") : sb.Append("| [] ");
             sb.AppendLine($"Quest : '{Name}' |")
-              .AppendLine($"| Description : '{Description}' | ")
-              .AppendLine($"| Diff. : '{Difficulty}', Type : '{QuestType}' |")
-              .AppendLine($"| Exp. : '{RewardExp}', Gold : '{RewardGold} |");
+              .AppendLine($"| 상세설명 : '{Description}' | ")
+              .AppendLine($"| 난이도 : '{Difficulty}', 타입 : '{QuestType}' |")
+              .AppendLine($"| Exp : '{RewardExp}', Gold : '{RewardGold} |");
             return sb.ToString();
         }
     }
@@ -225,7 +225,7 @@ namespace TextRPG
         public override string ToString()
         {
             StringBuilder sb = new(base.ToString());
-            if(IsContracted) sb.AppendLine($"| Progress : '{QuestProgress}/{QuestGoal}' |");
+            if(IsContracted) sb.AppendLine($"| 진행도 : '{QuestProgress}/{QuestGoal}' |");
             return sb.ToString();
         }
     }
@@ -315,7 +315,7 @@ namespace TextRPG
         public override string ToString()
         {
             StringBuilder sb = new(base.ToString());
-            if (IsContracted) sb.AppendLine($"| Progress : '{QuestProgress}/{QuestGoal}' |");
+            if (IsContracted) sb.AppendLine($"| 진행도 : '{QuestProgress}/{QuestGoal}' |");
             return sb.ToString();
         }
 
