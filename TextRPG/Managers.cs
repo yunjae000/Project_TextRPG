@@ -786,7 +786,7 @@ namespace TextRPG
 |                                                                                     | 
 |                                                                          PARK_DOUN  | 
 |                                                                         CHO_YUNJAE  | 
-|                                                                         BAG_JIHWAN  | 
+|                                                                         PARK_JIHWAN | 
 |                                                                        KIM_KONGSIK  | 
 |                                                                      BANG_EUNSEONG  | 
 |                                                                                     | 
