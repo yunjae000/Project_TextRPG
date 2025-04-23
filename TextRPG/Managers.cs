@@ -993,10 +993,10 @@ namespace TextRPG
             |                               ||||               .   |                           |
             |            _.-=-._.             |     .               |                          |
             |                                  |                  | |                          |
-            |      /\                          ||                 ||              _.""._.""._. |
+            |      /\                          ||                 ||              _.""._.""._.   |
             |     O /\ /\                      ||                  |                           |
             |      O  O  O                      |       '         |                            |
-            |       \/ \/                       |          .       ||     _.""._.""            |
+            |       \/ \/                       |          .       ||     _.""._.""              |
             |                                   |                  |                           |
             |                                  ||                  |                           |
             |      O                /\         ||        .         ||                          |
@@ -1184,7 +1184,7 @@ namespace TextRPG
         {
             var contracted = from quest in Quests
                              where quest.IsContracted == true && quest.IsCompleted == false && quest is CollectItemQuest
-                             where ((CollectItemQuest)quest).ItemType.Equals(itemName)
+                             where ((CollectItemQuest)quest).ItemName.Equals(itemName)
                              select (CollectItemQuest)quest;
             return contracted;
         }
@@ -1266,7 +1266,7 @@ namespace TextRPG
         private static Quest[] Quests =
         {
             new KillMonsterQuest("Please save us from monsters' attack", "Kill 1 Goblins", QuestDifficulty.Normal, 1, 120,300),
-            new CollectItemQuest("Please bring me some goblin's ears", typeof(GoblinEar), "Collect 1 Goblin's Ears", QuestDifficulty.Easy, 1, 100,300),
+            new CollectItemQuest("Please bring me some goblin's ears", typeof(GoblinEar).Name, "Collect 1 Goblin's Ears", QuestDifficulty.Easy, 1, 100,300),
         };
     }
 
@@ -1680,8 +1680,6 @@ namespace TextRPG
         public void GoToNextLevel()
         {
             Console.WriteLine("| 목표량을 달성하였습니다, 던전 레벨과 목표량이 올라갑니다! |");
-            Console.WriteLine("| Press any key to continue... |");
-            Console.ReadKey();
             KilledMonsterCount = 0;
             Quota = 10 + (++GroundLevel - 1) * 5;
         }

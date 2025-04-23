@@ -236,34 +236,34 @@ namespace TextRPG
     class CollectItemQuest : NormalQuest
     {
         // Field
-        private Type itemType;
+        private string itemName;
 
         // Property
-        public Type ItemType { get { return itemType; } set { itemType = value; } }
+        public string ItemName { get { return itemName; } set { itemName = value; } }
 
         // Constructor
         public CollectItemQuest(CollectItemQuest quest) : base(quest)
         {
-            ItemType = quest.ItemType;
+            ItemName = quest.ItemName;
             IsSpecial = false;
         }
 
-        public CollectItemQuest(string name, Type itemName, string description, QuestDifficulty difficulty,
+        public CollectItemQuest(string name, string itemName, string description, QuestDifficulty difficulty,
                                 int questGoal, int rewardExp, int rewardGold)
             : base(name, description, difficulty, QuestType.CollectItem, questGoal, rewardExp, rewardGold)
         {
             IsSpecial = false;
-            ItemType = itemName;
+            ItemName = itemName;
         }
 
         [JsonConstructor]
-        public CollectItemQuest(string name, Type itemName, string description, QuestDifficulty difficulty, QuestType questType,
+        public CollectItemQuest(string name, string itemName, string description, QuestDifficulty difficulty, QuestType questType,
                                 int questProgress, int questGoal, int rewardExp, int rewardGold,
                                 bool isCompleted, bool isSpecial)
             : base(name, description, difficulty, questType, questProgress, questGoal, rewardExp, rewardGold, isCompleted, isSpecial)
         {
             IsSpecial = isSpecial;
-            ItemType = itemName;
+            ItemName = itemName;
         }
 
         // Methods
@@ -276,18 +276,9 @@ namespace TextRPG
             base.OnContracted();
             foreach (var item in character.ImportantItems)
             {
-                if(item is GoblinEar goblinEar)
-                {
-                    if (!goblinEar.GetType().Equals(ItemType)) continue;
-                    QuestProgress++;
-                    if (QuestProgress >= QuestGoal) { IsCompleted = true; break; }
-                }
-                else if(item is GoblinEye goblinEye)
-                {
-                    if (!goblinEye.GetType().Equals(ItemType)) continue;
-                    QuestProgress++;
-                    if (QuestProgress >= QuestGoal) { IsCompleted = true; break; }
-                }
+                if (!item.GetType().Name.Equals(ItemName)) continue;
+                QuestProgress++;
+                if (QuestProgress >= QuestGoal) { IsCompleted = true; break; }
             }
         }
 
@@ -302,18 +293,9 @@ namespace TextRPG
             QuestProgress = 0;
             foreach (var item in character.ImportantItems)
             {
-                if (item is GoblinEar goblinEar)
-                {
-                    if (!goblinEar.GetType().Equals(ItemType)) continue;
-                    QuestProgress++;
-                    if (QuestProgress >= QuestGoal) { IsCompleted = true; break; }
-                }
-                else if (item is GoblinEye goblinEye)
-                {
-                    if (!goblinEye.GetType().Equals(ItemType)) continue;
-                    QuestProgress++;
-                    if (QuestProgress >= QuestGoal) { IsCompleted = true; break; }
-                }
+                if (!item.GetType().Name.Equals(ItemName)) continue;
+                QuestProgress++;
+                if (QuestProgress >= QuestGoal) { IsCompleted = true; break; }
             }
         }
 
@@ -347,7 +329,7 @@ namespace TextRPG
             int i = 0;
             foreach (var item in character.ImportantItems)
             {
-                if (nameof(item).Equals(ItemType))
+                if (item.GetType().Name.Equals(ItemName))
                 {
                     item.OnDropped(character); i++;
                     if (i >= QuestGoal) break;

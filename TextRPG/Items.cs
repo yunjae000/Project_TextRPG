@@ -1221,7 +1221,7 @@ namespace TextRPG
         public void OnDropped(Character character)
         {
             character.ImportantItems.Remove(this);
-            var quests = QuestManager.GetContractedQuests_CollectItem(Name);
+            var quests = QuestManager.GetContractedQuests_CollectItem(GetType().Name);
             foreach (var quest in quests) { quest.OnProgress(character); }
             Console.WriteLine($"| {Name} is dropped! |");
         }
@@ -1230,7 +1230,7 @@ namespace TextRPG
         {
             character.Currency += Price;
             character.ImportantItems.Remove(this);
-            var quests = QuestManager.GetContractedQuests_CollectItem(Name);
+            var quests = QuestManager.GetContractedQuests_CollectItem(GetType().Name);
             foreach (var quest in quests) { quest.OnProgress(character); }
             Console.WriteLine($"| {Name} is sold! |");
         }
@@ -1249,7 +1249,7 @@ namespace TextRPG
         {
             base.OnPicked(character);
             character.ImportantItems.Add(new GoblinEar(this));
-            var quests = QuestManager.GetContractedQuests_CollectItem(nameof(GoblinEar));
+            var quests = QuestManager.GetContractedQuests_CollectItem(GetType().Name);
             foreach (var quest in quests) { quest.OnProgress(character); }
         }
 
@@ -1274,7 +1274,7 @@ namespace TextRPG
         {
             base.OnPicked(character);
             character.ImportantItems.Add(new GoblinEye(this));
-            var quests = QuestManager.GetContractedQuests_CollectItem(nameof(GoblinEye));
+            var quests = QuestManager.GetContractedQuests_CollectItem(GetType().Name);
             foreach (var quest in quests) { quest.OnProgress(character); }
         }
 
