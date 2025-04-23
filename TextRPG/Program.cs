@@ -61,15 +61,15 @@ namespace TextRPG
                 {
                     case 1: Console.WriteLine("| Have a great day! |"); return;
                     case 2:
-                        if (GameManager.SelectedCharacter.Currency < 20) { Console.WriteLine("| Not enough Money! |"); }
-                        else { isSelected = true; }
-                        break;
-                    case 3:
                         if (GameManager.SelectedCharacter.Currency < 40) { Console.WriteLine("| Not enough Money! |"); }
                         else { isSelected = true; }
                         break;
-                    case 4:
+                    case 3:
                         if (GameManager.SelectedCharacter.Currency < 60) { Console.WriteLine("| Not enough Money! |"); }
+                        else { isSelected = true; }
+                        break;
+                    case 4:
+                        if (GameManager.SelectedCharacter.Currency < 80) { Console.WriteLine("| Not enough Money! |"); }
                         else { isSelected = true; }
                         break;
                 }
@@ -78,7 +78,8 @@ namespace TextRPG
             Console.WriteLine("| Have a sweet dream! |");
 
             GameManager.SelectedCharacter.Currency -= (option * 20);
-            GameManager.SelectedCharacter.OnHeal(GameManager.SelectedCharacter.MaxHealth * (0.5f + (0.25f * (option - 1))));
+            GameManager.SelectedCharacter.OnHeal(GameManager.SelectedCharacter.MaxHealth * (0.25f + (0.25f * (option - 2))));
+            GameManager.SelectedCharacter.OnMagicPointHeal(GameManager.SelectedCharacter.MaxMagicPoint * (0.25f + (0.25f * (option - 2))));
             if (GameManager.GameTime == GameTime.Afternoon) GameManager.GameTime = GameTime.Night;
             else { GameManager.GameTime = GameTime.Afternoon; GameManager.RemoveAllBuffs(); }
         }

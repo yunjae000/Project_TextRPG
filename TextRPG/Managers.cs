@@ -28,10 +28,10 @@ namespace TextRPG
             Console.WriteLine("|\"Armors\" |");
             int i = 1;
             foreach (Armor armor in character.Armors) { Console.WriteLine($"{i++}. {armor}"); }
-            Console.WriteLine("\n|\"Weapons\" |");
+            Console.WriteLine("\n\n|\"Weapons\" |");
             i = 1;
             foreach (Weapon weapon in character.Weapons) { Console.WriteLine($"{i++}. {weapon}"); }
-            Console.WriteLine("\n|\"Potions\" |");
+            Console.WriteLine("\n\n|\"Potions\" |");
             i = 1;
             foreach (Consumables potion in character.Consumables) { Console.WriteLine($"{i++}. {potion}"); }
             Console.WriteLine("| ------------- |");
@@ -80,10 +80,10 @@ namespace TextRPG
             Console.WriteLine("| 1. \"Armors\" |");
             foreach (Armor armor in ItemLists.Armors) { Console.WriteLine($"{i++}. {armor}"); }
             i = 1;
-            Console.WriteLine("| 2. \"Weapons\" |");
+            Console.WriteLine("\n| 2. \"Weapons\" |");
             foreach (Weapon weapon in ItemLists.Weapons) { Console.WriteLine($"{i++}. {weapon}"); }
             i = 1;
-            Console.WriteLine("| 3. \"Potions\" |");
+            Console.WriteLine("\n| 3. \"Potions\" |");
             foreach (Consumables potion in ItemLists.Consumables) { Console.WriteLine($"{i++}. {potion}"); }
             Console.WriteLine("| --------------------- |");
             Console.Write("\nWhat do you want to buy? ( Type [ Category,Index ] ) : ");
@@ -140,9 +140,9 @@ namespace TextRPG
             foreach (string line in Miscs.Alby) Console.WriteLine(line);
             Console.WriteLine("\n| Room Options |");
             Console.WriteLine("| 1. Back |");
-            Console.WriteLine("| 2. Normal Room (Heals 50% of your Max Health, 20G) |");
-            Console.WriteLine("| 3. Comfy Room (Heals 75% of your Max Health, 40G) |");
-            Console.WriteLine("| 4. Emperror Room (Heals 100% of your Max Health, 60G)");
+            Console.WriteLine("| 2. Normal Room (Heals 25% of your Max Health, 40G) |");
+            Console.WriteLine("| 3. Comfy Room (Heals 50% of your Max Health, 60G) |");
+            Console.WriteLine("| 4. Emperror Room (Heals 75% of your Max Health, 80G)");
             Console.WriteLine("| ------------------------------------ |");
             Console.Write("\nChoose Room Option : ");
         }
