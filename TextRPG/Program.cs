@@ -101,18 +101,18 @@ namespace TextRPG
                 UIManager.InventoryUI(GameManager.SelectedCharacter);
 
                 // Get Input from user
-                if (!int.TryParse(Console.ReadLine(), out int opt)) { Console.WriteLine("| 잘못된 입력입니다! |"); continue; }
-                else if (opt < 1 || opt > 2) { Console.WriteLine("| 잘못된 입력입니다! |"); continue; }
+                if (!int.TryParse(Console.ReadLine(), out int opt)) { Console.WriteLine("| 잘못된 입력입니다! |"); Console.Write("Press any key to continue..."); Console.ReadKey(); continue; }
+                else if (opt < 1 || opt > 2) { Console.WriteLine("| 잘못된 입력입니다! |"); Console.Write("Press any key to continue..."); Console.ReadKey(); continue; }
 
                 // If "Back" option selected, go back to main game.
                 if (opt == 1) return;
 
                 // Select Category and Index of Item
                 Console.Write("Type item category and index ( Type [ Category,Index ] ) : ");
-                string[] vals = Console.ReadLine().Split(new char[] { ',', ' ', '|' });
-                if (vals == null) { Console.WriteLine("| 잘못된 입력입니다! |"); break; }
-                if (!int.TryParse(vals[0].Trim(new char[] { '[', ']', ' ', ',' }), out int cat)) { Console.WriteLine("| 잘못된 입력입니다! |"); break; }
-                if (!int.TryParse(vals[1].Trim(new char[] { '[', ']', ' ', ',' }), out int ind)) { Console.WriteLine("| 잘못된 입력입니다! |"); break; }
+                string[]? vals = Console.ReadLine()?.Split(new char[] { ',', ' ', '|' });
+                if (vals == null || vals.Length < 2) { Console.WriteLine("| 잘못된 입력입니다! |"); Console.Write("Press any key to continue..."); Console.ReadKey(); continue; }
+                if (!int.TryParse(vals[0].Trim(new char[] { '[', ']', ' ', ',' }), out int cat)) { Console.WriteLine("| 잘못된 입력입니다! |"); Console.Write("Press any key to continue..."); Console.ReadKey(); continue; }
+                if (!int.TryParse(vals[1].Trim(new char[] { '[', ']', ' ', ',' }), out int ind)) { Console.WriteLine("| 잘못된 입력입니다! |"); Console.Write("Press any key to continue..."); Console.ReadKey(); continue; }
 
                 ItemCategory category = (ItemCategory)(Math.Clamp(cat, 1, Enum.GetValues(typeof(ItemCategory)).Length) - 1);
 
