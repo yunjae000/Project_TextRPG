@@ -187,7 +187,8 @@ namespace TextRPG
         {
             if (character.Currency < Price) { Console.WriteLine("| Not enough Money! |"); return; }
             character.Currency -= Price;
-            Console.WriteLine($"| {name}을 구매하였습니다! |");
+
+            Console.WriteLine($"| {name}을 구매하였습니다! |"); 
         }
 
         /// <summary>
@@ -484,7 +485,7 @@ namespace TextRPG
                     {
                         Attack = attackStat.Attack + ((int)rarity >= (int)Rarity.Hero ? attackStat.Attack * ((int)rarity - (int)Rarity.Rare) * 0.05f : 0f),
                         RangeAttack = attackStat.RangeAttack + ((int)rarity >= (int)Rarity.Hero ? attackStat.RangeAttack * ((int)rarity - (int)Rarity.Rare) * 0.05f : 0f),
-                        MagicAttack = attackStat.MagicAttack + ((int)rarity >= (int)Rarity.Hero ? attackStat.MagicAttack * ((int)rarity - (int)Rarity.Rare) * 0.05f : 0f)
+                        MagicAttack = attackStat.MagicAttack + ((int)rarity >= (int)Rarity.Hero ? attackStat.MagicAttack * ((int)rarity - (int)Rarity.Rare) * 0.05f : 0f)   
                     };
                     this.attackStat = newStat;
                 }
@@ -1251,6 +1252,13 @@ namespace TextRPG
             var quests = QuestManager.GetContractedQuests_CollectItem(Name);
             foreach (var quest in quests) { quest.OnProgress(character); }
         }
+
+        public override string ToString()
+        {
+            StringBuilder sb = new();
+            sb.Append($"{Name} | 가격 : {Price} | {Rarity}");
+            return sb.ToString();
+        }
     }
 
     /// <summary>
@@ -1268,6 +1276,13 @@ namespace TextRPG
             character.ImportantItems.Add(new GoblinEye(this));
             var quests = QuestManager.GetContractedQuests_CollectItem(Name);
             foreach (var quest in quests) { quest.OnProgress(character); }
+        }
+
+        public override string ToString()
+        {
+            StringBuilder sb = new();
+            sb.Append($"{Name} | 가격 : {Price} | {Rarity}");
+            return sb.ToString();
         }
     }
 

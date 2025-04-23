@@ -94,7 +94,7 @@ namespace TextRPG
         [JsonInclude] public float MaxHealth { get { return characterStat.MaxHealth; } protected set { characterStat.MaxHealth = value; } }
         [JsonInclude] public float Health { get { return characterStat.Health; } protected set { characterStat.Health = Math.Clamp(value, 0, MaxHealth); } }
         [JsonInclude] public float MaxMagicPoint { get { return characterStat.MaxMagicPoint; } protected set { characterStat.MaxMagicPoint = value; } }
-        [JsonInclude] public float MagicPoint { get { return characterStat.MagicPoint; } protected set { characterStat.MagicPoint = Math.Clamp(value, 0, MaxMagicPoint); } }
+        [JsonInclude] public float MagicPoint { get { return characterStat.MagicPoint; } protected set { characterStat.MagicPoint = Math.Clamp(value,0, MaxMagicPoint); } }
         [JsonInclude] public int CriticalHitChance { get { return characterStat.CriticalHitChance; } protected set { characterStat.CriticalHitChance = value; } }
         [JsonInclude] public float CriticalHitDamagePercentage { get { return characterStat.CriticalHitDamagePercentage; } protected set { characterStat.CriticalHitDamagePercentage = value; } }
         [JsonInclude] public int Level { get { return characterStat.Level; } protected set { characterStat.Level = value; } }

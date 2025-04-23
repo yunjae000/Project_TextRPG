@@ -67,6 +67,9 @@ namespace TextRPG
                 Console.WriteLine($"| {character.Name}가 시전하기엔 MP가 부족합니다! |");
                 return false;
             }
+            
+            character.OnMagicPointConsume(ManaCost);
+            Console.WriteLine($"| 스킬_{Name}을 {target.Name}에 시전하였습니다! |");
 
             AttackType? type = character.EquippedWeapon?.AttackType;
             switch (type)
@@ -75,8 +78,6 @@ namespace TextRPG
                 case AttackType.Long: target.OnDamage(AttackType.Long, Coefficient * character.AttackStat.RangeAttack); break;
                 case AttackType.Magic: target.OnDamage(AttackType.Magic, Coefficient * character.AttackStat.MagicAttack); break;
             }
-            character.OnMagicPointConsume(ManaCost);
-            Console.WriteLine($"| 스킬_{Name}을 {target.Name}에 시전하였습니다! |");
             return true;
         }
 
@@ -93,13 +94,16 @@ namespace TextRPG
                 Console.WriteLine($"| {character.Name}가 시전하기엔 MP가 부족합니다! |");
                 return false;
             }
+            
+            character.OnMagicPointConsume(ManaCost);
+            Console.WriteLine($"| 스킬_{Name}을 모든 몬스터에 시전하였습니다! |");
 
             AttackType? type = character.EquippedWeapon?.AttackType;
             switch (type)
             {
                 case AttackType.Close:
                     var current = targets.First;
-                    while (current != null)
+                    while(current != null)
                     {
                         var next = current.Next;
                         Monster target = current.Value;
@@ -117,7 +121,7 @@ namespace TextRPG
                         current = next;
                     }
                     break;
-                case AttackType.Magic:
+                case AttackType.Magic: 
                     current = targets.First;
                     while (current != null)
                     {
@@ -128,8 +132,6 @@ namespace TextRPG
                     }
                     break;
             }
-            character.OnMagicPointConsume(ManaCost);
-            Console.WriteLine($"| 스킬_{Name}을 모든 몬스터에 시전하였습니다! |");
             return true;
         }
     }
@@ -173,14 +175,14 @@ namespace TextRPG
             if (IsActive) { character.OnMagicPointConsume(ManaCost); UsedTurn = GameManager.CurrentTurn; return true; }
 
             character.OnMagicPointConsume(ManaCost);
+            Console.WriteLine($"| 스킬_{Name}을 시전하였습니다! |");
+
             originalAttackStat = new(character.AttackStat);
             originalDefendStat = new(character.DefendStat);
             character.AttackStat *= Coefficient;
             character.DefendStat *= Coefficient;
             UsedTurn = GameManager.CurrentTurn;
             IsActive = true;
-
-            Console.WriteLine($"| 스킬_{Name}을 시전하였습니다! |");
             return true;
         }
 
