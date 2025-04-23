@@ -94,7 +94,7 @@ namespace TextRPG
         [JsonInclude] public float MaxHealth { get { return characterStat.MaxHealth; } protected set { characterStat.MaxHealth = value; } }
         [JsonInclude] public float Health { get { return characterStat.Health; } protected set { characterStat.Health = Math.Clamp(value, 0, MaxHealth); } }
         [JsonInclude] public float MaxMagicPoint { get { return characterStat.MaxMagicPoint; } protected set { characterStat.MaxMagicPoint = value; } }
-        [JsonInclude] public float MagicPoint { get { return characterStat.MagicPoint; } set { characterStat.MagicPoint = Math.Clamp(value,0, MaxMagicPoint); } }
+        [JsonInclude] public float MagicPoint { get { return characterStat.MagicPoint; } protected set { characterStat.MagicPoint = Math.Clamp(value,0, MaxMagicPoint); } }
         [JsonInclude] public int CriticalHitChance { get { return characterStat.CriticalHitChance; } protected set { characterStat.CriticalHitChance = value; } }
         [JsonInclude] public float CriticalHitDamagePercentage { get { return characterStat.CriticalHitDamagePercentage; } protected set { characterStat.CriticalHitDamagePercentage = value; } }
         [JsonInclude] public int Level { get { return characterStat.Level; } protected set { characterStat.Level = value; } }
@@ -169,6 +169,12 @@ namespace TextRPG
             MagicPoint += coef;
         }
 
+        public void OnMagicPointConsume(float coef)
+        {
+            if (!IsAlive) { return; }
+            MagicPoint -= coef;
+        }
+
         /// <summary>
         /// Level up the character.
         /// </summary>
@@ -199,7 +205,7 @@ namespace TextRPG
                 (type == AttackType.Long ? Math.Max(1f, damage * (1f - DefendStat.RangeDefend / 100f)) :
                 Math.Max(1f, damage * (1f - DefendStat.MagicDefend / 100f)));
 
-            Console.WriteLine($"| {Name} got {calculatedDamage:F2} damage! |");
+            Console.WriteLine($"| {Name}이 {calculatedDamage:F2}의 데미지를 받았습니다! |");
             Health -= calculatedDamage;
 
             if (Health < 1f && IsAlive) Die();
@@ -217,6 +223,7 @@ namespace TextRPG
             if (Currency < 100) return false; 
             Currency -= 100;
             Health = MaxHealth;
+            MagicPoint = MaxMagicPoint;
             return true;
         }
 

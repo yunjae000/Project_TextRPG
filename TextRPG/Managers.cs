@@ -18,45 +18,55 @@ namespace TextRPG
         {
             Console.WriteLine();
             foreach (string line in Miscs.CharacterSelection) Console.WriteLine(line);
-            Console.WriteLine("\n| 1. Choose Job |");
-            Console.Write("Choose Action : ");
+            Console.WriteLine("\n| 직업 선택 (뒤로가려면 0을 누르세요) |");
+            Console.Write("원하는 직업을 선택하세요 : ");
         }
 
         public static void InventoryUI(Character character)
         {
-            Console.WriteLine("| ----- Inventory ----- |");
-            Console.WriteLine("|\"Armors\" |");
+            Console.WriteLine("| ----- 인벤토리 ----- |");
+            Console.WriteLine("| \"방어구\" |");
             int i = 1;
             foreach (Armor armor in character.Armors) { Console.WriteLine($"{i++}. {armor}"); }
-            Console.WriteLine("\n|\"Weapons\" |");
+            Console.WriteLine("\n| \"무기\" |");
             i = 1;
             foreach (Weapon weapon in character.Weapons) { Console.WriteLine($"{i++}. {weapon}"); }
-            Console.WriteLine("\n|\"Potions\" |");
+            Console.WriteLine("\n| \"포션\" |");
             i = 1;
             foreach (Consumables potion in character.Consumables) { Console.WriteLine($"{i++}. {potion}"); }
+            Console.WriteLine("\n| \"잡동사니\"|");
+            i = 1;
+            foreach (ImportantItem item in character.ImportantItems) { Console.WriteLine($"{i++}. {item}"); }
             Console.WriteLine("| ------------- |");
-            Console.WriteLine("\n| Actions |");
-            Console.WriteLine("| 1. Back |");
-            Console.WriteLine("| 2. Select Item |");
-            Console.Write("Choose Action : ");
+            Console.WriteLine("\n| 1. 뒤로가기 |");
+            Console.WriteLine("| 2. 아이템 선택 |");
+            Console.Write("원하는 기능을 선택하세요 : ");
         }
 
         public static void InventoryUI_Equipment()
         {
-            Console.WriteLine("\n| ----- \"Equipment\" ----- |");
-            Console.WriteLine("| 1. Back |");
-            Console.WriteLine("| 2. Equip |");
-            Console.WriteLine("| 3. Unequip |");
-            Console.WriteLine("| 4. Drop |");
-            Console.Write("Choose Action : ");
+            Console.WriteLine("\n| ----- \"장비\" ----- |");
+            Console.WriteLine("| 1. 뒤로가기 |");
+            Console.WriteLine("| 2. 착용하기 |");
+            Console.WriteLine("| 3. 해제하기 |");
+            Console.WriteLine("| 4. 버리기 |");
+            Console.Write("원하는 기능을 선택하세요 : ");
         }
 
         public static void InventoryUI_Consumable()
         {
-            Console.WriteLine("\n| ----- \"Consumable\" ----- |");
-            Console.WriteLine("| 1. Back |");
-            Console.WriteLine("| 2. Use  |");
-            Console.Write("Choose Action : ");
+            Console.WriteLine("\n| ----- \"소모품\" ----- |");
+            Console.WriteLine("| 1. 뒤로가기 |");
+            Console.WriteLine("| 2. 사용하기  |");
+            Console.Write("원하는 기능을 선택하세요 : ");
+        }
+
+        public static void InventoryUI_Misc()
+        {
+            Console.WriteLine("\n| ----- \"잡동사니\" ----- |");
+            Console.WriteLine("| 1. 뒤로가기 |");
+            Console.WriteLine("| 2. 버리기  |");
+            Console.Write("원하는 기능을 선택하세요 : ");
         }
 
         public static void ShopUI(Character character)
@@ -65,146 +75,148 @@ namespace TextRPG
             foreach (string line in Miscs.Henry) Console.WriteLine(line);
             Console.WriteLine("| ---------------------------------- |");
 
-            Console.WriteLine($"\n| Currency : {character.Currency} |");
-            Console.WriteLine("| Actions |");
-            Console.WriteLine("| 1. Back |");
-            Console.WriteLine("| 2. Buy |");
-            Console.WriteLine("| 3. Sell |");
-            Console.Write("\nChoose Action : ");
+            Console.WriteLine($"\n| Gold : {character.Currency} |");
+            Console.WriteLine("\n| 0. 뒤로가기 |");
+            Console.WriteLine("| 1. 방어구 구매 |");
+            Console.WriteLine("| 2. 무기 구매 |");
+            Console.WriteLine("| 3. 포션 구매 |");
+            Console.WriteLine("| 4. 아이템 판매 |");
+            Console.Write("\n원하는 기능을 선택하세요 : ");
         }
 
-        public static void ShowShopList()
+        public static void ShowShopList(ItemCategory category)
         {
-            int i = 1;
-            Console.WriteLine("\n| ----- Buy Items ----- |");
-            Console.WriteLine("| 1. \"Armors\" |");
-            foreach (Armor armor in ItemLists.Armors) { Console.WriteLine($"{i++}. {armor}"); }
-            i = 1;
-            Console.WriteLine("| 2. \"Weapons\" |");
-            foreach (Weapon weapon in ItemLists.Weapons) { Console.WriteLine($"{i++}. {weapon}"); }
-            i = 1;
-            Console.WriteLine("| 3. \"Potions\" |");
-            foreach (Consumables potion in ItemLists.Consumables) { Console.WriteLine($"{i++}. {potion}"); }
-            Console.WriteLine("| --------------------- |");
-            Console.Write("\nWhat do you want to buy? ( Type [ Category,Index ] ) : ");
+            Console.WriteLine("\n| ----- 아이템 구매 ----- |");
+            switch (category)
+            {
+                case ItemCategory.Armor:
+                    Console.WriteLine("| \"방어구\" |");
+                    int i = 1;
+                    foreach (Armor armor in ItemLists.Armors) { Console.WriteLine($"{i++}. {armor}"); }
+                    break;
+                case ItemCategory.Weapon:
+                    Console.WriteLine("| \"무기\" |");
+                    i = 1;
+                    foreach (Weapon weapon in ItemLists.Weapons) { Console.WriteLine($"{i++}. {weapon}"); }
+                    break;
+                case ItemCategory.Consumable:
+                    Console.WriteLine("| \"포션\" |");
+                    i = 1;
+                    foreach (Consumables potion in ItemLists.Consumables) { Console.WriteLine($"{i++}. {potion}"); }
+                    break;
+            }
+            Console.Write("\n구매할 상품 번호 입력 (취소하려면 0을 입력하세요) : ");
         }
 
         public static void ShowItemList(Character character)
         {
+            Console.WriteLine("\n| ----- 아이템 판매 ----- |");
+            Console.WriteLine("| 1. \"방어구\" |");
             int i = 1;
-            Console.WriteLine("\n| ----- Sell Items ----- |");
-            Console.WriteLine("| 1. \"Armors\" |");
             foreach (Armor armor in character.Armors) { Console.WriteLine($"{i++}. {armor}"); }
-            Console.WriteLine("| 2. \"Weapons\" |");
+            Console.WriteLine("| 2. \"무기\" |");
             i = 1;
             foreach (Weapon weapon in character.Weapons) { Console.WriteLine($"{i++}. {weapon}"); }
-            Console.WriteLine("| 3. \"Potions\" |");
+            Console.WriteLine("| 3. \"포션\" |");
             i = 1;
             foreach (Consumables potion in character.Consumables) { Console.WriteLine($"{i++}. {potion}"); }
+            Console.WriteLine("| 4. \"잡동사니\" |");
+            foreach(ImportantItem item in character.ImportantItems) { Console.WriteLine($"{i++}. {item}"); }
             Console.WriteLine("| ---------------------- |");
-            Console.Write("\nWhat do you want to sell? ( Type [ Category,Index ] ) : ");
+            Console.Write("\n무엇을 판매하겠습니까? ( Type [ Category,Index ], 취소하려면 exit을 입력하세요) : ");
         }
 
         public static void ShowSkillList(Character character)
         {
-            Console.WriteLine("\n| ----- Skills ----- |");
-            Console.WriteLine("| \"Active Skills\" |");
-            var activeSkills = from skill in character.Skills
-                               where skill.GetType().Equals(typeof(ActiveSkill))
-                               select skill;
-            foreach (ActiveSkill skill in activeSkills) Console.WriteLine($"| {skill.ToString()} |");
-            Console.WriteLine("| \"Buff Skills\" |");
-            var buffSkills = from skill in character.Skills
-                             where skill.GetType().Equals(typeof(BuffSkill))
-                             select skill;
-            foreach (BuffSkill skill in buffSkills) Console.WriteLine($"| {skill.ToString()} |");
-            Console.WriteLine("| ------------------ |");
+            int i = 1;
+            Console.WriteLine("\n| \"Skills\" |");
+            foreach (Skill skill in character.Skills) Console.WriteLine($"| {i++}. {skill.ToString()} |");
 
-            Console.Write("\nChoose Skill : ");
+            Console.Write("\n원하는 스킬을 고르세요 (취소하려면 0을 입력하세요) : ");
         }
 
         public static void ShowMonsterList(SpawnManager spawnManager)
         {
             Console.WriteLine("\n| ----- Battle ----- |");
-            Console.WriteLine("| \"Monsters\" |");
+            Console.WriteLine("| \"몬스터\" |");
             int i = 1;
             foreach (Monster monster in spawnManager.spawnedMonsters)
-                Console.WriteLine($"| {i++}. {monster.Name} | Health : {monster.Health} |");
+                Console.WriteLine($"| {i++}. {monster.Name} | HP : {monster.Health} |");
             Console.WriteLine("| ------------------ |");
-            Console.Write("\nChoose Monster to Attack : ");
+            Console.Write("\n공격할 몬스터를 선택하세요 (취소하려면 0을 입력하세요) : ");
         }
 
         public static void CabinUI()
         {
             Console.WriteLine("| ----- Welcome to Alby's Cabin! ----- |");
             foreach (string line in Miscs.Alby) Console.WriteLine(line);
-            Console.WriteLine("\n| Room Options |");
-            Console.WriteLine("| 1. Back |");
-            Console.WriteLine("| 2. Normal Room (Heals 50% of your Max Health, 20G) |");
-            Console.WriteLine("| 3. Comfy Room (Heals 75% of your Max Health, 40G) |");
-            Console.WriteLine("| 4. Emperror Room (Heals 100% of your Max Health, 60G)");
+            Console.WriteLine("\n| 1. 뒤로가기 |");
+            Console.WriteLine("| 2. 스탠다드 룸 (최대 체력 25% 회복, 40G) |");
+            Console.WriteLine("| 3. 디럭스 룸 (최대 체력 50% 회복, 60G) |");
+            Console.WriteLine("| 4. 스위트 룸 (최대 체력 75% 회복, 80G)");
             Console.WriteLine("| ------------------------------------ |");
-            Console.Write("\nChoose Room Option : ");
+            Console.Write("\n룸 옵션을 선택하세요 : ");
         }
 
         public static void QuestUI()
         {
             Console.WriteLine("| ----- Welcome to Adventurers' Guild ----- |");
-            Console.WriteLine("\n| Actions |");
-            Console.WriteLine("| 1. Back |");
-            Console.WriteLine("| 2. Contract Quest |");
-            Console.WriteLine("| 3. Complete Quest |");
-            Console.WriteLine("| 4. Show Contractable Quests |");
-            Console.WriteLine("| 5. Show Contracted Quests |");
-            Console.WriteLine("| 6. Show Completed Quests |");
+            Console.WriteLine("\n| 1. 뒤로가기 |");
+            Console.WriteLine("| 2. Quest 수주 |");
+            Console.WriteLine("| 3. Quest 완료 |");
+            Console.WriteLine("| 4. 수주 가능한 Quest 목록 |");
+            Console.WriteLine("| 5. 수주한 Quest 목록 |");
+            Console.WriteLine("| 6. 완료한 Quest 목록 |");
             Console.WriteLine("| ------------------------------------------ |");
-            Console.Write("\nChoose Action : ");
+            Console.Write("\n원하는 기능을 선택하세요 : ");
         }
 
         public static void QuestUI_Contract()
         {
             var questList = QuestManager.GetContractableQuests();
-            Console.WriteLine("\n| ----- Contractable Quests ----- |");
-            if (questList == null) { Console.WriteLine("| There is no Contractable Quests |"); return; }
+            Console.WriteLine("\n| ----- 수주 가능한 Quest 목록 ----- |");
+            if (questList == null) { Console.WriteLine("| 수주 가능한 Quest가 없습니다! |"); return; }
 
             foreach (var quest in questList) Console.WriteLine($"{quest.ToString()}");
-            Console.Write("\nSelect Quest: ");
+            Console.Write("\nQuest를 선택하세요 : ");
         }
 
         public static void QuestUI_Complete()
         {
             var questList = QuestManager.GetCompletableQuests();
-            Console.WriteLine("\n| ----- Completable Quests ----- |");
-            if (questList == null) { Console.WriteLine("| There is no Completable Quests |"); return; }
+            Console.WriteLine("\n| ----- 완료 가능한 Quest 목록 ----- |");
+            if (questList == null) { Console.WriteLine("| 완료 가능한 Quest가 없습니다! |"); return; }
 
             foreach (var quest in questList) Console.WriteLine($"{quest.ToString()}");
-            Console.Write("\nSelect Quest: ");
+            Console.Write("\nQuest를 선택하세요: ");
         }
 
         public static void StatusUI(Character character)
         {
-            Console.WriteLine("| ----- \"Character Info.\" ----- |");
+            Console.WriteLine("| ----- \"캐릭터 정보\" ----- |");
             Console.WriteLine($"\n| \"Name\" : {character.Name} |");
             Console.WriteLine($"| \"Lv {character.Level:D2}\" |");
-            Console.WriteLine($"| \"Experience\" : {character.Exp:F2} |");
-            Console.WriteLine($"| \"Health\" : {character.Health:F2} |");
-            Console.WriteLine($"| \"Magic Point\" : {character.MagicPoint:F2} |");
-            Console.WriteLine($"| \"Currency\" : {character.Currency} |");
+            Console.WriteLine($"| \"Exp\" : {character.Exp:F2} |");
+            Console.WriteLine($"| \"HP\" : {character.Health:F2} |");
+            Console.WriteLine($"| \"MP\" : {character.MagicPoint:F2} |");
+            Console.WriteLine($"| \"Gold\" : {character.Currency} |");
 
-            Console.WriteLine("\n| ----- \"Status\" ----- |");
-            Console.WriteLine($"| \"Attack\" : {character.AttackStat.Attack} |");
-            Console.WriteLine($"| \"Range Attack\" : {character.AttackStat.RangeAttack} |");
-            Console.WriteLine($"| \"Magic Attack\" : {character.AttackStat.MagicAttack} |");
-            Console.WriteLine($"| \"Defence\" : {character.DefendStat.Defend} |");
-            Console.WriteLine($"| \"Range Defence\" : {character.DefendStat.RangeDefend} |");
-            Console.WriteLine($"| \"Magic Defence\" : {character.DefendStat.MagicDefend} |");
+            Console.WriteLine("\n| ----- \"캐릭터 상세\" ----- |");
+            Console.WriteLine($"| \"Atk.\" : {character.AttackStat.Attack:F2} |");
+            Console.WriteLine($"| \"Range Atk.\" : {character.AttackStat.RangeAttack:F2} |");
+            Console.WriteLine($"| \"Magic Atk.\" : {character.AttackStat.MagicAttack:F2} |");
+            Console.WriteLine($"| \"Def.\" : {character.DefendStat.Defend:F2} |");
+            Console.WriteLine($"| \"Range Def.\" : {character.DefendStat.RangeDefend:F2} |");
+            Console.WriteLine($"| \"Magic Def.\" : {character.DefendStat.MagicDefend:F2} |");
 
-            Console.WriteLine("\n| ----- \"Armors\" ----- |");
+            Console.WriteLine("\n| ----- \"방어구\" ----- |");
             foreach (Armor armor in character.Armors) { Console.WriteLine($"| {armor} |"); }
-            Console.WriteLine("| ----- \"Weapons\" ----- |");
+            Console.WriteLine("| ----- \"무기\" ----- |");
             foreach (Weapon weapon in character.Weapons) { Console.WriteLine($"| {weapon} |"); }
-            Console.WriteLine("| ----- \"Potions\" ----- |");
+            Console.WriteLine("| ----- \"포션\" ----- |");
             foreach (Consumables consumable in character.Consumables) { Console.WriteLine($"| {consumable} |"); }
+            Console.WriteLine("| ----- \"잡동사니\" ----- |");
+            foreach (ImportantItem item in character.ImportantItems) { Console.WriteLine($"| {item} |"); }
             Console.WriteLine("\n| Press any key to continue... |");
             Console.ReadKey();
         }
@@ -212,7 +224,7 @@ namespace TextRPG
         public static void KillCountUI(int KillCount, int Quota)
         {
             Console.WriteLine("\n| --------------------------------------------- |");
-            Console.WriteLine($"| Killed Monsters : {KillCount}, Quota : {Quota} |");
+            Console.WriteLine($"| 사냥한 몬스터 : {KillCount}, 목표량 : {Quota} |");
             Console.WriteLine("| ----------------------------------------------- |");
         }
 
@@ -235,7 +247,7 @@ namespace TextRPG
             Console.ResetColor();
             Console.WriteLine("| ---------------------------------- |");
 
-            Console.WriteLine($"\n| Warning! : Encountered {sb} |");
+            Console.WriteLine($"\n| Warning! : 포악한 {sb} 을 조우했다! |");
             Console.WriteLine("Press any key to continue...");
             Console.ReadKey();
         }
@@ -243,20 +255,29 @@ namespace TextRPG
         public static void NoMonsterFoundUI()
         {
             int ind = new Random().Next(Miscs.Quotes.Length);
-            Console.WriteLine($"\n| Nothing Found, {Miscs.Quotes[ind]}");
+            Console.WriteLine($"\n| 아무 일도 없었다..., {Miscs.Quotes[ind]}");
             Console.WriteLine("Press any key to continue...");
             Console.ReadKey();
         }
 
-        public static void GameOverUI()
+        public static void GameOverUI(Character character)
         {
             Console.WriteLine();
             Console.ForegroundColor = ConsoleColor.Red;
             foreach (string line in Miscs.GameOver) Console.WriteLine(line);
             Console.ResetColor();
-
-            Console.WriteLine("\nPress any key to revive(Loses 100G)...");
-            Console.ReadKey();
+            
+            Console.WriteLine($"\nGold : {character.Currency}");
+            if(character.Currency >= 100)
+            {
+                Console.WriteLine("100G를 지불하면 부활할 수 있습니다...");
+                Console.Write("부활하겠습니까? (Y/N) : ");
+            }
+            else
+            {
+                Console.WriteLine("부활할 수 없습니다...");
+                Console.WriteLine("메인 화면으로 돌아갑니다...");
+            }
         }
 
         
@@ -270,33 +291,51 @@ namespace TextRPG
             {
                 Console.WriteLine($"| {i++}. {opt} |");
             }
-            Console.Write("\nChoose Action : ");
+            Console.Write("\n원하는 기능을 선택하세요 : ");
         }
 
         public static void SettingOptionUI()
         {
-            Console.WriteLine($"\n| ----- Options ----- |");
+            Console.WriteLine($"\n| ----- 옵션 ----- |");
             int i = 1;
             foreach (var opt in Enum.GetValues(typeof(SettingOptions)))
             {
                 Console.WriteLine($"| {i++}. {opt} |");
             }
-            Console.Write("\nChoose Action : ");
+            Console.Write("\n원하는 기능을 선택하세요 : ");
+        }
+
+        public static void DungeonUI(Character character, GameManager gameManager, int[] pathOptions)
+        {
+            Console.WriteLine($"\n| ----- 던전 Lv{gameManager.GroundLevel} ----- |");
+            Console.WriteLine($"| 현재 시간 : {GameManager.GameTime} |");
+            Console.WriteLine($"| HP : {character.Health} | MP : {character.MagicPoint} |");
+            Console.WriteLine($"| Gold : {character.Currency} |");
+            Console.WriteLine();
+            for(int i = 1; i <= pathOptions.Length; i++)
+            {
+                Console.WriteLine($"| {i}. {(DungeonOptions)pathOptions[i - 1]} |");
+            }
+            for (int i = 4, j = 0; i < Enum.GetValues(typeof(DungeonOptions)).Length; i++, j++)
+            {
+                Console.WriteLine($"| {pathOptions.Length + j + 1}. {(DungeonOptions)(4 + j)} |");
+            }
+            Console.Write("\n원하는 기능을 선택하세요 : ");
         }
 
         public static void BaseUI(Character character, string headLine, Type type)
         {
             Console.WriteLine($"\n| ----- {headLine} ----- |");
-            Console.WriteLine($"| Current Time : {GameManager.GameTime} |");
-            Console.WriteLine($"| Health : {character.Health} | MagicPoint : {character.MagicPoint} |");
-            Console.WriteLine($"| Currency : {character.Currency} |");
+            Console.WriteLine($"| 현재 시간 : {GameManager.GameTime} |");
+            Console.WriteLine($"| HP : {character.Health} | MP : {character.MagicPoint} |");
+            Console.WriteLine($"| Gold : {character.Currency} |");
             Console.WriteLine();
             int i = 1;
             foreach (var opt in Enum.GetValues(type))
             {
                 Console.WriteLine($"| {i++}. {opt} |");
             }
-            Console.Write("\nChoose Action : ");
+            Console.Write("\n원하는 기능을 선택하세요 : ");
         }
     }
 
@@ -1047,13 +1086,17 @@ namespace TextRPG
     class SpawnManager
     {
         // Property
-        public List<Monster> spawnedMonsters = new();
-        public int KilledMonsterCount { get; set; } = 0;
+        public LinkedList<Monster> spawnedMonsters = new();
 
         // Constructor
         public SpawnManager() { }
 
         // Public Methods
+        /// <summary>
+        /// Spawn monsters
+        /// </summary>
+        /// <param name="character"></param>
+        /// <param name="groundLevel"></param>
         public void SpawnMonsters(Character character, int groundLevel)
         {
             int count = new Random().Next(1, 5);
@@ -1081,12 +1124,26 @@ namespace TextRPG
                 }
             }
         }
+
+        /// <summary>
+        /// Get all spawned monsters
+        /// </summary>
+        /// <returns>Returns spawned monster count</returns>
         public int GetMonsterCount() { return spawnedMonsters.Count; }
-        public void ResetKillCount() { KilledMonsterCount = 0; }
+
+        /// <summary>
+        /// Remove all spawned monsters
+        /// </summary>
         public void RemoveAllMonsters() { spawnedMonsters.Clear(); }
 
         // Private Methods
-        // Set monster
+        /// <summary>
+        /// Set monster's level and stats
+        /// </summary>
+        /// <param name="monster"></param>
+        /// <param name="character"></param>
+        /// <param name="groundLevel"></param>
+        /// <param name="currency"></param>
         private void SetMonster(Monster monster, Character character, int groundLevel,  int currency)
         {
             monster.Level = groundLevel;
@@ -1103,12 +1160,24 @@ namespace TextRPG
                 foreach(var quest in quests) { quest.OnProgress(); }
             };
         }
-        private void AddMonster(Monster monster) { spawnedMonsters.Add(monster); }
+
+        /// <summary>
+        /// Add monster to the linked list
+        /// </summary>
+        /// <param name="monster"></param>
+        private void AddMonster(Monster monster) { spawnedMonsters.AddLast(monster); }
+
+        /// <summary>
+        /// Remove monster from the linked list
+        /// </summary>
+        /// <param name="character"></param>
+        /// <param name="monster"></param>
+        /// <param name="currency"></param>
         private void RemoveMonster(Character character, Monster monster, int currency)
         {
             Console.WriteLine($"| {monster.Name} is dead! |");
             Console.WriteLine($"| {character.Name} gets {currency}G |");
-            KilledMonsterCount++;
+            GameManager.KilledMonsterCount++;
             character.Currency += currency;
             character.OnEarnExp(monster.Exp);
 
@@ -1237,7 +1306,9 @@ namespace TextRPG
         // Static Field
         public static GameState GameState = GameState.MainMenu;
         public static GameTime GameTime = GameTime.Afternoon;
+        public static int KilledMonsterCount = 0;
         public static int CurrentTurn = 1;
+        public static int prevPath = 0;
         public static Queue<Consumables> Exposables = new();
 
         // Property
@@ -1249,6 +1320,7 @@ namespace TextRPG
         public GameManager(int groundLevel = 1) { GroundLevel = groundLevel; }
 
         // Methods
+        #region Game Mechanisms
         /// <summary>
         /// Job Selection UI will be displayed.
         /// This method will return true if the job selected successfully.
@@ -1262,31 +1334,135 @@ namespace TextRPG
             {
                 UIManager.JobSelectionUI();
                 if (!int.TryParse(Console.ReadLine(), out int opt)) { Console.WriteLine("| Invalid Input! |"); }
-                else { option = Math.Clamp(opt, 1, Enum.GetValues(typeof(Job)).Length); break; }
+                else { option = Math.Clamp(opt, 0, Enum.GetValues(typeof(Job)).Length); break; }
             }
+            
+            if (option <= 0) return;
 
             switch ((Job)(option - 1))
             {
                 case Job.Warrior:
-                    Console.WriteLine("| You selected Warrior! |");
-                    Console.Write("Type the name of your warrior : ");
+                    Console.WriteLine("| 전사를 선택하였습니다! |");
+                    Console.Write("전사의 이름을 작성해주세요 : ");
                     SelectedCharacter = new Warrior(new CharacterStat(Console.ReadLine(), 150, 50, 15, 1.6f, 1, new AttackStat(30f, 6f, 1f), new DefendStat(25, 15, 5)), 100, 0);
                     break;
                 case Job.Wizard:
-                    Console.WriteLine("| You selected Wizard! |");
-                    Console.Write("Type the name of your wizard : ");
-                    SelectedCharacter = new Wizard(new CharacterStat(Console.ReadLine(), 100, 65, 15, 1.6f, 1, new AttackStat(1f, 6f, 30f), new DefendStat(5, 10, 30)), 100, 0);
+                    Console.WriteLine("| 법사를 선택하였습니다! |");
+                    Console.Write("법사의 이름을 작성해주세요 : ");
+                    SelectedCharacter = new Wizard(new CharacterStat(Console.ReadLine(), 100, 80, 15, 1.6f, 1, new AttackStat(1f, 6f, 30f), new DefendStat(5, 10, 30)), 100, 0);
                     break;
                 case Job.Archer:
-                    Console.WriteLine("| You selected Archer! |");
-                    Console.Write("Type the name of your archer : ");
-                    SelectedCharacter = new Archer(new CharacterStat(Console.ReadLine(), 120, 80, 15, 1.6f, 1, new AttackStat(6f, 30f, 1f), new DefendStat(15, 25, 5)), 100, 0);
+                    Console.WriteLine("| 궁수를 선택하였습니다! |");
+                    Console.Write("궁수의 이름을 작성해주세요 : ");
+                    SelectedCharacter = new Archer(new CharacterStat(Console.ReadLine(), 120, 65, 15, 1.6f, 1, new AttackStat(6f, 30f, 1f), new DefendStat(15, 25, 5)), 100, 0);
                     break;
             }
 
             GiveBasicItems(SelectedCharacter);
             GiveBasicSkills(SelectedCharacter);
             SelectedCharacter.OnDeath += GameOver;
+
+            GameManager.GameState = GameState.Town;
+        }
+        
+        /// <summary>
+        /// Give basic items to the character.
+        /// </summary>
+        /// <param name="character"></param>
+        private void GiveBasicItems(Character character)
+        {
+            // LINQ
+            var basicHelmets = from armor in ItemLists.Armors
+                               where armor is Helmet && armor.Rarity == Rarity.Common
+                               select (Helmet)armor;
+            var basicChestArmors = from armor in ItemLists.Armors
+                                   where armor is ChestArmor && armor.Rarity == Rarity.Common
+                                   select (ChestArmor)armor;
+
+            var basicHealthPotions = from item in ItemLists.Consumables
+                                     where item is HealthPotion && item.Rarity == Rarity.Common
+                                     select (HealthPotion)item;
+            var basicMagicPotions = from item in ItemLists.Consumables
+                                    where item is MagicPotion && item.Rarity == Rarity.Common
+                                    select (MagicPotion)item;
+
+            if (basicHelmets.Count() > 0) { character.Armors.Add(new Helmet(basicHelmets.First())); }
+            if (basicChestArmors.Count() > 0) { character.Armors.Add(new ChestArmor(basicChestArmors.First())); }
+            if (basicHealthPotions.Count() > 0) { character.Consumables.Add(new HealthPotion(basicHealthPotions.First())); }
+            if (basicMagicPotions.Count() > 0) { character.Consumables.Add(new MagicPotion(basicMagicPotions.First())); }
+            
+            if (character is Warrior)
+            {
+                var basicSwords = from sword in ItemLists.Weapons
+                                  where sword is Sword && sword.Rarity == Rarity.Common
+                                  select (Sword)sword;
+                if (basicSwords.Count() > 0) { character.Weapons.Add(new Sword(basicSwords.First())); }
+            }
+            else if (character is Wizard)
+            {
+                var basicStaffs = from staff in ItemLists.Weapons
+                                  where staff is Staff && staff.Rarity == Rarity.Common
+                                  select (Staff)staff;
+                if (basicStaffs.Count() > 0) { character.Weapons.Add(new Staff(basicStaffs.First())); }
+            }
+            else
+            {
+                var basicBows = from bow in ItemLists.Weapons
+                                where bow is Bow && bow.Rarity == Rarity.Common
+                                select (Bow)bow;
+                if (basicBows.Count() > 0) { character.Weapons.Add(new Bow(basicBows.First())); }
+            }
+        }
+
+        /// <summary>
+        /// Give basic skills to the character.
+        /// </summary>
+        /// <param name="character"></param>
+        private void GiveBasicSkills(Character character)
+        {
+            // Active Skills
+            if (character is Warrior) 
+                character.Skills.Add(new ActiveSkill((ActiveSkill)SkillLists.ActiveSkills[0]));
+            else if(character is Archer) 
+                character.Skills.Add(new ActiveSkill((ActiveSkill)SkillLists.ActiveSkills[1]));
+            else character.Skills.Add(new ActiveSkill((ActiveSkill)SkillLists.ActiveSkills[2]));
+
+            // Buff Skills
+            character.Skills.Add(new BuffSkill((BuffSkill)SkillLists.BuffSkills[0]));
+        }
+        
+        /// <summary>
+        /// Game Over UI will be displayed.
+        /// </summary>
+        private void GameOver()
+        {
+            GameState = GameState.GameOver;
+            UIManager.GameOverUI(SelectedCharacter);
+
+            // Low currency -> Reset game and move to main menu
+            if (SelectedCharacter.Currency < 100) { ResetGame(); return; }
+
+            // Enough currency -> Give player option to revive
+            char key = char.ToLower(Console.ReadKey(true).KeyChar);
+            if (key.Equals('n')) { ResetGame(); return; }
+
+            // If player choose to revive, revive the character and move to town
+            SelectedCharacter.OnRevive();
+            GameState = GameState.Town;
+            GameTime = GameTime.Afternoon;
+        }
+ 
+        /// <summary>
+        /// Reset the game to initial state.
+        /// </summary>
+        private void ResetGame()
+        {
+            GameState = GameState.MainMenu;
+            GameTime = GameTime.Afternoon;
+
+            Exposables.Clear();
+            GroundLevel = 1;
+            Quota = 10;
         }
 
         /// <summary>
@@ -1303,6 +1479,7 @@ namespace TextRPG
 
                 consumable.OnDeBuffed(SelectedCharacter);
             }
+            Console.WriteLine("| 하루가 지나 모든 버프가 해제되었습니다... |");
         }
 
         /// <summary>
@@ -1310,12 +1487,15 @@ namespace TextRPG
         /// </summary>
         public void GoToNextLevel()
         {
-            Console.WriteLine("| Quota reached. Moving to next level! |");
+            Console.WriteLine("| 목표량을 달성하였습니다, 던전 레벨과 목표량이 올라갑니다! |");
             Console.WriteLine("| Press any key to continue... |");
             Console.ReadKey();
+            KilledMonsterCount = 0;
             Quota = 10 + (GroundLevel - 1) * 5;
         }
+        #endregion
 
+        #region Save & Load Functions
         /// <summary>
         /// Save the character and game data to JSON files.
         /// </summary>
@@ -1342,6 +1522,7 @@ namespace TextRPG
             {
                 GroundLevel = GroundLevel,
                 Quota = Quota,
+                KilledMonsterCount = KilledMonsterCount,
                 GameState = GameState,
                 GameTime = GameTime,
                 Exposables = Exposables.ToList()
@@ -1369,9 +1550,7 @@ namespace TextRPG
             string questJson = JsonSerializer.Serialize(QuestManager.GetQuests(), questOptions);
             File.WriteAllText("data/quest.json", questJson, new UTF8Encoding(true));
 
-            Console.WriteLine("| Game Saved Successfully! |");
-            Console.WriteLine("| Press any key to continue... |");
-            Console.ReadKey();
+            Console.WriteLine("| 게임이 성공적으로 저장되었습니다! |");
         }
 
         /// <summary>
@@ -1382,7 +1561,9 @@ namespace TextRPG
         {
             if (!File.Exists("data/character.json") || !File.Exists("data/game.json") || !File.Exists("data/quest.json"))
             {
-                Console.WriteLine("| No saved data found! |");
+                Console.WriteLine("| 저장된 세이브 데이터가 없습니다! |");
+                Console.Write("| Press any key to continue... |");
+                Console.ReadKey();
                 return;
             }
 
@@ -1424,76 +1605,7 @@ namespace TextRPG
             var quests = JsonSerializer.Deserialize<Quest[]>(questJson, questOptions) ?? throw new InvalidOperationException("Failed to load quest data.");
             QuestManager.SetQuests(quests);
 
-            Console.WriteLine("| Game Loaded Successfully! |");
-            Console.WriteLine("| Press any key to continue... |");
-            Console.ReadKey();
-        }
-
-        /// <summary>
-        /// Give basic items to the character.
-        /// </summary>
-        /// <param name="character"></param>
-        private void GiveBasicItems(Character character)
-        {
-            // LINQ
-            var basicHelmets = from armor in ItemLists.Armors
-                               where armor.GetType().Equals(typeof(Helmet)) && armor.Rarity == Rarity.Common
-                               select armor;
-            var basicChestArmors = from armor in ItemLists.Armors
-                                   where armor.GetType().Equals(typeof(ChestArmor)) && armor.Rarity == Rarity.Common
-                                   select armor;
-
-            var basicHealthPotions = from item in ItemLists.Consumables
-                                     where item.GetType().Equals(typeof(HealthPotion)) && item.Rarity == Rarity.Common
-                                     select item;
-            var basicMagicPotions = from item in ItemLists.Consumables
-                                    where item.GetType().Equals(typeof(MagicPotion)) && item.Rarity == Rarity.Common
-                                    select item;
-
-            if (basicHelmets.Count() > 0) { character.Armors.Add(new Helmet((Helmet)basicHelmets.First())); }
-            if (basicChestArmors.Count() > 0) { character.Armors.Add(new ChestArmor((ChestArmor)basicChestArmors.First())); }
-
-            if (character.GetType().Equals(typeof(Warrior)))
-            {
-                var basicSwords = from sword in ItemLists.Weapons
-                                  where sword.GetType().Equals(typeof(Sword)) && sword.Rarity == Rarity.Common
-                                  select sword;
-                if (basicSwords.Count() > 0) { character.Weapons.Add(new Sword((Sword)basicSwords.First())); }
-            }
-            else if (character.GetType().Equals(typeof(Wizard)))
-            {
-                var basicStaffs = from staff in ItemLists.Weapons
-                                  where staff.GetType().Equals(typeof(Staff)) && staff.Rarity == Rarity.Common
-                                  select staff;
-                if (basicStaffs.Count() > 0) { character.Weapons.Add(new Staff((Staff)basicStaffs.First())); }
-            }
-            else
-            {
-                var basicBows = from bow in ItemLists.Weapons
-                                where bow.GetType().Equals(typeof(Bow)) && bow.Rarity == Rarity.Common
-                                select bow;
-                if (basicBows.Count() > 0) { character.Weapons.Add(new Bow((Bow)basicBows.First())); }
-            }
-
-            if (basicHealthPotions.Count() > 0) { character.Consumables.Add(new HealthPotion((HealthPotion)basicHealthPotions.First())); }
-            if (basicMagicPotions.Count() > 0) { character.Consumables.Add(new MagicPotion((MagicPotion)basicMagicPotions.First())); }
-        }
-
-        /// <summary>
-        /// Give basic skills to the character.
-        /// </summary>
-        /// <param name="character"></param>
-        private void GiveBasicSkills(Character character)
-        {
-            // Active Skills
-            if (character.GetType().Equals(typeof(Warrior))) 
-                character.Skills.Add(new ActiveSkill((ActiveSkill)SkillLists.ActiveSkills[0]));
-            else if(character.GetType().Equals(typeof(Archer))) 
-                character.Skills.Add(new ActiveSkill((ActiveSkill)SkillLists.ActiveSkills[1]));
-            else character.Skills.Add(new ActiveSkill((ActiveSkill)SkillLists.ActiveSkills[2]));
-
-            // Buff Skills
-            character.Skills.Add(new BuffSkill((BuffSkill)SkillLists.BuffSkills[0]));
+            Console.WriteLine("| 게임을 성공적으로 불러왔습니다! |");
         }
 
         /// <summary>
@@ -1504,35 +1616,11 @@ namespace TextRPG
         {
             GroundLevel = gameData.GroundLevel;
             Quota = gameData.Quota;
+            KilledMonsterCount = gameData.KilledMonsterCount;
             GameState = gameData.GameState;
             GameTime = gameData.GameTime;
             Exposables = new Queue<Consumables>(gameData.Exposables);
         }
-
-        /// <summary>
-        /// Game Over UI will be displayed.
-        /// </summary>
-        private void GameOver()
-        {
-            UIManager.GameOverUI();
-            GameState = GameState.GameOver;
-
-            if (!SelectedCharacter.OnRevive()) { ResetGame(); return; }
-            GameState = GameState.Town;
-            GameTime = GameTime.Afternoon;
-        }
-
-        /// <summary>
-        /// Reset the game to initial state.
-        /// </summary>
-        private void ResetGame()
-        {
-            GameState = GameState.MainMenu;
-            GameTime = GameTime.Afternoon;
-
-            Exposables.Clear();
-            GroundLevel = 1;
-            Quota = 10;
-        }
+        #endregion
     }
 }

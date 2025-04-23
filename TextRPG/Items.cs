@@ -94,6 +94,11 @@ namespace TextRPG
             return new DefendStat(stat1.Defend - stat2.Defend, stat1.RangeDefend - stat2.RangeDefend, stat1.MagicDefend - stat2.MagicDefend);
         }
 
+        public static DefendStat operator *(DefendStat stat, float coef)
+        {
+            return new DefendStat(stat.Defend * coef, stat.RangeDefend * coef, stat.MagicDefend * coef);
+        }
+
         public override string ToString()
         {
             StringBuilder sb = new();
@@ -136,9 +141,9 @@ namespace TextRPG
                 if ((int)rarity > (int)Rarity.Common)
                 {
                     DefendStat newStat = new(
-                        defendStat.Defend + defendStat.Defend * ((int)rarity - (int)Rarity.Common) * 0.3f,
-                        defendStat.RangeDefend + defendStat.RangeDefend * ((int)rarity - (int)Rarity.Common) * 0.3f,
-                        defendStat.MagicDefend + defendStat.MagicDefend * ((int)rarity - (int)Rarity.Common) * 0.3f);
+                        defendStat.Defend + ((int)rarity >= (int)Rarity.Hero ? defendStat.Defend * ((int)rarity - (int)Rarity.Rare) * 0.05f : 0f),
+                        defendStat.RangeDefend + ((int)rarity >= (int)Rarity.Hero ? defendStat.RangeDefend * ((int)rarity - (int)Rarity.Rare) * 0.05f : 0f),
+                        defendStat.MagicDefend + ((int)rarity >= (int)Rarity.Hero ? defendStat.MagicDefend * ((int)rarity - (int)Rarity.Rare) * 0.05f : 0f));
                     this.defendStat = newStat;
                 }
                 else this.defendStat = defendStat;
@@ -182,7 +187,7 @@ namespace TextRPG
         {
             if (character.Currency < Price) { Console.WriteLine("| Not enough Money! |"); return; }
             character.Currency -= Price;
-            Console.WriteLine($"| {name} is purchased! |"); 
+            Console.WriteLine($"| {name}을 구매하였습니다! |"); 
         }
 
         /// <summary>
@@ -225,10 +230,10 @@ namespace TextRPG
         {
             StringBuilder sb = new();
             _ = IsEquipped == true ? sb.Append("[E]") : sb.Append("[ ]");
-            sb.Append($"{Name} | Defense : {DefendStat.Defend}, ")
-              .Append($"RangeDefense : {DefendStat.RangeDefend}, ")
-              .Append($"MagicDefense : {DefendStat.MagicDefend} | ")
-              .Append($"Price : {Price} | Rarity : {Rarity}");
+            sb.Append($"{Name} | Def. : {DefendStat.Defend:F2}, ")
+              .Append($"RDef. : {DefendStat.RangeDefend:F2}, ")
+              .Append($"MDef. : {DefendStat.MagicDefend:F2} | ")
+              .Append($"가격 : {Price} | {Rarity}");
             return sb.ToString();
         }
     }
@@ -467,9 +472,9 @@ namespace TextRPG
                 {
                     AttackStat newStat = new()
                     {
-                        Attack = attackStat.Attack + attackStat.Attack * ((int)rarity - (int)Rarity.Common) * 0.3f,
-                        RangeAttack = attackStat.RangeAttack + attackStat.RangeAttack * ((int)rarity - (int)Rarity.Common) * 0.3f,
-                        MagicAttack = attackStat.MagicAttack + attackStat.MagicAttack * ((int)rarity - (int)Rarity.Common) * 0.3f
+                        Attack = attackStat.Attack + ((int)rarity >= (int)Rarity.Hero ? attackStat.Attack * ((int)rarity - (int)Rarity.Rare) * 0.05f : 0f),
+                        RangeAttack = attackStat.RangeAttack + ((int)rarity >= (int)Rarity.Hero ? attackStat.RangeAttack * ((int)rarity - (int)Rarity.Rare) * 0.05f : 0f),
+                        MagicAttack = attackStat.MagicAttack + ((int)rarity >= (int)Rarity.Hero ? attackStat.MagicAttack * ((int)rarity - (int)Rarity.Rare) * 0.05f : 0f)   
                     };
                     this.attackStat = newStat;
                 }
@@ -546,21 +551,6 @@ namespace TextRPG
             character.Weapons.Remove(this);
             Console.WriteLine($"| Dropped {name}! |");
         }
-
-        /// <summary>
-        /// Describe the weapon
-        /// </summary>
-        /// <returns></returns>
-        public override string ToString()
-        {
-            StringBuilder sb = new();
-            _ = IsEquipped == true ? sb.Append("[E]") : sb.Append("[ ]");
-            sb.Append($"{Name} | Attack : {AttackStat.Attack}, ")
-              .Append($"RangeAttack : {AttackStat.RangeAttack}, ")
-              .Append($"MagicAttack : {AttackStat.MagicAttack} | ")
-              .Append($"Price : {Price} | Rarity : {Rarity}");
-            return sb.ToString();
-        }
     }
     /// <summary>
     /// Sword -> Close Range Attack Stat
@@ -599,6 +589,19 @@ namespace TextRPG
         {
             base.OnPicked(character);
             character.Weapons.Add(new Sword(this));
+        }
+
+        /// <summary>
+        /// Describe the sword
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            StringBuilder sb = new();
+            _ = IsEquipped == true ? sb.Append("[E]") : sb.Append("[ ]");
+            sb.Append($"{Name} | Atk. : {AttackStat.Attack:F2} | ")
+              .Append($"가격 : {Price} | {Rarity}");
+            return sb.ToString();
         }
     }
     /// <summary>
@@ -639,6 +642,19 @@ namespace TextRPG
             base.OnPicked(character);
             character.Weapons.Add(new Bow(this));
         }
+
+        /// <summary>
+        /// Describe the bow
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            StringBuilder sb = new();
+            _ = IsEquipped == true ? sb.Append("[E]") : sb.Append("[ ]");
+            sb.Append($"{Name} | Rng Atk. : {AttackStat.RangeAttack:F2} | ")
+              .Append($"가격 : {Price} | {Rarity}");
+            return sb.ToString();
+        }
     }
     /// <summary>
     /// Staff -> Magic Attack Stat
@@ -677,6 +693,19 @@ namespace TextRPG
         {
             base.OnPicked(character);
             character.Weapons.Add(new Staff(this));
+        }
+
+        /// <summary>
+        /// Describe the staff
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            StringBuilder sb = new();
+            _ = IsEquipped == true ? sb.Append("[E]") : sb.Append("[ ]");
+            sb.Append($"{Name} | Mag Atk. : {AttackStat.MagicAttack:F2} | ")
+              .Append($"가격 : {Price} | {Rarity}");
+            return sb.ToString();
         }
     }
     #endregion
@@ -826,7 +855,7 @@ namespace TextRPG
         public override string ToString()
         {
             StringBuilder sb = new();
-            sb.Append($"{Name} | Category : {ConsumableCategory} | Restore Health : {Coefficient} | Price : {Price} | Rarity : {Rarity}");
+            sb.Append($"{Name} | 체력 회복 : {Coefficient} | 가격 : {Price} | {Rarity}");
             return sb.ToString();
         }
     }
@@ -883,7 +912,7 @@ namespace TextRPG
         public override string ToString()
         {
             StringBuilder sb = new();
-            sb.Append($"{Name} | Category : {ConsumableCategory} | Restore Health : {Coefficient} | Price : {Price} | Rarity : {Rarity}");
+            sb.Append($"{Name} | 마력 회복 : {Coefficient} | 가격 : {Price} | {Rarity}");
             return sb.ToString();
         }
     }
@@ -903,7 +932,7 @@ namespace TextRPG
         public AttackBuffPotion(string name, float coefficient, int price, Rarity rarity = Rarity.Common) 
             : base(name, coefficient, price, ConsumableCategory.IncreaseAttack, rarity)
         {
-            attackStat = new AttackStat(2 + (int)Rarity * 4, 2 + (int)Rarity * 4, 2 + (int)Rarity * 4);
+            attackStat = new AttackStat(coefficient, coefficient, coefficient);
         }
         public AttackBuffPotion(AttackBuffPotion potion) : base(potion.Name, potion.Coefficient, potion.Price, potion.ConsumableCategory, potion.Rarity)
         {
@@ -914,7 +943,7 @@ namespace TextRPG
         public AttackBuffPotion(string name, float coefficient, int price, Rarity rarity, ConsumableCategory consumableCategory)
             : base(name, coefficient, price, consumableCategory, rarity)
         {
-            attackStat = new AttackStat(2 + (int)Rarity * 4, 2 + (int)Rarity * 4, 2 + (int)Rarity * 4);
+            attackStat = new AttackStat(coefficient, coefficient, coefficient);
         }
 
         // Methods
@@ -963,11 +992,9 @@ namespace TextRPG
         public override string ToString()
         {
             StringBuilder sb = new();
-            sb.Append($"{Name} | Category : {ConsumableCategory} | ")
-              .Append($"Attack Buff : {AttackStat.Attack} | ")
-              .Append($"Range Attack Buff : {AttackStat.RangeAttack} | ")
-              .Append($"Magic Attack Buff : {AttackStat.MagicAttack} | ")
-              .Append($"Price : {Price} | Rarity : {Rarity}");
+            sb.Append($"{Name} | ")
+              .Append($"공격력 증가 : {AttackStat.Attack} | ")
+              .Append($"가격 : {Price} | {Rarity}");
             return sb.ToString();
         }
     }
@@ -987,7 +1014,7 @@ namespace TextRPG
         public DefendBuffPotion(string name, float coefficient, int price, Rarity rarity = Rarity.Common)
             : base(name, coefficient, price, ConsumableCategory.IncreaseDefence, rarity)
         {
-            defendStat = new DefendStat(1.2f + (int)Rarity * 3, 1.2f + (int)Rarity * 3, 1.2f + (int)Rarity * 3);
+            defendStat = new DefendStat(coefficient, coefficient, coefficient);
         }
         public DefendBuffPotion(DefendBuffPotion potion) : base(potion.Name, potion.Coefficient, potion.Price, potion.ConsumableCategory, potion.Rarity)
         {
@@ -998,7 +1025,7 @@ namespace TextRPG
         public DefendBuffPotion(string name, float coefficient, int price, Rarity rarity, ConsumableCategory consumableCategory)
             : base(name, coefficient, price, consumableCategory, rarity)
         {
-            defendStat = new DefendStat(1.2f + (int)Rarity * 3, 1.2f + (int)Rarity * 3, 1.2f + (int)Rarity * 3);
+            defendStat = new DefendStat(coefficient, coefficient, coefficient);
         }
 
         // Methods
@@ -1047,11 +1074,9 @@ namespace TextRPG
         public override string ToString()
         {
             StringBuilder sb = new();
-            sb.Append($"{Name} | Category : {ConsumableCategory} | ")
-              .Append($"Defence Buff : {DefendStat.Defend} | ")
-              .Append($"Range Defence Buff : {DefendStat.RangeDefend} | ")
-              .Append($"Magic Defence Buff : {DefendStat.MagicDefend} | ")
-              .Append($"Price : {Price} | Rarity : {Rarity}");
+            sb.Append($"{Name} | ")
+              .Append($"방어력 증가 : {DefendStat.Defend} | ")
+              .Append($"가격 : {Price} | {Rarity}");
             return sb.ToString();
         }
     }
@@ -1072,8 +1097,8 @@ namespace TextRPG
         public AllBuffPotion(string name, float coefficient, int price, Rarity rarity = Rarity.Common) 
             : base(name, coefficient, price, ConsumableCategory.IncreaseAllStat, rarity)
         {
-            attackStat = new AttackStat(2 + (int)Rarity * 4, 2 + (int)Rarity * 4, 2 + (int)Rarity * 4);
-            defendStat = new DefendStat(1.2f + (int)Rarity * 3, 1.2f + (int)Rarity * 3, 1.2f + (int)Rarity * 3);
+            attackStat = new AttackStat(coefficient, coefficient, coefficient);
+            defendStat = new DefendStat(coefficient, coefficient, coefficient);
         }
         public AllBuffPotion(AllBuffPotion potion) : base(potion.Name, potion.Coefficient, potion.Price, potion.ConsumableCategory, potion.Rarity)
         {
@@ -1085,8 +1110,8 @@ namespace TextRPG
         public AllBuffPotion(string name, float coefficient, int price, Rarity rarity, ConsumableCategory consumableCategory)
             : base(name, coefficient, price, consumableCategory, rarity)
         {
-            attackStat = new AttackStat(2 + (int)Rarity * 4, 2 + (int)Rarity * 4, 2 + (int)Rarity * 4);
-            defendStat = new DefendStat(1.2f + (int)Rarity * 3, 1.2f + (int)Rarity * 3, 1.2f + (int)Rarity * 3);
+            attackStat = new AttackStat(coefficient, coefficient, coefficient);
+            defendStat = new DefendStat(coefficient, coefficient, coefficient);
         }
 
         // Methods
@@ -1137,10 +1162,9 @@ namespace TextRPG
         public override string ToString()
         {
             StringBuilder sb = new();
-            sb.Append($"{Name} | Category : {ConsumableCategory} | ")
-              .Append($"All Attack Stat. Buff : {AttackStat.Attack} | ")
-              .Append($"All Defence Stat. Buff : {DefendStat.Defend} | ")
-              .Append($"Price : {Price} | Rarity : {Rarity}");
+            sb.Append($"{Name} | ")
+              .Append($"모든 스텟 증가 : {AttackStat.Attack:F2} | ")
+              .Append($"가격 : {Price}  | {Rarity}");
             return sb.ToString();
         }
     }
@@ -1239,42 +1263,74 @@ namespace TextRPG
     static class ItemLists
     {
         public static readonly Armor[] Armors = {
-            new Helmet("Steel Helmet", new DefendStat(3.1f, 2.4f, 1.2f), 15, Rarity.Common),
-            new ChestArmor("Steel ChestArmor", new DefendStat(5.1f, 4.2f, 3.3f), 30, Rarity.Common),
-            new LegArmor("Steel LegArmor", new DefendStat(1.5f, 1.3f, 0f), 8, Rarity.Common),
-            new FootArmor("Steel FootArmor", new DefendStat(0.5f, 0.3f, 0.1f), 4, Rarity.Common),
-            new Gauntlet("Steel Gauntlet", new DefendStat(1.5f, 1.3f, 0f), 8, Rarity.Common),
+            new Helmet("사슬 헬멧", new DefendStat(3.1f, 2.4f, 1.2f), 15, Rarity.Common),
+            new ChestArmor("사슬 갑옷상의", new DefendStat(5.1f, 4.2f, 3.3f), 30, Rarity.Common),
+            new LegArmor("사슬 갑옷하의", new DefendStat(1.5f, 1.3f, 0f), 8, Rarity.Common),
+            new FootArmor("사슬 장화", new DefendStat(0.5f, 0.3f, 0.1f), 4, Rarity.Common),
+            new Gauntlet("사슬 건틀렛", new DefendStat(1.5f, 1.3f, 0f), 8, Rarity.Common),
+            new Helmet("철제 헬멧", new DefendStat(5.1f, 4.2f, 3.3f), 50, Rarity.Exclusive),
+            new ChestArmor("철제 갑옷상의", new DefendStat(7.1f, 6.2f, 5.3f), 80, Rarity.Exclusive),
+            new LegArmor("철제 갑옷하의", new DefendStat(3.5f, 3.3f, 1.2f), 40, Rarity.Exclusive),
+            new FootArmor("철제 장화", new DefendStat(1.5f, 1.3f, 0.6f), 30, Rarity.Exclusive),
+            new Gauntlet("철제 건틀렛", new DefendStat(3.5f, 3.3f, 1f), 40, Rarity.Exclusive),
+            new Helmet("티타늄 헬멧", new DefendStat(7.1f, 6.2f, 5.3f), 120, Rarity.Rare),
+            new ChestArmor("티타늄 갑옷상의", new DefendStat(9.1f, 8.2f, 7.3f), 180, Rarity.Rare),
+            new LegArmor("티타늄 갑옷하의", new DefendStat(5.5f, 5.3f, 3.2f), 100, Rarity.Rare),
+            new FootArmor("티타늄 장화", new DefendStat(3.5f, 3.3f, 1.6f), 80, Rarity.Rare),
+            new Gauntlet("티타늄 건틀렛", new DefendStat(5.5f, 5.3f, 1.2f), 100, Rarity.Rare),
+            new Helmet("다이아몬드 헬멧", new DefendStat(10.1f, 9.2f, 8.3f), 260, Rarity.Hero),
+            new ChestArmor("다이아몬드 갑옷상의", new DefendStat(12.1f, 11.2f, 10.3f), 480, Rarity.Hero),
+            new LegArmor("다이아몬드 갑옷하의", new DefendStat(8.5f, 8.3f, 6.2f), 220, Rarity.Hero),
+            new FootArmor("다이아몬드 장화", new DefendStat(6.5f, 6.3f, 4.6f), 160, Rarity.Hero),
+            new Gauntlet("다이아몬드 건틀렛", new DefendStat(10.5f, 8.3f, 2.2f), 220, Rarity.Hero),
+            new Helmet("\"던\"의 헬멧", new DefendStat(20.1f, 19.2f, 18.3f), 1000, Rarity.Legend),
+            new ChestArmor("\"던\"의 갑옷상의", new DefendStat(22.1f, 21.2f, 20.3f), 1500, Rarity.Legend),
+            new LegArmor("\"던\"의 갑옷하의", new DefendStat(18.5f, 18.3f, 16.2f), 650, Rarity.Legend),
+            new FootArmor("\"던\"의 장화", new DefendStat(16.5f, 16.3f, 14.6f), 500, Rarity.Legend),
+            new Gauntlet("\"던\"의 건틀렛", new DefendStat(18.5f, 18.3f, 12.2f), 650, Rarity.Legend),
         };
 
         public static readonly Weapon[] Weapons = {
-            new Sword("Steel Sword", new AttackStat(10f, 0f, 0f), 20, Rarity.Common),
-            new Bow("Wooden Bow", new AttackStat(0f, 10f, 0f), 20, Rarity.Common),
-            new Staff("Steel Staff", new AttackStat(0f,0f,10f), 20, Rarity.Common),
+            new Sword("목검", new AttackStat(7f, 0f, 0f), 10, Rarity.Common),
+            new Bow("새총", new AttackStat(0f, 7f, 0f), 10, Rarity.Common),
+            new Staff("나무 스태프", new AttackStat(0f, 0f, 7f), 10, Rarity.Common),
+            new Sword("철제 검", new AttackStat(12.5f, 0f, 0f), 120, Rarity.Exclusive),
+            new Bow("사냥꾼의 활", new AttackStat(0f, 12.5f, 0f), 120, Rarity.Exclusive),
+            new Staff("고목나무 스태프", new AttackStat(0f, 0f, 12.5f), 120, Rarity.Exclusive),
+            new Sword("티타늄 검", new AttackStat(17.5f, 0f, 0f), 250, Rarity.Rare),
+            new Bow("각궁", new AttackStat(0f, 17.5f, 0f), 250, Rarity.Rare),
+            new Staff("버드나무 스태프", new AttackStat(0f, 0f, 17.5f), 250, Rarity.Rare),
+            new Sword("다이아몬드 검", new AttackStat(25f, 0f, 0f), 500, Rarity.Hero),
+            new Bow("신궁", new AttackStat(0f, 25f, 0f), 500, Rarity.Hero),
+            new Staff("딱총나무 스태프", new AttackStat(0f, 0f, 25f), 500, Rarity.Hero),
+            new Sword("\"던\"의 검", new AttackStat(60f, 0f, 0f), 1000, Rarity.Legend),
+            new Bow("\"던\"의 활", new AttackStat(0f, 60f, 0f), 1000, Rarity.Legend),
+            new Staff("\"던\"의 스태프", new AttackStat(0f, 0f, 60f), 1000, Rarity.Legend),
         };
 
         public static readonly Consumables[] Consumables =
         {
-            new HealthPotion("Small Health Potion", 20, 5, Rarity.Common),
-            new HealthPotion("Medium Health Potion", 40, 10, Rarity.Exclusive),
-            new HealthPotion("Large Health Potion", 60, 20, Rarity.Rare),
-            new MagicPotion("Small Magic Potion", 20, 5, Rarity.Common),
-            new MagicPotion("Medium Magic Potion", 40, 10, Rarity.Exclusive),
-            new MagicPotion("Large Magic Potion", 60, 20, Rarity.Rare),
-            new AttackBuffPotion("Common Attack Potion", 5, 10, Rarity.Common),
-            new AttackBuffPotion("Exclusive Attack Potion", 10, 30, Rarity.Exclusive),
-            new AttackBuffPotion("Rare Attack Potion", 15, 50, Rarity.Rare),
-            new DefendBuffPotion("Common Defend Potion", 5, 10, Rarity.Common),
-            new DefendBuffPotion("Exclusive Defend Potion", 10, 30, Rarity.Exclusive),
-            new DefendBuffPotion("Rare Defend Potion", 15, 50, Rarity.Rare),
-            new AllBuffPotion("Rare Universal Potion", 10, 150, Rarity.Rare),
-            new AllBuffPotion("Hero Universal Potion", 30, 350, Rarity.Hero),
-            new AllBuffPotion("Legendary Universal Potion", 100, 1000, Rarity.Legend),
+            new HealthPotion("소형 HP 포션", 20, 15, Rarity.Common),
+            new HealthPotion("중형 HP 포션", 50, 80, Rarity.Exclusive),
+            new HealthPotion("대형 HP 포션", 100, 150, Rarity.Rare),
+            new MagicPotion("소형 MP 포션", 15, 30, Rarity.Common),
+            new MagicPotion("중형 MP 포션", 60, 130, Rarity.Exclusive),
+            new MagicPotion("대형 MP 포션", 120, 260, Rarity.Rare),
+            new AttackBuffPotion("하급 공격력 증가 포션", 5, 10, Rarity.Common),
+            new AttackBuffPotion("중급 공격력 증가 포션", 10, 30, Rarity.Exclusive),
+            new AttackBuffPotion("상급 공격력 증가 포션", 15, 50, Rarity.Rare),
+            new DefendBuffPotion("하급 방어력 증가 포션", 5, 10, Rarity.Common),
+            new DefendBuffPotion("중급 방어력 증가 포션", 10, 30, Rarity.Exclusive),
+            new DefendBuffPotion("상급 방어력 증가 포션", 15, 50, Rarity.Rare),
+            new AllBuffPotion("중급 모든 스텟 증가 포션", 10, 150, Rarity.Rare),
+            new AllBuffPotion("상급 모든 스텟 증가 포션", 30, 350, Rarity.Hero),
+            new AllBuffPotion("최상급 모든 스텟 증가 포션", 100, 1000, Rarity.Legend),
         };
 
         public static readonly ImportantItem[] ImportantItems =
         {
-            new GoblinEar("Goblin Ear", 10, Rarity.Common),
-            new GoblinEye("Goblin Eye", 10, Rarity.Common),
+            new GoblinEar("고블린의 찢어진 귀", 10, Rarity.Common),
+            new GoblinEye("고블린의 사슬어린 눈", 10, Rarity.Common),
         };
     }
 }
