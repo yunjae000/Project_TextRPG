@@ -1,3 +1,5 @@
+using System.Reflection.Metadata.Ecma335;
+
 namespace TextRPG
 {
     class InGame
@@ -5,12 +7,14 @@ namespace TextRPG
         // Field
         public GameManager GameManager { get; private set; }
         public SpawnManager SpawnManager { get; private set; }
+        public QuestManager QuestManager { get; private set; }
 
         // Constructor
-        public InGame(GameManager gameManager, SpawnManager spawnManager)
+        public InGame(GameManager gameManager, SpawnManager spawnManager, QuestManager questManager)
         {
             GameManager = gameManager;
-            SpawnManager = spawnManager;    
+            SpawnManager = spawnManager;
+            QuestManager = questManager;
         }
 
         /// <summary>
@@ -325,16 +329,90 @@ namespace TextRPG
                     GameManager.SelectedCharacter.Consumables[ind - 1].OnSold(GameManager.SelectedCharacter); break;
             }
         }
-        
-        // TODO: Implement Quest System
+      
         /// <summary>
         /// Gives interface what player can do in quest.
         /// </summary>
         private void InQuest()
         {
-
+            while (true)
+            {
+                UIManager.QuestUI();
+                if(!int.TryParse(Console.ReadLine(), out int opt)) { Console.WriteLine("| Invalid Input! |"); continue; }
+                else if (opt < 1 || opt > 6) { Console.WriteLine("| Invalid Input! |"); continue; }
+                
+                switch (Math.Clamp(opt, 1, 6))
+                {
+                    case 1: return;
+                    case 2: ContractQuest(); break;
+                    case 3: CompleteQuest(GameManager.SelectedCharacter); break;
+                    case 4: ShowQuests(QuestStatus.NotStarted); break;
+                    case 5: ShowQuests(QuestStatus.InProgress); break;
+                    case 6: ShowQuests(QuestStatus.Completed); break;
+                } 
+            }
         }
-        
+
+        /// <summary>
+        /// Contract Quest Mechanism
+        /// </summary>
+        private void ContractQuest()
+        {
+            ShowQuests(QuestStatus.NotStarted);
+            Console.Write("\nSelect Quest: ");
+            if (!int.TryParse(Console.ReadLine(), out int opt)) { Console.WriteLine("| Invalid Input! |"); return; }
+            else if (opt < 1 || opt > QuestManager.GetContractableQuests().Count()) { Console.WriteLine("| Invalid Input! |"); return; }
+
+            while (true)
+            {
+                Console.Write("Do you really want to contract this Quest? (Y/N) : ");
+                char key = Console.ReadKey(true).KeyChar;
+                if (key.Equals('N')) return;
+                else if (key.Equals('Y')) break;
+                else { Console.WriteLine("| Invalid Input! |"); }
+            }
+            
+            Quest quest = QuestManager.GetContractableQuests().ElementAt(opt - 1);
+            quest.OnContracted();
+        }
+
+        /// <summary>
+        /// Complete Quest Mechanism
+        /// </summary>
+        /// <param name="character"></param>
+        private void CompleteQuest(Character character)
+        {
+            ShowQuests(QuestStatus.Completable);
+            Console.Write("\nSelect Quest: ");
+            if (!int.TryParse(Console.ReadLine(), out int opt)) { Console.WriteLine("| Invalid Input! |"); return; }
+            else if (opt < 1 || opt > QuestManager.GetCompletableQuests().Count()) { Console.WriteLine("| Invalid Input! |"); return; }
+
+            while (true)
+            {
+                Console.Write("Do you really want to complete this Quest? (Y/N) : ");
+                char key = Console.ReadKey(true).KeyChar;
+                if (key.Equals('N')) return;
+                else if (key.Equals('Y')) break;
+                else { Console.WriteLine("| Invalid Input! |"); }
+            }
+
+            Quest quest = QuestManager.GetContractableQuests().ElementAt(opt - 1);
+            quest.OnCompleted(character);
+        }
+
+        /// <summary>
+        /// Shows quests by type in the game.
+        /// </summary>
+        private void ShowQuests(QuestStatus type)
+        {
+            if(type == QuestStatus.NotStarted) { foreach (var quest in QuestManager.GetContractableQuests()) Console.WriteLine($"{quest}"); }
+            else if(type == QuestStatus.InProgress) { foreach (var quest in QuestManager.GetContractedQuests()) Console.WriteLine($"{quest}"); }
+            else if(type == QuestStatus.Completable) { foreach (var quest in QuestManager.GetCompletableQuests()) Console.WriteLine($"{quest}"); }
+            else { foreach (var quest in QuestManager.GetCompletedQuests()) Console.WriteLine($"{quest}"); }
+            Console.WriteLine("\n| Press any key to continue... |");
+            Console.ReadKey(true);
+        }
+
         /// <summary>
         /// Gives interface what player can do in town(Shop, Rest, Dungeon, Inventory, Status, Option).
         /// </summary>
@@ -508,7 +586,7 @@ namespace TextRPG
         {
             // Game Start UI
             UIManager.StartUI();
-            InGame inGame = new(new GameManager(), new SpawnManager());
+            InGame inGame = new(new GameManager(), new SpawnManager(), new QuestManager());
 
             // Main Game
             inGame.MainGame();

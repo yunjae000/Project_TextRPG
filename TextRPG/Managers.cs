@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Text;
 using System.Text.Json;
 
@@ -24,6 +25,7 @@ namespace TextRPG
 
         public static void InventoryUI(Character character)
         {
+            Console.Clear();
             foreach (string line in Miscs.Inventory) Console.WriteLine(line);
             Console.WriteLine("\n| ----- Inventory ----- |");
             Console.WriteLine("|\"Armors\" |");
@@ -62,7 +64,8 @@ namespace TextRPG
 
         public static void ShopUI(Character character)
         {
-            Console.WriteLine("\n| ----- Welcome to Henry's Shop! ----- |");
+            Console.Clear();
+            Console.WriteLine("| ----- Welcome to Henry's Shop! ----- |");
             foreach(string line in Miscs.Henry) Console.WriteLine(line);
             Console.WriteLine("| ---------------------------------- |");
 
@@ -119,7 +122,8 @@ namespace TextRPG
 
         public static void CabinUI()
         {
-            Console.WriteLine("\n| ----- Welcome to Alby's Cabin! ----- |");
+            Console.Clear();
+            Console.WriteLine("| ----- Welcome to Alby's Cabin! ----- |");
             foreach(string line in Miscs.Alby) Console.WriteLine(line);
             Console.WriteLine("\n| Room Options |");
             Console.WriteLine("| 1. Back |");
@@ -130,20 +134,23 @@ namespace TextRPG
             Console.Write("\nChoose Room Option : ");
         }
 
+        public static void QuestUI()
+        {
+            Console.Clear();
+            Console.WriteLine("| ----- Welcome to Adventurers' Guild ----- |");
+            Console.WriteLine("\n| Actions |");
+            Console.WriteLine("| 1. Back |");
+            Console.WriteLine("| 2. Contract Quest |");
+            Console.WriteLine("| 3. Complete Quest |");
+            Console.WriteLine("| 4. Show Contractable Quests |");
+            Console.WriteLine("| 5. Show Contracted Quests |");
+            Console.WriteLine("| 6. Show Completed Quests |");
+            Console.WriteLine("| ------------------------------------------ |");
+            Console.Write("\nChoose Action : ");
+        }
+
         public static void StatusUI(Character character)
         {
-            if (character.GetType().Equals(typeof(Warrior)))
-            {
-                foreach (string line in Miscs.WarriorDesign) Console.WriteLine(line);
-            }
-            else if (character.GetType().Equals(typeof(Archer)))
-            {
-                foreach (string line in Miscs.ArcherDesign) Console.WriteLine(line);
-            }
-            else if(character.GetType().Equals(typeof(Wizard)))
-            {
-                foreach (string line in Miscs.MazeDesign) Console.WriteLine(line);
-            }
             Console.WriteLine("\n| ----- \"Character Info.\" ----- |");
             Console.WriteLine($"\n| \"Name\" : {character.Name} |");
             Console.WriteLine($"| \"Lv {character.Level:D2}\" |");
@@ -856,15 +863,122 @@ namespace TextRPG
     }
 
     /// <summary>
+    /// Manage quests
+    /// </summary>
+    class QuestManager
+    {
+    // Methods
+
+    public static IEnumerable<Quest> GetContractedQuests_CollectItem()
+    {
+        var contracted = from quest in Quests
+                         where quest.IsContracted == true && quest.IsCompleted == false && quest.QuestType == QuestType.CollectItem
+                         select quest;
+        return contracted;
+    }   
+
+    public static IEnumerable<Quest> GetContractedQuests_KillMonster()
+    {
+        var contracted = from quest in Quests
+                         where quest.IsContracted == true && quest.IsCompleted == false && quest.QuestType == QuestType.KillMonster
+                         select quest;
+        return contracted;
+    }
+
+    /// <summary>
+    /// Get Contracted Quests
+    /// </summary>
+    /// <returns> IEnumerable Array of Contracted Quests </returns>
+    public static IEnumerable<Quest> GetContractedQuests()
+    {
+        Console.WriteLine("\n| Contracted Quests |");
+        var contracted = from quest in Quests
+                            where quest.IsContracted == true && quest.IsCompleted == false
+                            select quest;
+        if (contracted.Count() < 1)
+            Console.WriteLine("| There are no quests available! |");
+        else Console.WriteLine($"| There are {contracted.Count()} quests available! |");
+        return contracted;
+    }
+
+    /// <summary>
+    /// Get Contractable Quests
+    /// </summary>
+    /// <returns> IEnumerable Array of Contractable Quests </returns>
+    public static IEnumerable<Quest> GetContractableQuests()
+    {
+        Console.WriteLine("\n| Contractable Quests |");
+        var contractables = from quest in Quests
+                            where quest.IsContracted == false && quest.IsCompleted == false
+                            select quest;
+        if (contractables.Count() < 1)
+            Console.WriteLine("| There are no quests available! |");
+        else Console.WriteLine($"| There are {contractables.Count()} quests available! |");
+        return contractables;
+    }
+
+    /// <summary>
+    /// Get Completed Quests
+    /// </summary>
+    /// <returns> IEnumerable Array of Completed Quests </returns>
+    public static IEnumerable<Quest> GetCompletedQuests()
+    {
+        Console.WriteLine("\n| Completed Quests |");
+        var completed = from quest in Quests
+                         where quest.IsCompleted == true && quest.IsContracted == false
+                         select quest;
+        if (completed.Count() < 1)
+            Console.WriteLine("| There are no quests available! |");
+        else Console.WriteLine($"| There are {completed.Count()} quests available! |");
+        return completed;
+    }
+
+    /// <summary>
+    /// Get Completable Quests
+    /// </summary>
+    /// <returns> IEnumerable Array of Completable Quests </returns>
+    public static IEnumerable<Quest> GetCompletableQuests()
+    {
+        Console.WriteLine("\n| Completable Quests |");
+        var completables = from quest in Quests
+                         where quest.IsCompleted == true && quest.IsContracted == true
+                         select quest;
+        if (completables.Count() < 1)
+            Console.WriteLine("| There are no quests available! |");
+        else Console.WriteLine($"| There are {completables.Count()} quests available! |");
+        return completables;
+    }
+
+    /// <summary>
+    /// Get all quests
+    /// </summary>
+    /// <returns> IEnumerable Array of Quests </returns>
+    public static IEnumerable<Quest> GetQuests() { return Quests; }
+
+    /// <summary>
+    /// Quest List
+    /// </summary>
+    private static Quest[] Quests =
+    {
+        new KillMonsterQuest("Please save us from monsters' attack", "Kill 5 Goblins", QuestDifficulty.Hard, 5, 120,300),
+        
+    };
+}
+
+
+    /// <summary>
     /// Manage spawning monsters
     /// </summary>
     class SpawnManager
     {
+        // Property
         public List<Monster> spawnedMonsters = new();
         public int KilledMonsterCount { get; set; } = 0;
 
+        // Constructor
         public SpawnManager() { }
 
+        // Public Methods
         public void SpawnMonsters(Character character, int groundLevel)
         {
             int count = new Random().Next(1, 5);
@@ -892,14 +1006,13 @@ namespace TextRPG
                 }
             }
         }
-        
-        // Public Methods
         public int GetMonsterCount() { return spawnedMonsters.Count; }
         public void ResetKillCount() { KilledMonsterCount = 0; }
         public void RemoveAllMonsters() { spawnedMonsters.Clear(); }
 
         // Private Methods
         // TODO: Increase monster stat based on ground level
+        // Set monster
         private void SetMonster(Monster monster, int groundLevel, Character character, int currency)
         {
             monster.Level = character.Level;
@@ -912,6 +1025,8 @@ namespace TextRPG
             monster.OnDeath += () =>
             {
                 RemoveMonster(character, monster, currency);
+                var quests = QuestManager.GetContractedQuests_KillMonster();
+                foreach (KillMonsterQuest quest in quests) quest.OnProgress();
             };
         }
         private void AddMonster(Monster monster) { spawnedMonsters.Add(monster); }
@@ -931,7 +1046,7 @@ namespace TextRPG
             spawnedMonsters.Remove(monster);
         }
 
-
+        // Return random items
         private Armor? GetRandomArmor(int level)
         {
             if (new Random().Next(1, 101) % 2 != 0) return null;
@@ -1069,17 +1184,17 @@ namespace TextRPG
                 case Job.Warrior:
                     Console.WriteLine("| You selected Warrior! |");
                     Console.Write("Type the name of your warrior : ");
-                    SelectedCharacter = new Warrior(new CharacterStat(Console.ReadLine(), 150, 50, 1, new AttackStat(30f, 6f, 1f), new DefendStat(25, 15, 5)), 100, 0);
+                    SelectedCharacter = new Warrior(new CharacterStat(Console.ReadLine(), 150, 50, 15, 160, 1, new AttackStat(30f, 6f, 1f), new DefendStat(25, 15, 5)), 100, 0);
                     break;
                 case Job.Wizard:
                     Console.WriteLine("| You selected Wizard! |");
                     Console.Write("Type the name of your wizard : ");
-                    SelectedCharacter = new Wizard(new CharacterStat(Console.ReadLine(), 100, 65, 1, new AttackStat(1f, 6f, 30f), new DefendStat(5, 10, 30)), 100, 0);
+                    SelectedCharacter = new Wizard(new CharacterStat(Console.ReadLine(), 100, 65, 15, 160, 1, new AttackStat(1f, 6f, 30f), new DefendStat(5, 10, 30)), 100, 0);
                     break;
                 case Job.Archer:
                     Console.WriteLine("| You selected Archer! |");
                     Console.Write("Type the name of your archer : ");
-                    SelectedCharacter = new Archer(new CharacterStat(Console.ReadLine(), 120, 80, 1, new AttackStat(6f, 30f, 1f), new DefendStat(15, 25, 5)), 100, 0);
+                    SelectedCharacter = new Archer(new CharacterStat(Console.ReadLine(), 120, 80, 15, 160, 1, new AttackStat(6f, 30f, 1f), new DefendStat(15, 25, 5)), 100, 0);
                     break;
             }
 
@@ -1244,8 +1359,8 @@ namespace TextRPG
             if (character.GetType().Equals(typeof(Warrior)))
             {
                 var basicSwords = from sword in ItemLists.Weapons
-                              where sword.GetType().Equals(typeof(Sword)) && sword.Rarity == Rarity.Common
-                              select sword;
+                                  where sword.GetType().Equals(typeof(Sword)) && sword.Rarity == Rarity.Common
+                                  select sword;
                 if (basicSwords.Count() > 0) { character.Weapons.Add(new Sword((Sword)basicSwords.First())); }
             }
             else if (character.GetType().Equals(typeof(Wizard)))
