@@ -203,10 +203,10 @@ namespace TextRPG
         /// <param name="character"></param>
         public override void OnProgress()
         {
-            if(IsContracted && !IsCompleted) { 
-                QuestProgress++; 
-                if (QuestProgress >= QuestGoal) { IsCompleted = true; } 
-            }
+            if(!IsContracted || IsCompleted) return;
+
+            QuestProgress++;
+            if (QuestProgress >= QuestGoal) { IsCompleted = true; }
         }
 
         /// <summary>
@@ -290,16 +290,15 @@ namespace TextRPG
         /// <param name="character"></param>
         public override void OnProgress(Character character)
         {
-            if (IsContracted && !IsCompleted)
+            if (!IsContracted || IsCompleted) return;
+
+            QuestProgress = 0;
+            foreach (var item in character.ImportantItems)
             {
-                QuestProgress = 0;
-                foreach (var item in character.ImportantItems)
+                if (nameof(item).Equals(ItemName))
                 {
-                    if (nameof(item).Equals(ItemName))
-                    {
-                        QuestProgress++;
-                        if (QuestProgress >= QuestGoal) { IsCompleted = true; break; }
-                    }
+                    QuestProgress++;
+                    if (QuestProgress >= QuestGoal) { IsCompleted = true; break; }
                 }
             }
         }
@@ -334,7 +333,7 @@ namespace TextRPG
             int i = 0;
             foreach (var item in character.ImportantItems)
             {
-                if (item.Name.Contains(nameof(ItemName)))
+                if (nameof(item).Equals(ItemName))
                 {
                     item.OnDropped(character); i++;
                     if (i >= QuestGoal) break;

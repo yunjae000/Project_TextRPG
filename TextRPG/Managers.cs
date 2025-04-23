@@ -121,7 +121,8 @@ namespace TextRPG
             i = 1;
             foreach (Consumables potion in character.Consumables) { Console.WriteLine($"{i++}. {potion}"); }
             Console.WriteLine("| 4. \"잡동사니\" |");
-            foreach(ImportantItem item in character.ImportantItems) { Console.WriteLine($"{i++}. {item.ToString()}"); }
+            i = 1;
+            foreach (ImportantItem item in character.ImportantItems) { Console.WriteLine($"{i++}. {item.ToString()}"); }
             Console.WriteLine("| ---------------------- |");
             Console.Write("\n무엇을 판매하겠습니까? ( Type [ Category,Index ], 취소하려면 exit을 입력하세요) : ");
         }
@@ -177,9 +178,9 @@ namespace TextRPG
             Console.WriteLine("\n| ----- 수주 가능한 Quest 목록 ----- |");
             if (questList == null) { Console.WriteLine("| 수주 가능한 Quest가 없습니다! |"); return; }
 
-            foreach (var quest in questList) 
-                if(quest is KillMonsterQuest) Console.WriteLine($"{((KillMonsterQuest)quest).ToString()}");
-                else if(quest is CollectItemQuest) Console.WriteLine($"{((CollectItemQuest)quest).ToString()}");
+            foreach (var quest in questList)
+                if (quest is KillMonsterQuest) Console.WriteLine($"{((KillMonsterQuest)quest).ToString()}");
+                else if (quest is CollectItemQuest) Console.WriteLine($"{((CollectItemQuest)quest).ToString()}");
             Console.Write("\nQuest를 선택하세요 : ");
         }
 
@@ -189,8 +190,8 @@ namespace TextRPG
             Console.WriteLine("\n| ----- 완료 가능한 Quest 목록 ----- |");
             if (questList == null) { Console.WriteLine("| 완료 가능한 Quest가 없습니다! |"); return; }
 
-            foreach (var quest in questList) 
-                if(quest is KillMonsterQuest) Console.WriteLine($"{((KillMonsterQuest)quest).ToString()}");
+            foreach (var quest in questList)
+                if (quest is KillMonsterQuest) Console.WriteLine($"{((KillMonsterQuest)quest).ToString()}");
                 else if (quest is CollectItemQuest) Console.WriteLine($"{((CollectItemQuest)quest).ToString()}");
             Console.Write("\nQuest를 선택하세요: ");
         }
@@ -213,10 +214,10 @@ namespace TextRPG
             Console.WriteLine($"| \"Range Def.\" : {character.DefendStat.RangeDefend:F2} |");
             Console.WriteLine($"| \"Magic Def.\" : {character.DefendStat.MagicDefend:F2} |");
 
-            Console.WriteLine("\n| ----- \"방어구\" ----- |");
-            foreach (Armor armor in character.Armors) { Console.WriteLine($"| {armor} |"); }
-            Console.WriteLine("| ----- \"무기\" ----- |");
-            foreach (Weapon weapon in character.Weapons) { Console.WriteLine($"| {weapon} |"); }
+            Console.WriteLine("\n| ----- \"장착한 방어구\" ----- |");
+            foreach (Armor armor in character.Armors) { if(armor.IsEquipped) Console.WriteLine($"| {armor} |"); }
+            Console.WriteLine("| ----- \"장착한 무기\" ----- |");
+            foreach (Weapon weapon in character.Weapons) { if (weapon.IsEquipped) Console.WriteLine($"| {weapon} |"); }
             Console.WriteLine("| ----- \"포션\" ----- |");
             foreach (Consumables consumable in character.Consumables) { Console.WriteLine($"| {consumable} |"); }
             Console.WriteLine("| ----- \"잡동사니\" ----- |");
@@ -270,9 +271,9 @@ namespace TextRPG
             Console.ForegroundColor = ConsoleColor.Red;
             foreach (string line in Miscs.GameOver) Console.WriteLine(line);
             Console.ResetColor();
-            
+
             Console.WriteLine($"\nGold : {character.Currency}");
-            if(character.Currency >= 100)
+            if (character.Currency >= 100)
             {
                 Console.WriteLine("100G를 지불하면 부활할 수 있습니다...");
                 Console.Write("부활하겠습니까? (Y/N) : ");
@@ -283,8 +284,6 @@ namespace TextRPG
                 Console.WriteLine("메인 화면으로 돌아갑니다...");
             }
         }
-
-        
 
         public static void GameOptionUI()
         {
@@ -316,7 +315,7 @@ namespace TextRPG
             Console.WriteLine($"| HP : {character.Health} | MP : {character.MagicPoint} |");
             Console.WriteLine($"| Gold : {character.Currency} |");
             Console.WriteLine();
-            for(int i = 1; i <= pathOptions.Length; i++)
+            for (int i = 1; i <= pathOptions.Length; i++)
             {
                 Console.WriteLine($"| {i}. {(DungeonOptions)pathOptions[i - 1]} |");
             }
@@ -464,7 +463,7 @@ namespace TextRPG
             "    |______________|_____________||_______________|/",
             "_______________________________________________________"
         };
-       public static string[] Rest3 = {
+        public static string[] Rest3 = {
             "                  __..-----')",
             "        ,.--._ .-'_..--...-'",
             "       '-\"'. _/_ /  ..--''\"\"'-.",
@@ -778,7 +777,7 @@ namespace TextRPG
 |                                                                                     | 
 |                                                                          PARK_DOUN  | 
 |                                                                         CHO_YUNJAE  | 
-|                                                                         BAG_JIHWAN  | 
+|                                                                        PARK_JIHWAN  | 
 |                                                                        KIM_KONGSIK  | 
 |                                                                      BANG_EUNSEONG  | 
 |                                                                                     | 
@@ -815,172 +814,161 @@ namespace TextRPG
             @"| ======================================================================== |",
         };
 
-        public static string[] path = { @"
-+==================================================================================+
-|                     *                  ||                 |                      |
-|         *                             ||                 ||             -+H+     |
-|                                     * |             .    |                       |
-|                            *         ||  ┌──────────┐   |                        |
-||                   |                 |   │ 1. FRONT │  ||                     ||||
-| |||||      |||||||   |||            ||   └──────────┘ ||             |     |||   |
-|      || |              |||||||| |||| |                |         |||||  |||||     |
-|                                                      ||||||||||||                |
-|       *       *                                                         :        |
-|             *┌─────────┐                                  ┌──────────┐           |
-|              │ 2. LEFT │                                  │ 3. RIGHT │        ,  |
-||             └─────────┘                                  └──────────┘        ||||
-| ||||||||||||||                                                         |  ||||   |
-|             |||||||||||                                            ||            |
-|        *              |||||||                             .    |||               |
-|                        ,    ||||                           = ||        -+H+-+H   |
-|                                |                          ||                     |
-|                    *           |                      ||     -+             .    |
-|                                |                   ||       .                    |
-|                 *             |                  ||                              |
-|     *                         |    .            |                                |
-|                              |                ||                                 |
-|                    *        ||               ||                                  |
-|                             |                |                                   |
-|                             |               ||                    -+H+-+         |
-|                            ||               |                                    |
-|         *                  |             .  ||                                   |
-|                           ||                ||                                   |
-|                   *       ||                |         -+H+-+H+-                  |
-|                            | |             ||                                    |
-|                            |||                                                   |
-+==================================================================================+
-",
-@"
-+===============================+=================================================+
-|                                                   ||||                          |
-|             ^v                     ^v^        || |                              |
-|                                             |||                                 |
-||                      ^v^               | |         ┌──────────┐                |
-| ||||                                    ||          │ 2. RIGHT │                |
-|    |||||||||||||||||||||               |            └──────────┘               ||
-|                        ||||||||||||   ||                                  |  || |
-|                                    |||||                              ||| ||    |
-|                                        |                    |    ||  |          |
-|                    ┌─────────┐                             ||| |||              |
-|                    │ 1. LEFT │              .           |||                     |
-|                    └─────────┘                        ||                        |
-||||    ||||||                         .               |                          |
-|  ||||||    |||||||                                 | |              ^v^v^v^     |
-|                  ||||||                            ||                           |
-|                       ||  |                        ||                           |
-|                        |||||             '         |                            |
-|                               ||||          .       |                           |
-|                               | ||                  |                           |
-|                                ||                   |                           |
-|              ^v^v             ||          .         ||                          |
-|                               |       '              |                          |
-|                               ||             '     |||      ^v                  |
-|                                |                   ||                           |
-|                                |                   |                            |
-|    ^v^v^v^                     |         '        ||                            |
-|                                ||                 ||               ^v^v^        |
-|                                 |           '    | |                            |
-|                                 ||                 ||                           |
-|                                 |                   ||                          |
-|                                |||                   ||                         |
-+=================================================================================+
-",
-@"
-+==================================================================================+
-|                                 |               ||   ____  ____  ____  ____      |
-|     _.-=-.     ____  ____  ____|            '   ||  /\   \/\   \/\   \/\   \     |
-|               /\   \/\   \/\   \     .           | /  \___\ \___\ \___\ \___\    |
-|              /  \___\ \___\ \___\  ┌──────────┐  | \  /   / /   / /   / /   /    |
-|              \  /   / /   / /   /  │ 1. FRONT │  |  \/___/\/___/\/___/\/___/     |
-|               \/___/\/___/\/___/   └──────────┘  ||                              |
-|                                 |                 |    _.-=-._                   |
-|                                ||                 |                              |
-|                                |         '        |                              |
-|                                |                   |                             |
-|                                ||            .     |                             |
-|                                 |                  ||                            |
-|            _.-=-._.             |     .             |                            |
-|                                  |                  |                            |
-|                           ____  ____                |                            |
-|                          /\   \/\   \               ||               _.-=-.      |
-|                         /  \___\ \___\    '         |                            |
-|                         \  /   / /   /       .       |____  ____                 |
-|                          \/___/\/___/                /\   \/\   \                |
-|                                  |                  /  \___\ \___\               |
-|                                  ||        .        \  /   / /   /               |
-|     _.-=-._                       ||   '             \/___/\/___/                |
-|                                    |          '     |                            |
-|                                   ||                ||                           |
-|                                    |                |                            |
-|                                    |      '        ||                            |
-|                                  |||               |                             |
-|                                  |           '    ||                             |
-+==================================================================================+
-",
-@"
-+===============================================================================+
-|                                            |||| |||                            |                  
-|              *                         |||||                                   |    
-|                       *             ||||                       right           |
-|   *                               |||                                          | 
-|               *                  ||                                        || ||
-|                                  ||                                |  |||||    | 
-|                                ||                              ||              |
-|                               ||                           |||                 |
-|                              ||                          ||           *        |
-|                             ||                        ||                       |
-|                *           ||                     ||              *            |
-|                           ||                   ||                              |
-|                           |                  ||                                |
-|                          ||                 |                                  |
-|                          |                ||                                   |
-|                         ||               ||                                    |
-|                         |                |                                     |
-|                         |               ||                     .oOo.oOo.o      |
-|.oOo.oOo.oO             ||               |                                      |
-|                        |                ||                                     | 
-|        .oOo.oOo.oOo   ||                ||                                     |
-|                       ||                |                .oOo.oOo.oOo.oOo.     |
-|.oOo.oO                 | |             ||             .oOo.                    | 
-|                        |||             |        .oOo.oOo.oOo.o                 |
-|                        ||              | |                                     |
-+================================================================================+
-
-
-",
-          @"
-+=========================================|========================================+
-|                                  ||                            _.                |
-|     .               .               ||||                                 /\      |
-|                  ,      ,              ||||                             O  O     |
-|        ,                                  |||                            \/      |
-|                                      .       |||       /\ /\ /\                  |
-|                 ,            ┌─────────┐       ||     O  O  O  O                 |
-|||                            │ 1. LEFT │         ||    \/ \/ \ /\ /\             |
-| |||| |||| ||||           .   └─────────┘          |           O  O  O            |
-|     |          ||||||                         .    |           \/ \/             |
-|                     || ||                           |                            |
-|                          ||||||        ,            ||                           |
-|                               ||||               .   |                           |
-|            _.-=-._.             |     .               |                          |
-|                                  |                  | |                          |
-|      /\                          ||                 ||              _.""._.""._.   |
-|     O /\ /\                      ||                  |                           |
-|      O  O  O                      |       '         |                            |
-|       \/ \/                       |          .       ||     _.""._.""              |
-|                                   |                  |                           |
-|                                  ||                  |                           |
-|      O                /\         ||        .         ||                          |
-|     _ -=-._          O  O         ||   '              |              /\          |
-|                       \/           |          '     |||       /\ /\ O  O         |
-|                                   ||                ||       O  O  O \/          |
-|                                    |                |         \/ \/              |
-|                                    |      '          |                           |
-|                 _..-              ||                |                            |
-|                                  |           '      ||                           |
-+==================================================================================+
-
-               "};
+        public static string[] path = {
+            @"+==================================================================================+
+            |                     *                  ||                 |                      |
+            |         *                             ||                 ||             -+H+     |
+            |                                     * |             .    |                       |
+            |                            *         ||  ┌──────────┐   |                        |
+            ||                   |                 |   │ 1. FRONT │  ||                     ||||
+            | |||||      |||||||   |||            ||   └──────────┘ ||             |     |||   |
+            |      || |              |||||||| |||| |                |         |||||  |||||     |
+            |                                                      ||||||||||||                |
+            |       *       *                                                         :        |
+            |             *┌─────────┐                                  ┌──────────┐           |
+            |              │ 2. LEFT │                                  │ 3. RIGHT │        ,  |
+            ||             └─────────┘                                  └──────────┘        ||||
+            | ||||||||||||||                                                         |  ||||   |
+            |             |||||||||||                                            ||            |
+            |        *              |||||||                             .    |||               |
+            |                        ,    ||||                           = ||        -+H+-+H   |
+            |                                |                          ||                     |
+            |                    *           |                      ||     -+             .    |
+            |                                |                   ||       .                    |
+            |                 *             |                  ||                              |
+            |     *                         |    .            |                                |
+            |                              |                ||                                 |
+            |                    *        ||               ||                                  |
+            |                             |                |                                   |
+            |                             |               ||                    -+H+-+         |
+            |                            ||               |                                    |
+            |         *                  |             .  ||                                   |
+            |                           ||                ||                                   |
+            |                   *       ||                |         -+H+-+H+-                  |
+            |                            | |             ||                                    |
+            |                            |||                                                   |
+            +==================================================================================+",
+            @"+===============================+=================================================+
+            |                                                   ||||                          |
+            |             ^v                     ^v^        || |                              |
+            |                                             |||                                 |
+            ||                      ^v^               | |         ┌──────────┐                |
+            | ||||                                    ||          │ 2. RIGHT │                |
+            |    |||||||||||||||||||||               |            └──────────┘               ||
+            |                        ||||||||||||   ||                                  |  || |
+            |                                    |||||                              ||| ||    |
+            |                                        |                    |    ||  |          |
+            |                    ┌─────────┐                             ||| |||              |
+            |                    │ 1. LEFT │              .           |||                     |
+            |                    └─────────┘                        ||                        |
+            ||||    ||||||                         .               |                          |
+            |  ||||||    |||||||                                 | |              ^v^v^v^     |
+            |                  ||||||                            ||                           |
+            |                       ||  |                        ||                           |
+            |                        |||||             '         |                            |
+            |                               ||||          .       |                           |
+            |                               | ||                  |                           |
+            |                                ||                   |                           |
+            |              ^v^v             ||          .         ||                          |
+            |                               |       '              |                          |
+            |                               ||             '     |||      ^v                  |
+            |                                |                   ||                           |
+            |                                |                   |                            |
+            |    ^v^v^v^                     |         '        ||                            |
+            |                                ||                 ||               ^v^v^        |
+            |                                 |           '    | |                            |
+            |                                 ||                 ||                           |
+            |                                 |                   ||                          |
+            |                                |||                   ||                         |
+            +=================================================================================+",
+            @"+==================================================================================+
+            |                                 |               ||   ____  ____  ____  ____      |
+            |     _.-=-.     ____  ____  ____|            '   ||  /\   \/\   \/\   \/\   \     |
+            |               /\   \/\   \/\   \     .           | /  \___\ \___\ \___\ \___\    |
+            |              /  \___\ \___\ \___\  ┌──────────┐  | \  /   / /   / /   / /   /    |
+            |              \  /   / /   / /   /  │ 1. FRONT │  |  \/___/\/___/\/___/\/___/     |
+            |               \/___/\/___/\/___/   └──────────┘  ||                              |
+            |                                 |                 |    _.-=-._                   |
+            |                                ||                 |                              |
+            |                                |         '        |                              |
+            |                                |                   |                             |
+            |                                ||            .     |                             |
+            |                                 |                  ||                            |
+            |            _.-=-._.             |     .             |                            |
+            |                                  |                  |                            |
+            |                           ____  ____                |                            |
+            |                          /\   \/\   \               ||               _.-=-.      |
+            |                         /  \___\ \___\    '         |                            |
+            |                         \  /   / /   /       .       |____  ____                 |
+            |                          \/___/\/___/                /\   \/\   \                |
+            |                                  |                  /  \___\ \___\               |
+            |                                  ||        .        \  /   / /   /               |
+            |     _.-=-._                       ||   '             \/___/\/___/                |
+            |                                    |          '     |                            |
+            |                                   ||                ||                           |
+            |                                    |                |                            |
+            |                                    |      '        ||                            |
+            |                                  |||               |                             |
+            |                                  |           '    ||                             |
+            +==================================================================================+",
+            @"+================================================================================+
+            |                                            |||| |||                            |                  
+            |              *                         |||||                                   |    
+            |                       *             ||||                       right           |
+            |   *                               |||                                          | 
+            |               *                  ||                                        || ||
+            |                                  ||                                |  |||||    | 
+            |                                ||                              ||              |
+            |                               ||                           |||                 |
+            |                              ||                          ||           *        |
+            |                             ||                        ||                       |
+            |                *           ||                     ||              *            |
+            |                           ||                   ||                              |
+            |                           |                  ||                                |
+            |                          ||                 |                                  |
+            |                          |                ||                                   |
+            |                         ||               ||                                    |
+            |                         |                |                                     |
+            |                         |               ||                     .oOo.oOo.o      |
+            |.oOo.oOo.oO             ||               |                                      |
+            |                        |                ||                                     | 
+            |        .oOo.oOo.oOo   ||                ||                                     |
+            |                       ||                |                .oOo.oOo.oOo.oOo.     |
+            |.oOo.oO                 | |             ||             .oOo.                    | 
+            |                        |||             |        .oOo.oOo.oOo.o                 |
+            |                        ||              | |                                     |
+            +================================================================================+",
+            @"+=========================================|========================================+
+            |                                  ||                            _.                |
+            |     .               .               ||||                                 /\      |
+            |                  ,      ,              ||||                             O  O     |
+            |        ,                                  |||                            \/      |
+            |                                      .       |||       /\ /\ /\                  |
+            |                 ,            ┌─────────┐       ||     O  O  O  O                 |
+            |||                            │ 1. LEFT │         ||    \/ \/ \ /\ /\             |
+            | |||| |||| ||||           .   └─────────┘          |           O  O  O            |
+            |     |          ||||||                         .    |           \/ \/             |
+            |                     || ||                           |                            |
+            |                          ||||||        ,            ||                           |
+            |                               ||||               .   |                           |
+            |            _.-=-._.             |     .               |                          |
+            |                                  |                  | |                          |
+            |      /\                          ||                 ||              _.""._.""._.   |
+            |     O /\ /\                      ||                  |                           |
+            |      O  O  O                      |       '         |                            |
+            |       \/ \/                       |          .       ||     _.""._.""              |
+            |                                   |                  |                           |
+            |                                  ||                  |                           |
+            |      O                /\         ||        .         ||                          |
+            |     _ -=-._          O  O         ||   '              |              /\          |
+            |                       \/           |          '     |||       /\ /\ O  O         |
+            |                                   ||                ||       O  O  O \/          |
+            |                                    |                |         \/ \/              |
+            |                                    |      '          |                           |
+            |                 _..-              ||                |                            |
+            |                                  |           '      ||                           |
+            +==================================================================================+",
+        };
     }
 
     /// <summary>
@@ -997,7 +985,7 @@ namespace TextRPG
         public static IEnumerable<CollectItemQuest> GetContractedQuests_CollectItem(string itemName)
         {
             var contracted = from quest in Quests
-                             where quest.IsContracted == true && quest.IsCompleted == false && quest.GetType().Equals(typeof(CollectItemQuest))
+                             where quest.IsContracted == true && quest.IsCompleted == false && quest is CollectItemQuest
                              where ((CollectItemQuest)quest).ItemName == itemName
                              select (CollectItemQuest)quest;
             return contracted;
@@ -1148,20 +1136,20 @@ namespace TextRPG
         /// <param name="character"></param>
         /// <param name="groundLevel"></param>
         /// <param name="currency"></param>
-        private void SetMonster(Monster monster, Character character, int groundLevel,  int currency)
+        private void SetMonster(Monster monster, Character character, int groundLevel, int currency)
         {
             monster.Level = groundLevel;
-            monster.AttackStat += new AttackStat(monster.AttackStat.Attack * 0.1f * monster.Level,
-                                                 monster.AttackStat.RangeAttack * 0.1f * monster.Level,
-                                                 monster.AttackStat.MagicAttack * 0.1f * monster.Level);
-            monster.DefendStat += new DefendStat(monster.DefendStat.Defend * 0.1f * monster.Level,
-                                                 monster.DefendStat.RangeDefend * 0.1f * monster.Level,
-                                                 monster.DefendStat.MagicDefend * 0.1f * monster.Level);
+            monster.AttackStat += new AttackStat(monster.AttackStat.Attack * 0.2f * (monster.Level - 1),
+                                                 monster.AttackStat.RangeAttack * 0.2f * (monster.Level - 1),
+                                                 monster.AttackStat.MagicAttack * 0.2f * (monster.Level - 1));
+            monster.DefendStat += new DefendStat(monster.DefendStat.Defend * 0.17f * (monster.Level - 1),
+                                                 monster.DefendStat.RangeDefend * 0.17f * (monster.Level - 1),
+                                                 monster.DefendStat.MagicDefend * 0.17f * (monster.Level - 1));
             monster.OnDeath += () =>
             {
                 RemoveMonster(character, monster, currency);
                 var quests = QuestManager.GetContractedQuests_KillMonster();
-                foreach(var quest in quests) { quest.OnProgress(); }
+                foreach (var quest in quests) { quest.OnProgress(); }
             };
         }
 
@@ -1189,7 +1177,7 @@ namespace TextRPG
             int ind = new Random().Next(0, 4);
             if (ind == 0) GetRandomArmor(monster.Level)?.OnPicked(character);
             else if (ind <= 1) GetRandomWeapon(monster.Level)?.OnPicked(character);
-            else if(ind <= 2) GetRandomConsumable(monster.Level)?.OnPicked(character);
+            else if (ind <= 2) GetRandomConsumable(monster.Level)?.OnPicked(character);
             else GetRandomImportantItem()?.OnPicked(character);
             spawnedMonsters.Remove(monster);
         }
@@ -1295,8 +1283,8 @@ namespace TextRPG
             if (new Random().Next(1, 101) % 2 != 0) return null;
 
             var filteredItems = from item in ItemLists.ImportantItems
-                                 where item.Rarity == Rarity.Common
-                                 select item;
+                                where item.Rarity == Rarity.Common
+                                select item;
             int ind = new Random().Next(filteredItems.Count());
             return filteredItems.ElementAt(ind);
         }
@@ -1340,7 +1328,7 @@ namespace TextRPG
                 if (!int.TryParse(Console.ReadLine(), out int opt)) { Console.WriteLine("| Invalid Input! |"); }
                 else { option = Math.Clamp(opt, 0, Enum.GetValues(typeof(Job)).Length); break; }
             }
-            
+
             if (option <= 0) return;
 
             switch ((Job)(option - 1))
@@ -1368,7 +1356,7 @@ namespace TextRPG
 
             GameManager.GameState = GameState.Town;
         }
-        
+
         /// <summary>
         /// Give basic items to the character.
         /// </summary>
@@ -1394,7 +1382,7 @@ namespace TextRPG
             if (basicChestArmors.Count() > 0) { character.Armors.Add(new ChestArmor(basicChestArmors.First())); }
             if (basicHealthPotions.Count() > 0) { character.Consumables.Add(new HealthPotion(basicHealthPotions.First())); }
             if (basicMagicPotions.Count() > 0) { character.Consumables.Add(new MagicPotion(basicMagicPotions.First())); }
-            
+
             if (character is Warrior)
             {
                 var basicSwords = from sword in ItemLists.Weapons
@@ -1425,16 +1413,16 @@ namespace TextRPG
         private void GiveBasicSkills(Character character)
         {
             // Active Skills
-            if (character is Warrior) 
+            if (character is Warrior)
                 character.Skills.Add(new ActiveSkill((ActiveSkill)SkillLists.ActiveSkills[0]));
-            else if(character is Archer) 
+            else if (character is Archer)
                 character.Skills.Add(new ActiveSkill((ActiveSkill)SkillLists.ActiveSkills[1]));
             else character.Skills.Add(new ActiveSkill((ActiveSkill)SkillLists.ActiveSkills[2]));
 
             // Buff Skills
             character.Skills.Add(new BuffSkill((BuffSkill)SkillLists.BuffSkills[0]));
         }
-        
+
         /// <summary>
         /// Game Over UI will be displayed.
         /// </summary>
@@ -1455,7 +1443,7 @@ namespace TextRPG
             GameState = GameState.Town;
             GameTime = GameTime.Afternoon;
         }
- 
+
         /// <summary>
         /// Reset the game to initial state.
         /// </summary>

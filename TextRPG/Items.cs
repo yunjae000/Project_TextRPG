@@ -1232,7 +1232,7 @@ namespace TextRPG
         {
             base.OnPicked(character);
             character.ImportantItems.Add(new GoblinEar(this));
-            var quests = QuestManager.GetContractedQuests_CollectItem(Name);
+            var quests = QuestManager.GetContractedQuests_CollectItem(nameof(GoblinEar));
             foreach (var quest in quests) { quest.OnProgress(character); }
         }
 
@@ -1257,7 +1257,7 @@ namespace TextRPG
         {
             base.OnPicked(character);
             character.ImportantItems.Add(new GoblinEye(this));
-            var quests = QuestManager.GetContractedQuests_CollectItem(Name);
+            var quests = QuestManager.GetContractedQuests_CollectItem(nameof(GoblinEye));
             foreach (var quest in quests) { quest.OnProgress(character); }
         }
 

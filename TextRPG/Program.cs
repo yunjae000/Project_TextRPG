@@ -518,15 +518,6 @@ namespace TextRPG
             UIManager.KillCountUI(GameManager.KilledMonsterCount, GameManager.Quota);
             UIManager.DungeonUI(GameManager.SelectedCharacter, GameManager, pathOptions);
 
-            // TODO: Insert Dungeon Path UI
-
-            Random rand = new Random();
-            int index = rand.Next(Miscs.path.Length);
-
-            foreach (string line in Miscs.path[index].Split('\n'))
-            {
-                Console.WriteLine(line);
-            }
             // Try parsing, if successed clamp Parsed Input
             if (!int.TryParse(Console.ReadLine(), out int opt)) { Console.WriteLine("| 잘못된 입력입니다! |"); return; }
             else if (opt < 1 || opt > (pathOptions.Length + Enum.GetValues(typeof(DungeonOptions)).Length - 4)) { Console.WriteLine("| 잘못된 입력입니다! |"); return; }
@@ -548,8 +539,9 @@ namespace TextRPG
             int random = new Random().Next(0, 7);
             while(random == GameManager.prevPath) { random = new Random().Next(0, 7); }
             GameManager.prevPath = random;
-            
-            // TODO: Print Path UI
+
+            string path = Miscs.path[random];
+            Console.WriteLine($"{path}");
 
             return random switch
             {
@@ -608,8 +600,7 @@ namespace TextRPG
             switch ((BattleOptions)Math.Clamp(opt - 1, 0, Enum.GetValues(typeof(BattleOptions)).Length - 1))
             {
                 case BattleOptions.Attack: if (!InBattle_Attack()) return; break;
-                case BattleOptions.Skill: 
-                    if (!InBattle_Skill()) return; break;
+                case BattleOptions.Skill: if (!InBattle_Skill()) return; break;
                 case BattleOptions.Inventory: InInventory(); return;
                 case BattleOptions.Status: InStatus(); return;
                 case BattleOptions.Escape:
