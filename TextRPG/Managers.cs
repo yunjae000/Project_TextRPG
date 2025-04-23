@@ -303,6 +303,24 @@ namespace TextRPG
             Console.Write("\n원하는 기능을 선택하세요 : ");
         }
 
+        public static void DungeonUI(Character character, GameManager gameManager, int[] pathOptions)
+        {
+            Console.WriteLine($"\n| ----- 던전 Lv{gameManager.GroundLevel} ----- |");
+            Console.WriteLine($"| 현재 시간 : {GameManager.GameTime} |");
+            Console.WriteLine($"| HP : {character.Health} | MP : {character.MagicPoint} |");
+            Console.WriteLine($"| Gold : {character.Currency} |");
+            Console.WriteLine();
+            for(int i = 1; i <= pathOptions.Length; i++)
+            {
+                Console.WriteLine($"| {i}. {(DungeonOptions)pathOptions[i - 1]} |");
+            }
+            for (int i = 4, j = 0; i < Enum.GetValues(typeof(DungeonOptions)).Length; i++, j++)
+            {
+                Console.WriteLine($"| {pathOptions.Length + j + 1}. {(DungeonOptions)(4 + j)} |");
+            }
+            Console.Write("\n원하는 기능을 선택하세요 : ");
+        }
+
         public static void BaseUI(Character character, string headLine, Type type)
         {
             Console.WriteLine($"\n| ----- {headLine} ----- |");
@@ -804,6 +822,7 @@ namespace TextRPG
         public static GameTime GameTime = GameTime.Afternoon;
         public static int KilledMonsterCount = 0;
         public static int CurrentTurn = 1;
+        public static int prevPath = 0;
         public static Queue<Consumables> Exposables = new();
 
         // Property

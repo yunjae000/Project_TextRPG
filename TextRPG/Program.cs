@@ -60,6 +60,8 @@ namespace TextRPG
 
                 if (!int.TryParse(Console.ReadLine(), out int opt)) { Console.WriteLine("| 잘못된 입력입니다! |"); continue; }
                 else if (opt < 1 || opt > 4) { Console.WriteLine("| 잘못된 입력입니다! |"); continue; }
+                else { option = opt; }
+
                 switch (Math.Clamp(option, 1, 4))
                 {
                     case 1: Console.WriteLine("| 좋은 하루 되세요! |"); return;
@@ -502,20 +504,45 @@ namespace TextRPG
 
             // Print UI of Kill Count and Player Options
             Console.Clear();
-            // TODO: Insert Dungeon Path UI
+            int[] pathOptions = RandomPathOption();
             UIManager.KillCountUI(GameManager.KilledMonsterCount, GameManager.Quota);
-            UIManager.BaseUI(GameManager.SelectedCharacter, $"던전 Lv{GameManager.GroundLevel}", typeof(DungeonOptions));
+            UIManager.DungeonUI(GameManager.SelectedCharacter, GameManager, pathOptions);
 
             // Try parsing, if successed clamp Parsed Input
             if (!int.TryParse(Console.ReadLine(), out int opt)) { Console.WriteLine("| 잘못된 입력입니다! |"); return; }
-            else if (opt < 1 || opt > Enum.GetValues(typeof(DungeonOptions)).Length) { Console.WriteLine("| 잘못된 입력입니다! |"); return; }
-            opt = Math.Clamp(opt - 1, 0, Enum.GetValues(typeof(DungeonOptions)).Length - 1);
+            else if (opt < 1 || opt > (pathOptions.Length + Enum.GetValues(typeof(DungeonOptions)).Length - 4)) { Console.WriteLine("| 잘못된 입력입니다! |"); return; }
+            opt = Math.Clamp(opt - 1, 0, (pathOptions.Length + Enum.GetValues(typeof(DungeonOptions)).Length - 4) - 1);
 
             // Choices
-            if (opt >= 0 && opt < 4) { InDungeon_MonsterEncounter((DungeonOptions)opt); }
-            else if (opt == 4) { InInventory(); }
-            else if (opt == 5) { InStatus(); }
+            if (opt >= 0 && opt < pathOptions.Length) { InDungeon_MonsterEncounter((DungeonOptions)pathOptions[opt]); }
+            else if (opt <= pathOptions.Length) { InInventory(); }
+            else if (opt <= pathOptions.Length + 1) { InStatus(); }
             else { InDungeon_ReturnToTown(); }
+        }
+
+        /// <summary>
+        /// Randomly generates path options in dungeon.
+        /// </summary>
+        /// <returns></returns>
+        private int[] RandomPathOption()
+        {
+            int random = new Random().Next(0, 7);
+            while(random == GameManager.prevPath) { random = new Random().Next(0, 7); }
+            GameManager.prevPath = random;
+            
+            // TODO: Print Path UI
+
+            return random switch
+            {
+                0 => new int[] { (int)DungeonOptions.Forward, (int)DungeonOptions.Backward },
+                1 => new int[] { (int)DungeonOptions.Left, (int)DungeonOptions.Backward },
+                2 => new int[] { (int)DungeonOptions.Right, (int)DungeonOptions.Backward },
+                3 => new int[] { (int)DungeonOptions.Forward, (int)DungeonOptions.Left, (int)DungeonOptions.Backward },
+                4 => new int[] { (int)DungeonOptions.Forward, (int)DungeonOptions.Right, (int)DungeonOptions.Backward },
+                5 => new int[] { (int)DungeonOptions.Left, (int)DungeonOptions.Right, (int)DungeonOptions.Backward },
+                6 => new int[] { (int)DungeonOptions.Forward, (int)DungeonOptions.Left, (int)DungeonOptions.Right, (int)DungeonOptions.Backward },
+                _ => new int[] { (int)DungeonOptions.Forward, (int)DungeonOptions.Backward },
+            };
         }
 
         /// <summary>
