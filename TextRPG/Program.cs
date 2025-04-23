@@ -1,3 +1,5 @@
+using System.IO;
+
 namespace TextRPG
 {
     class InGame
@@ -451,9 +453,17 @@ namespace TextRPG
             // Print UI of Kill Count and Player Options
             Console.Clear();
             // TODO: Insert Dungeon Path UI
+            
             UIManager.KillCountUI(SpawnManager.KilledMonsterCount, GameManager.Quota);
             UIManager.BaseUI(GameManager.SelectedCharacter, $"The Dungeon Lv{GameManager.GroundLevel}", typeof(DungeonOptions));
 
+            Random rand = new Random();
+            int index = rand.Next(Miscs.path.Length);
+
+            foreach (string line in Miscs.path[index].Split('\n'))
+            {
+                Console.WriteLine(line);
+            }
             // Try parsing, if successed clamp Parsed Input
             if (!int.TryParse(Console.ReadLine(), out int opt)) { Console.WriteLine("| Invalid Input! |"); return; }
             else if(opt < 1 || opt > Enum.GetValues(typeof(DungeonOptions)).Length) { Console.WriteLine("| Invalid Input! |"); return; }
