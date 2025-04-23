@@ -424,8 +424,11 @@ namespace TextRPG
             }
 
             var quest = QuestManager.GetContractableQuests().ElementAt(opt - 1);
-            if (quest is KillMonsterQuest) quest.OnContracted();
-            else quest.OnContracted(GameManager.SelectedCharacter);
+            if (quest is KillMonsterQuest) ((KillMonsterQuest)quest).OnContracted();
+            else ((CollectItemQuest)quest).OnContracted(GameManager.SelectedCharacter);
+
+            Console.Write("Press any key to continue...");
+            Console.ReadKey(true);
         }
 
         /// <summary>
@@ -442,14 +445,19 @@ namespace TextRPG
             while (true)
             {
                 Console.Write("이 Quest를 정말로 완료할 것입니까? (Y/N) : ");
-                char key = Console.ReadKey(true).KeyChar;
-                if (key.Equals('N')) return;
-                else if (key.Equals('Y')) break;
+                char key = char.ToLower(Console.ReadKey(true).KeyChar);
+
+                if (key.Equals('n')) return;
+                else if (key.Equals('y')) break;
                 else { Console.WriteLine("| 잘못된 입력입니다! |"); }
             }
 
             var quest = QuestManager.GetCompletableQuests().ElementAt(opt - 1);
-            quest.OnCompleted(character);
+            if(quest is KillMonsterQuest) ((KillMonsterQuest)quest).OnCompleted(character);
+            else if (quest is CollectItemQuest) ((CollectItemQuest)quest).OnCompleted(character);
+
+            Console.Write("Press any key to continue...");
+            Console.ReadKey(true);
         }
 
         /// <summary>
@@ -589,7 +597,8 @@ namespace TextRPG
             switch ((BattleOptions)Math.Clamp(opt - 1, 0, Enum.GetValues(typeof(BattleOptions)).Length - 1))
             {
                 case BattleOptions.Attack: if (!InBattle_Attack()) return; break;
-                case BattleOptions.Skill: if (!InBattle_Skill()) return; break;
+                case BattleOptions.Skill: 
+                    if (!InBattle_Skill()) return; break;
                 case BattleOptions.Inventory: InInventory(); return;
                 case BattleOptions.Status: InStatus(); return;
                 case BattleOptions.Escape:
@@ -664,6 +673,8 @@ namespace TextRPG
                 if (!int.TryParse(Console.ReadLine(), out int ind)) Console.WriteLine("| 잘못된 입력입니다! |");
                 else if (ind < 0 || ind > GameManager.SelectedCharacter.Skills.Count) Console.WriteLine("| 잘못된 입력입니다! |");
                 else { skillOpt = Math.Clamp(ind, 0, GameManager.SelectedCharacter.Skills.Count); break; }
+                Console.Write("Press any key to continue...");
+                Console.ReadKey(true);
             }
 
             if (skillOpt <= 0) return false;
@@ -680,7 +691,17 @@ namespace TextRPG
                 }
 
                 if (!attackSkill.IsTargetable)
-                    return attackSkill.OnActive(GameManager.SelectedCharacter, SpawnManager.spawnedMonsters);
+                {
+                    bool isSuccess = attackSkill.OnActive(GameManager.SelectedCharacter, SpawnManager.spawnedMonsters);
+                    if (!isSuccess)
+                    {
+                        Console.WriteLine("| 마나가 부족합니다! |");
+                        Console.Write("Press any key to continue...");
+                        Console.ReadKey(true);
+                    }
+                    return isSuccess;
+                }
+                    
 
                 UIManager.ShowMonsterList(SpawnManager);
                 int monsterOpt;

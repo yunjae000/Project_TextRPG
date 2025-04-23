@@ -68,6 +68,9 @@ namespace TextRPG
                 return false;
             }
             
+            character.OnMagicPointConsume(ManaCost);
+            Console.WriteLine($"| 스킬_{Name}을 {target.Name}에 시전하였습니다! |");
+            
             AttackType? type = character.EquippedWeapon?.AttackType;
             switch (type)
             {
@@ -75,8 +78,6 @@ namespace TextRPG
                 case AttackType.Long: target.OnDamage(AttackType.Long, Coefficient * character.AttackStat.RangeAttack); break;
                 case AttackType.Magic: target.OnDamage(AttackType.Magic, Coefficient * character.AttackStat.MagicAttack); break;
             }
-            character.OnMagicPointConsume(ManaCost);
-            Console.WriteLine($"| 스킬_{Name}을 {target.Name}에 시전하였습니다! |");
             return true;
         }
 
@@ -93,6 +94,9 @@ namespace TextRPG
                 Console.WriteLine($"| {character.Name}가 시전하기엔 MP가 부족합니다! |");
                 return false;
             }
+            
+            character.OnMagicPointConsume(ManaCost);
+            Console.WriteLine($"| 스킬_{Name}을 모든 몬스터에 시전하였습니다! |");
 
             AttackType? type = character.EquippedWeapon?.AttackType;
             switch (type)
@@ -128,8 +132,6 @@ namespace TextRPG
                     }
                     break;
             }
-            character.OnMagicPointConsume(ManaCost);
-            Console.WriteLine($"| 스킬_{Name}을 모든 몬스터에 시전하였습니다! |");
             return true;
         }
     }
@@ -173,6 +175,8 @@ namespace TextRPG
             if (IsActive) { character.OnMagicPointConsume(ManaCost); UsedTurn = GameManager.CurrentTurn; return true; }
 
             character.OnMagicPointConsume(ManaCost);
+            Console.WriteLine($"| 스킬_{Name}을 시전하였습니다! |");
+            
             originalAttackStat = new(character.AttackStat);
             originalDefendStat = new(character.DefendStat);
             character.AttackStat *= Coefficient;
@@ -180,7 +184,6 @@ namespace TextRPG
             UsedTurn = GameManager.CurrentTurn;
             IsActive = true;
 
-            Console.WriteLine($"| 스킬_{Name}을 시전하였습니다! |");
             return true;
         }
 

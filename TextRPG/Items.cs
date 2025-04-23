@@ -1235,6 +1235,13 @@ namespace TextRPG
             var quests = QuestManager.GetContractedQuests_CollectItem(Name);
             foreach (var quest in quests) { quest.OnProgress(character); }
         }
+
+        public override string ToString()
+        {
+            StringBuilder sb = new();
+            sb.Append($"{Name} | 가격 : {Price} | {Rarity}");
+            return sb.ToString();
+        }
     }
 
     /// <summary>
@@ -1252,6 +1259,13 @@ namespace TextRPG
             character.ImportantItems.Add(new GoblinEye(this));
             var quests = QuestManager.GetContractedQuests_CollectItem(Name);
             foreach (var quest in quests) { quest.OnProgress(character); }
+        }
+
+        public override string ToString()
+        {
+            StringBuilder sb = new();
+            sb.Append($"{Name} | 가격 : {Price} | {Rarity}");
+            return sb.ToString();
         }
     }
 

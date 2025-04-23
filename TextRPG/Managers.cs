@@ -36,7 +36,7 @@ namespace TextRPG
             foreach (Consumables potion in character.Consumables) { Console.WriteLine($"{i++}. {potion}"); }
             Console.WriteLine("\n| \"잡동사니\"|");
             i = 1;
-            foreach (ImportantItem item in character.ImportantItems) { Console.WriteLine($"{i++}. {item}"); }
+            foreach (ImportantItem item in character.ImportantItems) { Console.WriteLine($"{i++}. {item.ToString()}"); }
             Console.WriteLine("| ------------- |");
             Console.WriteLine("\n| 1. 뒤로가기 |");
             Console.WriteLine("| 2. 아이템 선택 |");
@@ -121,7 +121,7 @@ namespace TextRPG
             i = 1;
             foreach (Consumables potion in character.Consumables) { Console.WriteLine($"{i++}. {potion}"); }
             Console.WriteLine("| 4. \"잡동사니\" |");
-            foreach(ImportantItem item in character.ImportantItems) { Console.WriteLine($"{i++}. {item}"); }
+            foreach(ImportantItem item in character.ImportantItems) { Console.WriteLine($"{i++}. {item.ToString()}"); }
             Console.WriteLine("| ---------------------- |");
             Console.Write("\n무엇을 판매하겠습니까? ( Type [ Category,Index ], 취소하려면 exit을 입력하세요) : ");
         }
@@ -177,7 +177,9 @@ namespace TextRPG
             Console.WriteLine("\n| ----- 수주 가능한 Quest 목록 ----- |");
             if (questList == null) { Console.WriteLine("| 수주 가능한 Quest가 없습니다! |"); return; }
 
-            foreach (var quest in questList) Console.WriteLine($"{quest.ToString()}");
+            foreach (var quest in questList) 
+                if(quest is KillMonsterQuest) Console.WriteLine($"{((KillMonsterQuest)quest).ToString()}");
+                else if(quest is CollectItemQuest) Console.WriteLine($"{((CollectItemQuest)quest).ToString()}");
             Console.Write("\nQuest를 선택하세요 : ");
         }
 
@@ -187,7 +189,9 @@ namespace TextRPG
             Console.WriteLine("\n| ----- 완료 가능한 Quest 목록 ----- |");
             if (questList == null) { Console.WriteLine("| 완료 가능한 Quest가 없습니다! |"); return; }
 
-            foreach (var quest in questList) Console.WriteLine($"{quest.ToString()}");
+            foreach (var quest in questList) 
+                if(quest is KillMonsterQuest) Console.WriteLine($"{((KillMonsterQuest)quest).ToString()}");
+                else if (quest is CollectItemQuest) Console.WriteLine($"{((CollectItemQuest)quest).ToString()}");
             Console.Write("\nQuest를 선택하세요: ");
         }
 
@@ -197,8 +201,8 @@ namespace TextRPG
             Console.WriteLine($"\n| \"Name\" : {character.Name} |");
             Console.WriteLine($"| \"Lv {character.Level:D2}\" |");
             Console.WriteLine($"| \"Exp\" : {character.Exp:F2} |");
-            Console.WriteLine($"| \"HP\" : {character.Health:F2} |");
-            Console.WriteLine($"| \"MP\" : {character.MagicPoint:F2} |");
+            Console.WriteLine($"| \"HP\" : {character.Health:F2}/{character.MaxHealth} |");
+            Console.WriteLine($"| \"MP\" : {character.MagicPoint:F2}/{character.MaxMagicPoint} |");
             Console.WriteLine($"| \"Gold\" : {character.Currency} |");
 
             Console.WriteLine("\n| ----- \"캐릭터 상세\" ----- |");
@@ -590,7 +594,7 @@ namespace TextRPG
         private static Quest[] Quests =
         {
             new KillMonsterQuest("Please save us from monsters' attack", "Kill 1 Goblins", QuestDifficulty.Normal, 1, 120,300),
-            new CollectItemQuest("Please bring me some goblin's ears", "Collect 1 Goblin's Ears", QuestDifficulty.Easy, 1, 100,300),
+            new CollectItemQuest("Please bring me some goblin's ears", nameof(GoblinEar), "Collect 1 Goblin's Ears", QuestDifficulty.Easy, 1, 100,300),
         };
     }
 
@@ -858,17 +862,17 @@ namespace TextRPG
                 case Job.Warrior:
                     Console.WriteLine("| 전사를 선택하였습니다! |");
                     Console.Write("전사의 이름을 작성해주세요 : ");
-                    SelectedCharacter = new Warrior(new CharacterStat(Console.ReadLine(), 150, 50, 15, 1.6f, 1, new AttackStat(30f, 6f, 1f), new DefendStat(25, 15, 5)), 100, 0);
+                    SelectedCharacter = new Warrior(new CharacterStat(Console.ReadLine(), 150, 50, 15, 1.6f, 1, new AttackStat(30f, 6f, 1f), new DefendStat(25, 15, 5)), 250, 0);
                     break;
                 case Job.Wizard:
                     Console.WriteLine("| 법사를 선택하였습니다! |");
                     Console.Write("법사의 이름을 작성해주세요 : ");
-                    SelectedCharacter = new Wizard(new CharacterStat(Console.ReadLine(), 100, 80, 15, 1.6f, 1, new AttackStat(1f, 6f, 30f), new DefendStat(5, 10, 30)), 100, 0);
+                    SelectedCharacter = new Wizard(new CharacterStat(Console.ReadLine(), 100, 80, 15, 1.6f, 1, new AttackStat(1f, 6f, 30f), new DefendStat(5, 10, 30)), 250, 0);
                     break;
                 case Job.Archer:
                     Console.WriteLine("| 궁수를 선택하였습니다! |");
                     Console.Write("궁수의 이름을 작성해주세요 : ");
-                    SelectedCharacter = new Archer(new CharacterStat(Console.ReadLine(), 120, 65, 15, 1.6f, 1, new AttackStat(6f, 30f, 1f), new DefendStat(15, 25, 5)), 100, 0);
+                    SelectedCharacter = new Archer(new CharacterStat(Console.ReadLine(), 120, 65, 15, 1.6f, 1, new AttackStat(6f, 30f, 1f), new DefendStat(15, 25, 5)), 250, 0);
                     break;
             }
 
@@ -1005,7 +1009,7 @@ namespace TextRPG
             Console.WriteLine("| Press any key to continue... |");
             Console.ReadKey();
             KilledMonsterCount = 0;
-            Quota = 10 + (GroundLevel - 1) * 5;
+            Quota = 10 + (++GroundLevel - 1) * 5;
         }
         #endregion
 
