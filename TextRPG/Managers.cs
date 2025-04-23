@@ -90,6 +90,7 @@ namespace TextRPG
             switch (category)
             {
                 case ItemCategory.Armor:
+                    foreach (string line in Miscs.ArmorDesign) Console.WriteLine(line);
                     Console.WriteLine("| \"방어구\" |");
                     int i = 1;
                     foreach (Armor armor in ItemLists.Armors) { Console.WriteLine($"{i++}. {armor}"); }
@@ -100,6 +101,7 @@ namespace TextRPG
                     foreach (Weapon weapon in ItemLists.Weapons) { Console.WriteLine($"{i++}. {weapon}"); }
                     break;
                 case ItemCategory.Consumable:
+                    foreach (string line in Miscs.PotionDesign) Console.WriteLine(line);
                     Console.WriteLine("| \"포션\" |");
                     i = 1;
                     foreach (Consumables potion in ItemLists.Consumables) { Console.WriteLine($"{i++}. {potion}"); }
@@ -791,7 +793,7 @@ namespace TextRPG
 |                                                                                     | 
 |                                                                          PARK_DOUN  | 
 |                                                                         CHO_YUNJAE  | 
-|                                                                         PARK_JIHWAN | 
+|                                                                        PARK_JIHWAN  | 
 |                                                                        KIM_KONGSIK  | 
 |                                                                      BANG_EUNSEONG  | 
 |                                                                                     | 
