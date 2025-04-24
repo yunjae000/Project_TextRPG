@@ -189,13 +189,12 @@ namespace TextRPG
         /// <summary>
         /// Show Monster List UI
         /// </summary>
-        /// <param name="spawnManager"></param>
-        public static void ShowMonsterList(SpawnManager spawnManager)
+        public static void ShowMonsterList()
         {
             Console.WriteLine("\n| ----- Battle ----- |");
             Console.WriteLine("| \"몬스터\" |");
             int i = 1;
-            foreach (Monster monster in spawnManager.spawnedMonsters)
+            foreach (Monster monster in SpawnManager.spawnedMonsters)
                 Console.WriteLine($"| {i++}. {monster.Name} | HP : {monster.Health} |");
             Console.WriteLine("| ------------------ |");
             Console.Write("\n공격할 몬스터를 선택하세요 (취소하려면 0을 입력하세요) : ");
@@ -209,12 +208,12 @@ namespace TextRPG
         {
             Console.WriteLine("| ----- Welcome to Alby's Cabin! ----- |");
             foreach (string line in Miscs.Alby) Console.WriteLine(line);
+            Console.WriteLine("| ------------------------------------ |");
             Console.WriteLine($"\n| Gold : {character.Currency} |");
             Console.WriteLine("| 1. 뒤로가기 |");
             Console.WriteLine("| 2. 스탠다드 룸 (최대 체력 25% 회복, 40G) |");
-            Console.WriteLine("| 3. 디럭스 룸 (최대 체력 50% 회복, 60G) |");
-            Console.WriteLine("| 4. 스위트 룸 (최대 체력 75% 회복, 80G)");
-            Console.WriteLine("| ------------------------------------ |");
+            Console.WriteLine("| 3. 디럭스 룸 (최대 체력 50% 회복, 60G)   |");
+            Console.WriteLine("| 4. 스위트 룸 (최대 체력 75% 회복, 80G)   |");
             Console.Write("\n룸 옵션을 선택하세요 : ");
         }
 
@@ -288,18 +287,35 @@ namespace TextRPG
             Console.WriteLine("| ----- \"캐릭터 정보\" ----- |");
             Console.WriteLine($"\n| \"Name\" : {character.Name} |");
             Console.WriteLine($"| \"Lv {character.Level:D2}\" |");
-            Console.WriteLine($"| \"Exp\" : {character.Exp:F2} |");
+            Console.WriteLine($"| \"Exp\" : {(character.Exp - (character.Level - 1) * 100) % 100}/100 |");
             Console.WriteLine($"| \"HP\" : {character.Health:F2}/{character.MaxHealth} |");
             Console.WriteLine($"| \"MP\" : {character.MagicPoint:F2}/{character.MaxMagicPoint} |");
             Console.WriteLine($"| \"Gold\" : {character.Currency} |");
 
             Console.WriteLine("\n| ----- \"캐릭터 상세\" ----- |");
-            Console.WriteLine($"| \"Atk.\" : {character.AttackStat.Attack:F2} |");
-            Console.WriteLine($"| \"Range Atk.\" : {character.AttackStat.RangeAttack:F2} |");
-            Console.WriteLine($"| \"Magic Atk.\" : {character.AttackStat.MagicAttack:F2} |");
-            Console.WriteLine($"| \"Def.\" : {character.DefendStat.Defend:F2} |");
-            Console.WriteLine($"| \"Range Def.\" : {character.DefendStat.RangeDefend:F2} |");
-            Console.WriteLine($"| \"Magic Def.\" : {character.DefendStat.MagicDefend:F2} |");
+
+            AttackStat atkStat = new(0, 0, 0);
+            if(character.EquippedWeapon != null) atkStat += character.EquippedWeapon.AttackStat;
+            foreach (var item in GameManager.Exposables)
+            {
+                if (item is AttackBuffPotion atkPotion) atkStat += atkPotion.AttackStat;
+                else if (item is AllBuffPotion allPotion) atkStat += allPotion.AttackStat;
+            }
+
+            DefendStat defStat = new(0, 0, 0);
+            foreach(var armor in character.EquippedArmor) if(armor != null) { defStat += armor.DefendStat; }
+            foreach (var item in GameManager.Exposables)
+            {
+                if (item is DefendBuffPotion defPotion) defStat += defPotion.DefendStat;
+                else if (item is AllBuffPotion allPotion) defStat += allPotion.DefendStat;
+            }
+
+            Console.WriteLine($"| \"Atk.\" : {character.AttackStat.Attack:F2} + ({atkStat.Attack:F2}) |");
+            Console.WriteLine($"| \"Range Atk.\" : {character.AttackStat.RangeAttack:F2} + ({atkStat.RangeAttack:F2}) |");
+            Console.WriteLine($"| \"Magic Atk.\" : {character.AttackStat.MagicAttack:F2} + ({atkStat.MagicAttack:F2}) |");
+            Console.WriteLine($"| \"Def.\" : {character.DefendStat.Defend:F2} + ({defStat.Defend:F2}) |");
+            Console.WriteLine($"| \"Range Def.\" : {character.DefendStat.RangeDefend:F2} + ({defStat.RangeDefend:F2}) |");
+            Console.WriteLine($"| \"Magic Def.\" : {character.DefendStat.MagicDefend:F2} + ({defStat.MagicDefend:F2}) |");
 
             Console.WriteLine("\n| ----- \"장착한 방어구\" ----- |");
             foreach (Armor armor in character.Armors) { if (armor.IsEquipped) Console.WriteLine($"| {armor} |"); }
@@ -325,14 +341,13 @@ namespace TextRPG
         /// <summary>
         /// Show Monster Encounter UI
         /// </summary>
-        /// <param name="spawnManager"></param>
-        public static void MonsterEncounterUI(SpawnManager spawnManager)
+        public static void MonsterEncounterUI()
         {
             StringBuilder sb = new();
 
             Console.WriteLine("\n| ---------------------------------- |");
             Console.ForegroundColor = ConsoleColor.Green;
-            foreach (Monster monster in spawnManager.spawnedMonsters)
+            foreach (Monster monster in SpawnManager.spawnedMonsters)
             {
                 sb.Append($"Lv {monster.Level}: ").Append(monster.Name).Append('\n');
 
@@ -356,7 +371,7 @@ namespace TextRPG
             Console.WriteLine("| ---------------------------------- |");
 
             Console.WriteLine($"\n| ---------- Warning! ---------- |");
-            Console.WriteLine($"| {spawnManager.spawnedMonsters.Count}마리의 몬스터가 나타났다! |");
+            Console.WriteLine($"| {SpawnManager.spawnedMonsters.Count}마리의 몬스터가 나타났다! |");
             Console.Write(sb.ToString());
             Console.Write("\nPress enter to continue..."); Console.ReadLine();
         }
@@ -434,13 +449,12 @@ namespace TextRPG
         /// Show Dungeon UI
         /// </summary>
         /// <param name="character"></param>
-        /// <param name="gameManager"></param>
         /// <param name="pathOptions"></param>
-        public static void DungeonUI(Character character, GameManager gameManager, int[] pathOptions)
+        public static void DungeonUI(Character character, int[] pathOptions)
         {
-            Console.WriteLine($"\n| ----- 던전 Lv{gameManager.GroundLevel} ----- |");
+            Console.WriteLine($"\n| ----- 던전 Lv{GameManager.GroundLevel} ----- |");
             Console.WriteLine($"| 현재 시간 : {GameManager.GameTime} |");
-            Console.WriteLine($"| HP : {character.Health} | MP : {character.MagicPoint} |");
+            Console.WriteLine($"| HP : {character.Health:F2} | MP : {character.MagicPoint:F2} |");
             Console.WriteLine($"| Gold : {character.Currency} |");
             Console.WriteLine();
             for (int i = 1; i <= pathOptions.Length; i++)
@@ -458,14 +472,13 @@ namespace TextRPG
         /// Show Battle UI
         /// </summary>
         /// <param name="character"></param>
-        /// <param name="spawnManager"></param>
         /// <param name="headLine"></param>
-        public static void BattleUI(Character character, SpawnManager spawnManager, string headLine)
+        public static void BattleUI(Character character, string headLine)
         {
             Console.WriteLine($"\n| .:~:. {headLine} .:~:. |");
             Console.WriteLine($"| 현재 시간 : {GameManager.GameTime} |");
-            Console.WriteLine($"| HP : {character.Health} | MP : {character.MagicPoint} |");
-            Console.WriteLine($"| Gold : {character.Currency} |");
+            Console.WriteLine($"| Lv : {character.Level} | Gold : {character.Currency} |");
+            Console.WriteLine($"| HP : {character.Health:F2} | MP : {character.MagicPoint:F2} |");
 
             foreach(Skill skill in character.Skills)
             {
@@ -476,11 +489,11 @@ namespace TextRPG
 
             Console.WriteLine("| .:~:..:~:..:~:..:~:..:~:. |");
             Console.WriteLine("| .:~:. 몬스터 정보 .:~:. |");
-            foreach(Monster monster in spawnManager.spawnedMonsters)
+            foreach(Monster monster in SpawnManager.spawnedMonsters)
             {
                 float atkStat = monster.AttackType == AttackType.Close ? monster.AttackStat.Attack :
                                 (monster.AttackType == AttackType.Long ? monster.AttackStat.RangeAttack : monster.AttackStat.MagicAttack);
-                Console.WriteLine($"| Name : {monster.Name} | HP : {monster.Health} | Atk : {atkStat} |");
+                Console.WriteLine($"| Name : {monster.Name} | HP : {monster.Health:F2} | Atk : {atkStat} |");
             }
 
             Console.WriteLine();
@@ -502,7 +515,7 @@ namespace TextRPG
         {
             Console.WriteLine($"\n| ----- {headLine} ----- |");
             Console.WriteLine($"| 현재 시간 : {GameManager.GameTime} |");
-            Console.WriteLine($"| HP : {character.Health} | MP : {character.MagicPoint} |");
+            Console.WriteLine($"| HP : {character.Health:F2} | MP : {character.MagicPoint:F2} |");
             Console.WriteLine($"| Gold : {character.Currency} |");
             Console.WriteLine();
             int i = 1;
@@ -872,34 +885,41 @@ namespace TextRPG
 
         public static string[] Henry = new string[]
         {
-            @"        /     \        ",
-            @"       / (/@\) \       ",
-            @"   \__/_________\__/   ",
-            @"     |  O     O  |     ",
-            @"     |     ^     |     ",
-            @"     |   \___/   |     ",
-            @"      \_________/      ",
-            @"   ___/   |||   \___   ",
-            @" /`    \       /    `\ ",
-            @" \__.   |     |   .__/ ",
-            @"     \  |     |  /     ",
-            @"      \_|_____|_/      ",
+            @"              /     \              ",
+            @"             / (/@\) \             ",
+            @"         \__/_________\__/         ",
+            @"           |  O     O  |           ",
+            @"           |     ^     |           ",
+            @"           |   \___/   |           ",
+            @"            \_________/            ",
+            @"         ___/   |||   \___         ",
+            @"       /`    \       /    `\       ",
+            @"       \__.   |     |   .__/       ",
+            @"           \  |     |  /           ",
+            @"            \_|_____|_/            ",
+            @"                                   ",
+            "  자네! 지금 강해지고 싶어서 왔는가!?  ",
+            "  하하하! 잘 찾아왔구만! 한번 골라봐~  ",
+            "    많이 사면 싼 가격에 쳐출테니~     ",
         };
 
         public static string[] Alby = new string[]
         {
-            @"        /     \        ",
-            @"       / -(+)- \       ",
-            @"    __/_________\__    ",
-            @"   / |  O     O  | \   ",
-            @"     |     ^     |     ",
-            @"     |   '---'   |     ",
-            @"      \_________/      ",
-            @"   ___/   |||   \___   ",
-            @" /`    \       /    `\ ",
-            @" \__.   |     |   .__/ ",
-            @"     \  |     |  /     ",
-            @"      \_|_____|_/      ",
+            @"             /     \             ",
+            @"            / -(+)- \            ",
+            @"         __/_________\__         ",
+            @"        / |  O     O  | \        ",
+            @"          |     ^     |          ",
+            @"          |   '---'   |          ",
+            @"           \_________/           ",
+            @"        ___/   |||   \___        ",
+            @"      /`    \       /    `\      ",
+            @"      \__.   |     |   .__/      ",
+            @"          \  |     |  /          ",
+            @"           \_|_____|_/           ",
+            " 어머~ 오셨군요~? 오랜만에 오셨어요~ ",
+            "    늘 하던 스위트룸으로~? 농담~    ",
+            "  오늘은 어떤방으로 안내해드릴까요~? ",
         };
 
         public static string[] GameStart = new string[]
@@ -1371,7 +1391,7 @@ namespace TextRPG
     /// <summary>
     /// Manage quests
     /// </summary>
-    class QuestManager
+    static class QuestManager
     {
         // Methods
         /// <summary>
@@ -1473,13 +1493,10 @@ namespace TextRPG
     /// <summary>
     /// Manage spawning monsters
     /// </summary>
-    class SpawnManager
+    static class SpawnManager
     {
-        // Property
-        public LinkedList<Monster> spawnedMonsters = new();
-
-        // Constructor
-        public SpawnManager() { }
+        // Field
+        public static LinkedList<Monster> spawnedMonsters = new();
 
         // Public Methods
         /// <summary>
@@ -1487,12 +1504,13 @@ namespace TextRPG
         /// </summary>
         /// <param name="character"></param>
         /// <param name="groundLevel"></param>
-        public void SpawnMonsters(Character character, int groundLevel)
+        public static void SpawnMonsters(Character character, int groundLevel)
         {
+            Random random = new Random();
             int count = new Random().Next(1, 5);
             for (int i = 0; i < count; i++)
             {
-                int type = new Random().Next(MonsterLists.monsters.Length);
+                int type = random.Next(MonsterLists.monsters.Length);
 
                 if (MonsterLists.monsters[type].AttackType == AttackType.Close)
                 {
@@ -1519,12 +1537,12 @@ namespace TextRPG
         /// Get all spawned monsters
         /// </summary>
         /// <returns>Returns spawned monster count</returns>
-        public int GetMonsterCount() { return spawnedMonsters.Count; }
+        public static int GetMonsterCount() { return spawnedMonsters.Count; }
 
         /// <summary>
         /// Remove all spawned monsters
         /// </summary>
-        public void RemoveAllMonsters() 
+        public static void RemoveAllMonsters() 
         {
             var monster = spawnedMonsters.First;
             while(monster != null)
@@ -1543,15 +1561,11 @@ namespace TextRPG
         /// <param name="character"></param>
         /// <param name="groundLevel"></param>
         /// <param name="currency"></param>
-        private void SetMonster(Monster monster, Character character, int groundLevel, int currency)
+        private static void SetMonster(Monster monster, Character character, int groundLevel, int currency)
         {
             monster.Level = groundLevel;
-            monster.AttackStat += new AttackStat(monster.AttackStat.Attack * 0.2f * (monster.Level - 1),
-                                                 monster.AttackStat.RangeAttack * 0.2f * (monster.Level - 1),
-                                                 monster.AttackStat.MagicAttack * 0.2f * (monster.Level - 1));
-            monster.DefendStat += new DefendStat(monster.DefendStat.Defend * 0.17f * (monster.Level - 1),
-                                                 monster.DefendStat.RangeDefend * 0.17f * (monster.Level - 1),
-                                                 monster.DefendStat.MagicDefend * 0.17f * (monster.Level - 1));
+            monster.AttackStat += new AttackStat(monster.AttackStat * (0.2f * (monster.Level - 1)));
+            monster.DefendStat += new DefendStat(monster.DefendStat * (0.17f * (monster.Level - 1)));
             monster.OnDeath += () =>
             {
                 RemoveMonster(character, monster, currency);
@@ -1564,7 +1578,7 @@ namespace TextRPG
         /// Add monster to the linked list
         /// </summary>
         /// <param name="monster"></param>
-        private void AddMonster(Monster monster) { spawnedMonsters.AddLast(monster); }
+        private static void AddMonster(Monster monster) { spawnedMonsters.AddLast(monster); }
 
         /// <summary>
         /// Remove monster from the linked list
@@ -1572,7 +1586,7 @@ namespace TextRPG
         /// <param name="character"></param>
         /// <param name="monster"></param>
         /// <param name="currency"></param>
-        private void RemoveMonster(Character character, Monster monster, int currency)
+        private static void RemoveMonster(Character character, Monster monster, int currency)
         {
             Console.WriteLine($"| {monster.Name} is dead! |");
             Console.WriteLine($"| {character.Name} gets {currency}G |");
@@ -1590,7 +1604,7 @@ namespace TextRPG
         }
 
         // Return random items
-        private Armor? GetRandomArmor(int level)
+        private static Armor? GetRandomArmor(int level)
         {
             if (new Random().Next(1, 101) % 2 != 0) return null;
 
@@ -1622,7 +1636,7 @@ namespace TextRPG
             int ind = new Random().Next(filteredItems.Count());
             return filteredItems.ElementAt(ind);
         }
-        private Weapon? GetRandomWeapon(int level)
+        private static Weapon? GetRandomWeapon(int level)
         {
             if (new Random().Next(1, 101) % 2 != 0) return null;
             IEnumerable<Weapon> filteredItems;
@@ -1653,7 +1667,7 @@ namespace TextRPG
             int ind = new Random().Next(filteredItems.Count());
             return filteredItems.ElementAt(ind);
         }
-        private Consumables? GetRandomConsumable(int level)
+        private static Consumables? GetRandomConsumable(int level)
         {
             if (new Random().Next(1, 101) % 2 != 0) return null;
 
@@ -1685,7 +1699,7 @@ namespace TextRPG
             int ind = new Random().Next(filteredItems.Count());
             return filteredItems.ElementAt(ind);
         }
-        private ImportantItem? GetRandomImportantItem()
+        private static ImportantItem? GetRandomImportantItem()
         {
             if (new Random().Next(1, 101) % 2 != 0) return null;
 
@@ -1700,7 +1714,7 @@ namespace TextRPG
     /// <summary>
     /// Manage controls of overall game statements and functions
     /// </summary>
-    class GameManager
+    static class GameManager
     {
         // Static Field
         public static GameState GameState = GameState.MainMenu;
@@ -1710,14 +1724,9 @@ namespace TextRPG
         public static int PrevPath = 0;
         public static bool IsPathSelected = false;
         public static Queue<Consumables> Exposables = new();
-
-        // Property
-        public Character SelectedCharacter { get; private set; }
-        public int GroundLevel { get; private set; }
-        public int Quota { get; private set; } = 10;
-
-        // Constructor
-        public GameManager(int groundLevel = 1) { GroundLevel = groundLevel; }
+        public static Character SelectedCharacter;
+        public static int GroundLevel { get; private set; } = 1;
+        public static int Quota { get; private set; } = 10;
 
         // Methods
         #region Game Mechanisms
@@ -1727,7 +1736,7 @@ namespace TextRPG
         /// If not, it will return false.
         /// </summary>
         /// <returns>Returns true, if job selected successfully. If not, returns false.</returns>
-        public void SelectJob(SpawnManager spawnManager)
+        public static void SelectJob()
         {
             int option;
             while (true)
@@ -1775,7 +1784,7 @@ namespace TextRPG
         /// Give basic items to the character.
         /// </summary>
         /// <param name="character"></param>
-        private void GiveBasicItems(Character character)
+        private static void GiveBasicItems(Character character)
         {
             // LINQ
             var basicHelmets = from armor in ItemLists.Armors
@@ -1824,7 +1833,7 @@ namespace TextRPG
         /// Give basic skills to the character.
         /// </summary>
         /// <param name="character"></param>
-        private void GiveBasicSkills(Character character)
+        private static void GiveBasicSkills(Character character)
         {
             // Active Skills
             if (character is Warrior)
@@ -1840,7 +1849,7 @@ namespace TextRPG
         /// <summary>
         /// Change to GameOver state.
         /// </summary>
-        private void GameOver()
+        private static void GameOver()
         {
             GameState = GameState.GameOver;
         }
@@ -1849,13 +1858,13 @@ namespace TextRPG
         /// Actions when game is over.
         /// </summary>
         /// <param name="spawnManager"></param>
-        public void GameOverAction(SpawnManager spawnManager)
+        public static void GameOverAction()
         {
             // Display Game Over UI
             UIManager.GameOverUI();
 
             // Remove all monsters
-            spawnManager.RemoveAllMonsters();
+            SpawnManager.RemoveAllMonsters();
 
             // Low currency -> Reset game and move to main menu
             if (SelectedCharacter.Currency < 100) { 
@@ -1884,7 +1893,7 @@ namespace TextRPG
         /// <summary>
         /// Reset the game to initial state.
         /// </summary>
-        private void ResetGame()
+        private static void ResetGame()
         {
             GameState = GameState.MainMenu;
             GameTime = GameTime.Afternoon;
@@ -1897,7 +1906,7 @@ namespace TextRPG
         /// <summary>
         /// Remove all buffs applied to character when night passed.
         /// </summary>
-        public void RemoveAllBuffs()
+        public static void RemoveAllBuffs()
         {
             if (Exposables.Count <= 0) return;
 
@@ -1914,7 +1923,7 @@ namespace TextRPG
         /// <summary>
         /// Increase Dungeon level when character reached the quota.
         /// </summary>
-        public void GoToNextLevel()
+        public static void GoToNextLevel()
         {
             Console.WriteLine("| 목표량을 달성하였습니다, 던전 레벨과 목표량이 올라갑니다! |");
             KilledMonsterCount = 0;
@@ -1926,7 +1935,7 @@ namespace TextRPG
         /// <summary>
         /// Save the character and game data to JSON files.
         /// </summary>
-        public void SaveGame()
+        public static void SaveGame()
         {
             if (!Directory.Exists("data")) Directory.CreateDirectory("data");
 
@@ -1985,7 +1994,7 @@ namespace TextRPG
         /// Load the character and game data from JSON files.
         /// </summary>
         /// <exception cref="InvalidOperationException"></exception>
-        public void LoadGame()
+        public static void LoadGame()
         {
             if (!File.Exists("data/character.json") || !File.Exists("data/game.json") || !File.Exists("data/quest.json"))
             {
@@ -2045,7 +2054,7 @@ namespace TextRPG
         /// Set GameManager data from GameData.
         /// </summary>
         /// <param name="gameData"></param>
-        private void SetGameData(GameData gameData)
+        private static void SetGameData(GameData gameData)
         {
             GroundLevel = gameData.GroundLevel;
             Quota = gameData.Quota;

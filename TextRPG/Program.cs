@@ -4,19 +4,6 @@ namespace TextRPG
 {
     class InGame
     {
-        // Property
-        public GameManager GameManager { get; private set; }
-        public SpawnManager SpawnManager { get; private set; }
-        public QuestManager QuestManager { get; private set; }
-
-        // Constructor
-        public InGame(GameManager gameManager, SpawnManager spawnManager, QuestManager questManager)
-        {
-            GameManager = gameManager;
-            SpawnManager = spawnManager;
-            QuestManager = questManager;
-        }
-
         /// <summary>
         /// Player can start the game or end the game.
         /// </summary>
@@ -36,7 +23,7 @@ namespace TextRPG
             switch ((GameOption)(option - 1))
             {
                 case GameOption.NewGame:
-                    GameManager.SelectJob(SpawnManager); break;
+                    GameManager.SelectJob(); break;
                 case GameOption.Continue:
                     GameManager.LoadGame(); Console.Write("\nPress enter to continue...");
                     Console.ReadLine(); break;
@@ -469,8 +456,8 @@ namespace TextRPG
             }
 
             var quest = QuestManager.GetCompletableQuests().ElementAt(opt - 1);
-            if(quest is KillMonsterQuest) ((KillMonsterQuest)quest).OnCompleted(character);
-            else if (quest is CollectItemQuest) ((CollectItemQuest)quest).OnCompleted(character);
+            if(quest is KillMonsterQuest killMonsterQuest) killMonsterQuest.OnCompleted(character);
+            else if (quest is CollectItemQuest collectItemQuest) collectItemQuest.OnCompleted(character);
 
             Console.Write("\nPress enter to continue...");
             Console.ReadLine();
@@ -537,7 +524,7 @@ namespace TextRPG
             Console.Clear();  
             int[] pathOptions = RandomPathOption(GameManager.IsPathSelected);
             UIManager.KillCountUI(GameManager.KilledMonsterCount, GameManager.Quota);
-            UIManager.DungeonUI(GameManager.SelectedCharacter, GameManager, pathOptions);
+            UIManager.DungeonUI(GameManager.SelectedCharacter, pathOptions);
 
             // Try parsing, if successed clamp Parsed Input
             if (!int.TryParse(Console.ReadLine(), out int opt)) { 
@@ -604,7 +591,7 @@ namespace TextRPG
             if (random >= ((int)option * 2) && random < ((int)option * 2 + 2 + ((int)option % 2)))
             {
                 SpawnManager.SpawnMonsters(GameManager.SelectedCharacter, GameManager.GroundLevel);
-                UIManager.MonsterEncounterUI(SpawnManager);
+                UIManager.MonsterEncounterUI();
                 GameManager.GameState = GameState.Battle;
             }
             else { UIManager.NoMonsterFoundUI(); }
@@ -630,7 +617,7 @@ namespace TextRPG
         private void InBattle()
         {
             Console.Clear();
-            UIManager.BattleUI(GameManager.SelectedCharacter, SpawnManager, "Kill the monsters");
+            UIManager.BattleUI(GameManager.SelectedCharacter, "Kill the monsters");
             if (!int.TryParse(Console.ReadLine(), out int opt)) { Console.WriteLine("| 잘못된 입력입니다! |"); Console.Write("\nPress enter to continue..."); Console.ReadLine(); return; }
             else if (opt < 1 || opt > Enum.GetValues(typeof(BattleOptions)).Length) { Console.WriteLine("| 잘못된 입력입니다! |"); Console.Write("\nPress enter to continue..."); Console.ReadLine(); return; }
 
@@ -678,7 +665,7 @@ namespace TextRPG
             while (true)
             {
                 Console.Clear();
-                UIManager.ShowMonsterList(SpawnManager);
+                UIManager.ShowMonsterList();
                 if (!int.TryParse(Console.ReadLine(), out int ind)) { Console.WriteLine("| 잘못된 입력입니다! |"); }
                 else if (ind < 0 || ind > SpawnManager.GetMonsterCount()) { Console.WriteLine("| 잘못된 입력입니다! |"); }
                 else { opt = Math.Clamp(ind, 0, SpawnManager.GetMonsterCount()); break; }
@@ -742,7 +729,7 @@ namespace TextRPG
                     return isSuccess;
                 }
 
-                UIManager.ShowMonsterList(SpawnManager);
+                UIManager.ShowMonsterList();
                 int monsterOpt;
                 while (true)
                 {
@@ -836,7 +823,7 @@ namespace TextRPG
                     case GameState.Town: InTown(); break;
                     case GameState.Dungeon: InDungeon(); break;
                     case GameState.Battle: InBattle(); break;
-                    case GameState.GameOver: GameManager.GameOverAction(SpawnManager); break;
+                    case GameState.GameOver: GameManager.GameOverAction(); break;
                 }
             }
         }
@@ -848,7 +835,7 @@ namespace TextRPG
         {
             // Game Start UI
             UIManager.StartUI();
-            InGame inGame = new(new GameManager(), new SpawnManager(), new QuestManager());
+            InGame inGame = new();
 
             // Main Game
             inGame.MainGame();

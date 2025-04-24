@@ -197,12 +197,8 @@ namespace TextRPG
                 }
             }
 
-            AttackStat += new AttackStat(newAtkStat.Attack * 0.15f,
-                                         newAtkStat.RangeAttack * 0.15f,
-                                         newAtkStat.MagicAttack * 0.15f);
-            DefendStat += new DefendStat(newDefStat.Defend * 0.15f,
-                                         newDefStat.RangeDefend * 0.15f,
-                                         newDefStat.MagicDefend * 0.15f);
+            AttackStat += new AttackStat(newAtkStat + 1.25f);
+            DefendStat += new DefendStat(newDefStat + 1.25f);
         }
 
         /// <summary>

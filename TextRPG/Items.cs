@@ -32,6 +32,11 @@ namespace TextRPG
             magicAttack = attackStat.MagicAttack;
         }
 
+        public static AttackStat operator +(AttackStat stat, float coef)
+        {
+            return new AttackStat(stat.Attack + coef, stat.RangeAttack + coef, stat.MagicAttack + coef);
+        }
+
         public static AttackStat operator +(AttackStat stat1, AttackStat stat2)
         {
             return new AttackStat(stat1.Attack + stat2.Attack, stat1.RangeAttack + stat2.RangeAttack, stat1.MagicAttack + stat2.MagicAttack);
@@ -82,6 +87,11 @@ namespace TextRPG
             defend = defendStat.Defend;
             rangeDefend = defendStat.RangeDefend;
             magicDefend = defendStat.MagicDefend;
+        }
+
+        public static DefendStat operator +(DefendStat stat, float coef)
+        {
+            return new DefendStat(stat.Defend + coef, stat.RangeDefend + coef, stat.MagicDefend + coef);
         }
 
         public static DefendStat operator +(DefendStat stat1, DefendStat stat2)

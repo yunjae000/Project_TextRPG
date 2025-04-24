@@ -143,6 +143,9 @@ namespace TextRPG
         }
     }
 
+    /// <summary>
+    /// MonsterLists Class
+    /// </summary>
     static class MonsterLists
     {
         public static Monster[] monsters = {
