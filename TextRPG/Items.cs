@@ -558,6 +558,7 @@ namespace TextRPG
         /// <param name="character"></param>
         public void OnSell(Character character)
         {
+            if(IsEquipped) { Console.WriteLine($"| Not possible to sell!, {Name} is equipped! |"); return; }
             character.Currency += Price;
             character.Weapons.Remove(this);
             Console.WriteLine($"| {Name} is sold! |");
@@ -578,7 +579,7 @@ namespace TextRPG
         /// <param name="character"></param>
         public void OnDropped(Character character)
         {
-            if (IsEquipped) { Console.WriteLine($"| {Name} is equipped! |"); return; }
+            if (IsEquipped) { Console.WriteLine($"| Not possible to drop!, {Name} is equipped! |"); return; }
             character.Weapons.Remove(this);
             Console.WriteLine($"| Dropped {name}! |");
         }

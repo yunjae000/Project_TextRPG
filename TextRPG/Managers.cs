@@ -151,11 +151,12 @@ namespace TextRPG
             Console.Write("\n공격할 몬스터를 선택하세요 (취소하려면 0을 입력하세요) : ");
         }
 
-        public static void CabinUI()
+        public static void CabinUI(Character character)
         {
             Console.WriteLine("| ----- Welcome to Alby's Cabin! ----- |");
             foreach (string line in Miscs.Alby) Console.WriteLine(line);
-            Console.WriteLine("\n| 1. 뒤로가기 |");
+            Console.WriteLine($"\n| Gold : {character.Currency} |");
+            Console.WriteLine("| 1. 뒤로가기 |");
             Console.WriteLine("| 2. 스탠다드 룸 (최대 체력 25% 회복, 40G) |");
             Console.WriteLine("| 3. 디럭스 룸 (최대 체력 50% 회복, 60G) |");
             Console.WriteLine("| 4. 스위트 룸 (최대 체력 75% 회복, 80G)");
@@ -1597,23 +1598,27 @@ namespace TextRPG
             }
 
             if (option <= 0) return;
-
+            
+            string name;
             switch ((Job)(option - 1))
             {
                 case Job.Warrior:
                     Console.WriteLine("| 전사를 선택하였습니다! |");
                     Console.Write("전사의 이름을 작성해주세요 : ");
-                    SelectedCharacter = new Warrior(new CharacterStat(Console.ReadLine(), 150, 50, 15, 1.6f, 1, new AttackStat(30f, 6f, 1f), new DefendStat(25, 15, 5)), 250, 0);
+                    name = Console.ReadLine() ?? "Jake"; if (name.Length < 1) name = "Jake";
+                    SelectedCharacter = new Warrior(new CharacterStat(name, 150, 50, 15, 1.6f, 1, new AttackStat(30f, 6f, 1f), new DefendStat(25, 15, 5)), 250, 0);
                     break;
                 case Job.Wizard:
                     Console.WriteLine("| 법사를 선택하였습니다! |");
                     Console.Write("법사의 이름을 작성해주세요 : ");
-                    SelectedCharacter = new Wizard(new CharacterStat(Console.ReadLine(), 100, 80, 15, 1.6f, 1, new AttackStat(1f, 6f, 30f), new DefendStat(5, 10, 30)), 250, 0);
+                    name = Console.ReadLine() ?? "Lucy"; if (name.Length < 1) name = "Lucy";
+                    SelectedCharacter = new Wizard(new CharacterStat(name, 100, 80, 15, 1.6f, 1, new AttackStat(1f, 6f, 30f), new DefendStat(5, 10, 30)), 250, 0);
                     break;
                 case Job.Archer:
                     Console.WriteLine("| 궁수를 선택하였습니다! |");
                     Console.Write("궁수의 이름을 작성해주세요 : ");
-                    SelectedCharacter = new Archer(new CharacterStat(Console.ReadLine(), 120, 65, 15, 1.6f, 1, new AttackStat(6f, 30f, 1f), new DefendStat(15, 25, 5)), 250, 0);
+                    name = Console.ReadLine() ?? "Omen"; if (name.Length < 1) name = "Omen";
+                    SelectedCharacter = new Archer(new CharacterStat(name, 120, 65, 15, 1.6f, 1, new AttackStat(6f, 30f, 1f), new DefendStat(15, 25, 5)), 250, 0);
                     break;
             }
 

@@ -58,7 +58,7 @@ namespace TextRPG
             while (!isSelected)
             {
                 Console.Clear();
-                UIManager.CabinUI();
+                UIManager.CabinUI(GameManager.SelectedCharacter);
 
                 if (!int.TryParse(Console.ReadLine(), out int opt)) { Console.WriteLine("| 잘못된 입력입니다! |"); Console.Write("\nPress enter to continue..."); Console.ReadLine(); continue; }
                 else if (opt < 1 || opt > 4) { Console.WriteLine("| 잘못된 입력입니다! |"); Console.Write("\nPress enter to continue..."); Console.ReadLine(); continue; }
@@ -485,7 +485,7 @@ namespace TextRPG
             else if (type == QuestStatus.InProgress) { foreach (var quest in QuestManager.GetContractedQuests()) Console.WriteLine($"{quest.ToString()}"); }
             else if(type == QuestStatus.Completable) { foreach(var quest in QuestManager.GetCompletableQuests()) Console.WriteLine($"{quest.ToString()}"); }
             else { foreach (var quest in QuestManager.GetCompletedQuests()) Console.WriteLine($"{quest.ToString()}"); }
-            Console.WriteLine("\nPress enter to continue...");
+            Console.Write("\nPress enter to continue...");
             Console.ReadLine();
         }
 
@@ -652,9 +652,6 @@ namespace TextRPG
             if (SpawnManager.GetMonsterCount() <= 0)
             {
                 InBattle_EscapeFromBattle("모든 몬스터들을 무찔렀습니다!");
-                if (GameManager.KilledMonsterCount >= GameManager.Quota) GameManager.GoToNextLevel();
-
-                Console.Write("\nPress enter to continue..."); Console.ReadLine();
                 return;
             }
 
