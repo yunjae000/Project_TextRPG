@@ -11,7 +11,7 @@ namespace TextRPG
         public static void StartUI()
         {
             foreach (string line in Miscs.GameStart) Console.WriteLine(line);
-            Console.ReadKey();
+            Console.Write("\nPress enter to continue..."); Console.ReadLine();
         }
 
         public static void JobSelectionUI()
@@ -151,11 +151,12 @@ namespace TextRPG
             Console.Write("\n공격할 몬스터를 선택하세요 (취소하려면 0을 입력하세요) : ");
         }
 
-        public static void CabinUI()
+        public static void CabinUI(Character character)
         {
             Console.WriteLine("| ----- Welcome to Alby's Cabin! ----- |");
             foreach (string line in Miscs.Alby) Console.WriteLine(line);
-            Console.WriteLine("\n| 1. 뒤로가기 |");
+            Console.WriteLine($"\n| Gold : {character.Currency} |");
+            Console.WriteLine("| 1. 뒤로가기 |");
             Console.WriteLine("| 2. 스탠다드 룸 (최대 체력 25% 회복, 40G) |");
             Console.WriteLine("| 3. 디럭스 룸 (최대 체력 50% 회복, 60G) |");
             Console.WriteLine("| 4. 스위트 룸 (최대 체력 75% 회복, 80G)");
@@ -239,8 +240,7 @@ namespace TextRPG
             foreach (Consumables consumable in character.Consumables) { Console.WriteLine($"| {consumable} |"); }
             Console.WriteLine("| ----- \"잡동사니\" ----- |");
             foreach (ImportantItem item in character.ImportantItems) { Console.WriteLine($"| {item} |"); }
-            Console.WriteLine("\n| Press any key to continue... |");
-            Console.ReadKey();
+            Console.Write("\nPress enter to continue..."); Console.ReadLine();
         }
 
         public static void KillCountUI(int KillCount, int Quota)
@@ -282,16 +282,14 @@ namespace TextRPG
             Console.WriteLine($"\n| ---------- Warning! ---------- |");
             Console.WriteLine($"| {spawnManager.spawnedMonsters.Count}마리의 몬스터가 나타났다! |");
             Console.Write(sb.ToString());
-            Console.Write("\nPress any key to continue...");
-            Console.ReadKey();
+            Console.Write("\nPress enter to continue..."); Console.ReadLine();
         }
 
         public static void NoMonsterFoundUI()
         {
             int ind = new Random().Next(Miscs.Quotes.Length);
             Console.WriteLine($"\n| 아무 일도 없었다..., {Miscs.Quotes[ind]}");
-            Console.WriteLine("Press any key to continue...");
-            Console.ReadKey();
+            Console.Write("\nPress enter to continue..."); Console.ReadLine();
         }
 
         public static void GameOverUI()
@@ -1255,7 +1253,7 @@ namespace TextRPG
         public static IEnumerable<KillMonsterQuest> GetContractedQuests_KillMonster()
         {
             var contracted = from quest in Quests
-                             where quest.IsContracted == true && quest.IsCompleted == false && quest.QuestType == QuestType.KillMonster
+                             where quest.IsContracted == true && quest.IsCompleted == false && quest is KillMonsterQuest
                              select (KillMonsterQuest)quest;
             return contracted;
         }
@@ -1593,29 +1591,34 @@ namespace TextRPG
             while (true)
             {
                 UIManager.JobSelectionUI();
-                if (!int.TryParse(Console.ReadLine(), out int opt)) { Console.WriteLine("| 잘못된 입력입니다! |"); Console.Write("Press any key to continue..."); Console.ReadKey(); }
-                else if(opt < 0 || Enum.GetValues(typeof(Job)).Length < opt) { Console.WriteLine("| 잘못된 입력입니다! |"); Console.Write("Press any key to continue..."); Console.ReadKey(); }
+                if (!int.TryParse(Console.ReadLine(), out int opt)) { Console.WriteLine("| 잘못된 입력입니다! |"); }
+                else if(opt < 0 || Enum.GetValues(typeof(Job)).Length < opt) { Console.WriteLine("| 잘못된 입력입니다! |"); }
                 else { option = Math.Clamp(opt, 0, Enum.GetValues(typeof(Job)).Length); break; }
+                Console.Write("\nPress enter to continue..."); Console.ReadLine();
             }
 
             if (option <= 0) return;
-
+            
+            string name;
             switch ((Job)(option - 1))
             {
                 case Job.Warrior:
                     Console.WriteLine("| 전사를 선택하였습니다! |");
                     Console.Write("전사의 이름을 작성해주세요 : ");
-                    SelectedCharacter = new Warrior(new CharacterStat(Console.ReadLine(), 150, 50, 15, 1.6f, 1, new AttackStat(30f, 6f, 1f), new DefendStat(25, 15, 5)), 250, 0);
+                    name = Console.ReadLine() ?? "Jake"; if (name.Length < 1) name = "Jake";
+                    SelectedCharacter = new Warrior(new CharacterStat(name, 150, 50, 15, 1.6f, 1, new AttackStat(30f, 6f, 1f), new DefendStat(25, 15, 5)), 250, 0);
                     break;
                 case Job.Wizard:
                     Console.WriteLine("| 법사를 선택하였습니다! |");
                     Console.Write("법사의 이름을 작성해주세요 : ");
-                    SelectedCharacter = new Wizard(new CharacterStat(Console.ReadLine(), 100, 80, 15, 1.6f, 1, new AttackStat(1f, 6f, 30f), new DefendStat(5, 10, 30)), 250, 0);
+                    name = Console.ReadLine() ?? "Lucy"; if (name.Length < 1) name = "Lucy";
+                    SelectedCharacter = new Wizard(new CharacterStat(name, 100, 80, 15, 1.6f, 1, new AttackStat(1f, 6f, 30f), new DefendStat(5, 10, 30)), 250, 0);
                     break;
                 case Job.Archer:
                     Console.WriteLine("| 궁수를 선택하였습니다! |");
                     Console.Write("궁수의 이름을 작성해주세요 : ");
-                    SelectedCharacter = new Archer(new CharacterStat(Console.ReadLine(), 120, 65, 15, 1.6f, 1, new AttackStat(6f, 30f, 1f), new DefendStat(15, 25, 5)), 250, 0);
+                    name = Console.ReadLine() ?? "Omen"; if (name.Length < 1) name = "Omen";
+                    SelectedCharacter = new Archer(new CharacterStat(name, 120, 65, 15, 1.6f, 1, new AttackStat(6f, 30f, 1f), new DefendStat(15, 25, 5)), 250, 0);
                     break;
             }
 
@@ -1715,8 +1718,8 @@ namespace TextRPG
             // Low currency -> Reset game and move to main menu
             if (SelectedCharacter.Currency < 100) { 
                 UIManager.ReviveOptionUI(SelectedCharacter);
-                ResetGame(); 
-                Console.Write("\nPress any key to continue..."); Console.ReadKey(); 
+                ResetGame();
+                Console.Write("\nPress enter to continue..."); Console.ReadLine();
                 return;
             }
 
@@ -1845,8 +1848,7 @@ namespace TextRPG
             if (!File.Exists("data/character.json") || !File.Exists("data/game.json") || !File.Exists("data/quest.json"))
             {
                 Console.WriteLine("| 저장된 세이브 데이터가 없습니다! |");
-                Console.Write("| Press any key to continue... |");
-                Console.ReadKey();
+                Console.Write("\nPress enter to continue..."); Console.ReadLine();
                 return;
             }
 
