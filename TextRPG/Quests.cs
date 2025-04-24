@@ -153,8 +153,7 @@ namespace TextRPG
         /// <summary>
         /// Called when the quest is canceled.
         /// </summary>
-        /// <param name="character"></param>
-        public void OnCanceled(Character character)
+        public void OnCanceled()
         {
             IsContracted = false;
             IsCompleted = false;

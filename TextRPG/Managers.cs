@@ -47,7 +47,7 @@ namespace TextRPG
             foreach (Consumables potion in character.Consumables) { Console.WriteLine($"{i++}. {potion}"); }
             Console.WriteLine("\n| \"잡동사니\"|");
             i = 1;
-            foreach (ImportantItem item in character.ImportantItems) { Console.WriteLine($"{i++}. {item.ToString()}"); }
+            foreach (ImportantItem item in character.ImportantItems) { Console.WriteLine($"{i++}. {item}"); }
             Console.WriteLine("| ------------- |");
             Console.WriteLine("\n| 1. 뒤로가기 |");
             Console.WriteLine("| 2. 아이템 선택 |");
@@ -168,7 +168,7 @@ namespace TextRPG
             foreach (Consumables potion in character.Consumables) { Console.WriteLine($"{i++}. {potion}"); }
             Console.WriteLine("| 4. \"잡동사니\" |");
             i = 1;
-            foreach (ImportantItem item in character.ImportantItems) { Console.WriteLine($"{i++}. {item.ToString()}"); }
+            foreach (ImportantItem item in character.ImportantItems) { Console.WriteLine($"{i++}. {item}"); }
             Console.WriteLine("| ---------------------- |");
             Console.Write("\n무엇을 판매하겠습니까? ( Type [ Category,Index ], 취소하려면 exit을 입력하세요) : ");
         }
@@ -244,8 +244,8 @@ namespace TextRPG
             if (questList == null) { Console.WriteLine("| 수주 가능한 Quest가 없습니다! |"); return; }
 
             foreach (var quest in questList)
-                if (quest is KillMonsterQuest) Console.WriteLine($"{((KillMonsterQuest)quest).ToString()}");
-                else if (quest is CollectItemQuest) Console.WriteLine($"{((CollectItemQuest)quest).ToString()}");
+                if (quest is KillMonsterQuest killMonsterQuest) Console.WriteLine($"{killMonsterQuest.ToString()}");
+                else if (quest is CollectItemQuest collectItemQuest) Console.WriteLine($"{collectItemQuest.ToString()}");
             Console.Write("\nQuest를 선택하세요 : ");
         }
 
@@ -257,11 +257,11 @@ namespace TextRPG
         {
             var questList = QuestManager.GetCompletableQuests();
             Console.WriteLine("\n| ----- 완료 가능한 Quest 목록 ----- |");
-            if (questList == null || questList.Count() < 1) { Console.WriteLine("| 완료 가능한 Quest가 없습니다! |"); return false; }
+            if (questList == null || !questList.Any()) { Console.WriteLine("| 완료 가능한 Quest가 없습니다! |"); return false; }
 
             foreach (var quest in questList)
-                if (quest is KillMonsterQuest) Console.WriteLine($"{((KillMonsterQuest)quest).ToString()}");
-                else if (quest is CollectItemQuest) Console.WriteLine($"{((CollectItemQuest)quest).ToString()}");
+                if (quest is KillMonsterQuest killMonsterQuest) Console.WriteLine($"{killMonsterQuest.ToString()}");
+                else if (quest is CollectItemQuest collectItemQuest) Console.WriteLine($"{collectItemQuest.ToString()}");
             Console.Write("\nQuest를 선택하세요: ");
             return true;
         }
@@ -1506,27 +1506,27 @@ namespace TextRPG
         /// <param name="groundLevel"></param>
         public static void SpawnMonsters(Character character, int groundLevel)
         {
-            Random random = new Random();
-            int count = new Random().Next(1, 5);
+            Random random = new();
+            int count = random.Next(1, 5);
             for (int i = 0; i < count; i++)
             {
                 int type = random.Next(MonsterLists.monsters.Length);
 
                 if (MonsterLists.monsters[type].AttackType == AttackType.Close)
                 {
-                    GoblinWarrior monster = new GoblinWarrior((GoblinWarrior)MonsterLists.monsters[type]);
+                    GoblinWarrior monster = new((GoblinWarrior)MonsterLists.monsters[type]);
                     SetMonster(monster, character, groundLevel, 50);
                     AddMonster(monster);
                 }
                 else if (MonsterLists.monsters[type].AttackType == AttackType.Long)
                 {
-                    GoblinArcher monster = new GoblinArcher((GoblinArcher)MonsterLists.monsters[type]);
+                    GoblinArcher monster = new((GoblinArcher)MonsterLists.monsters[type]);
                     SetMonster(monster, character, groundLevel, 65);
                     AddMonster(monster);
                 }
                 else if (MonsterLists.monsters[type].AttackType == AttackType.Magic)
                 {
-                    GoblinMage monster = new GoblinMage((GoblinMage)MonsterLists.monsters[type]);
+                    GoblinMage monster = new((GoblinMage)MonsterLists.monsters[type]);
                     SetMonster(monster, character, groundLevel, 80);
                     AddMonster(monster);
                 }
@@ -1801,31 +1801,31 @@ namespace TextRPG
                                     where item is MagicPotion && item.Rarity == Rarity.Common
                                     select (MagicPotion)item;
 
-            if (basicHelmets.Count() > 0) { character.Armors.Add(new Helmet(basicHelmets.First())); }
-            if (basicChestArmors.Count() > 0) { character.Armors.Add(new ChestArmor(basicChestArmors.First())); }
-            if (basicHealthPotions.Count() > 0) { character.Consumables.Add(new HealthPotion(basicHealthPotions.First())); }
-            if (basicMagicPotions.Count() > 0) { character.Consumables.Add(new MagicPotion(basicMagicPotions.First())); }
+            if (basicHelmets.Any()) { character.Armors.Add(new Helmet(basicHelmets.First())); }
+            if (basicChestArmors.Any()) { character.Armors.Add(new ChestArmor(basicChestArmors.First())); }
+            if (basicHealthPotions.Any()) { character.Consumables.Add(new HealthPotion(basicHealthPotions.First())); }
+            if (basicMagicPotions.Any()) { character.Consumables.Add(new MagicPotion(basicMagicPotions.First())); }
 
             if (character is Warrior)
             {
                 var basicSwords = from sword in ItemLists.Weapons
                                   where sword is Sword && sword.Rarity == Rarity.Common
                                   select (Sword)sword;
-                if (basicSwords.Count() > 0) { character.Weapons.Add(new Sword(basicSwords.First())); }
+                if (basicSwords.Any()) { character.Weapons.Add(new Sword(basicSwords.First())); }
             }
             else if (character is Wizard)
             {
                 var basicStaffs = from staff in ItemLists.Weapons
                                   where staff is Staff && staff.Rarity == Rarity.Common
                                   select (Staff)staff;
-                if (basicStaffs.Count() > 0) { character.Weapons.Add(new Staff(basicStaffs.First())); }
+                if (basicStaffs.Any()) { character.Weapons.Add(new Staff(basicStaffs.First())); }
             }
             else
             {
                 var basicBows = from bow in ItemLists.Weapons
                                 where bow is Bow && bow.Rarity == Rarity.Common
                                 select (Bow)bow;
-                if (basicBows.Count() > 0) { character.Weapons.Add(new Bow(basicBows.First())); }
+                if (basicBows.Any()) { character.Weapons.Add(new Bow(basicBows.First())); }
             }
         }
 
@@ -1898,7 +1898,10 @@ namespace TextRPG
             GameState = GameState.MainMenu;
             GameTime = GameTime.Afternoon;
 
+            foreach(var quest in QuestManager.GetQuests())
+                if(quest is ICancelable cancelableQuest) cancelableQuest.OnCanceled();
             Exposables.Clear();
+            KilledMonsterCount = 0;
             GroundLevel = 1;
             Quota = 10;
         }

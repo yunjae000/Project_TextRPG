@@ -44,7 +44,7 @@ namespace TextRPG
 
     interface ICancelable
     {
-        public void OnCanceled(Character character);
+        public void OnCanceled();
     }
 
     interface ISkillActive

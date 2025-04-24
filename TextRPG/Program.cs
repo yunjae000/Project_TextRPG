@@ -428,8 +428,8 @@ namespace TextRPG
             }
 
             var quest = QuestManager.GetContractableQuests().ElementAt(opt - 1);
-            if (quest is KillMonsterQuest) ((KillMonsterQuest)quest).OnContracted();
-            else ((CollectItemQuest)quest).OnContracted(GameManager.SelectedCharacter);
+            if (quest is KillMonsterQuest killMonsterQuest) killMonsterQuest.OnContracted();
+            else if (quest is CollectItemQuest collectItemQuest) collectItemQuest.OnContracted(GameManager.SelectedCharacter);
 
             Console.Write("\nPress enter to continue...");
             Console.ReadLine();
@@ -592,6 +592,7 @@ namespace TextRPG
             {
                 SpawnManager.SpawnMonsters(GameManager.SelectedCharacter, GameManager.GroundLevel);
                 UIManager.MonsterEncounterUI();
+                GameManager.CurrentTurn = 1;
                 GameManager.GameState = GameState.Battle;
             }
             else { UIManager.NoMonsterFoundUI(); }
