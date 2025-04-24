@@ -97,6 +97,7 @@ namespace TextRPG
                     foreach (Armor armor in ItemLists.Armors) { Console.WriteLine($"{i++}. {armor}"); }
                     break;
                 case ItemCategory.Weapon:
+                    foreach (string line in Miscs.WeaponDesign) Console.WriteLine(line);
                     Console.WriteLine("| \"무기\" |");
                     i = 1;
                     foreach (Weapon weapon in ItemLists.Weapons) { Console.WriteLine($"{i++}. {weapon}"); }
@@ -839,7 +840,7 @@ namespace TextRPG
             @"| ======================================================================== |",
         };
 
-        public static string[] WarriorDesign = new string[]
+        public static string[] WeaponDesign = new string[]
         {
             "   |\\                     /)",
             " /\\_\\\\__               (_//",
@@ -1191,6 +1192,39 @@ namespace TextRPG
             +==================================================================================+
             ",
         };
+        public static string[] WarriorDesign = new string[]
+{
+    "           ,",
+    "          / \\",
+    "         {   }",
+    "         p   !",
+    "         ; : ;",
+    "         | : |",
+    "         | : |",
+    "         l ; l",
+    "         l ; l",
+    "         I ; I",
+    "         I ; I",
+    "         I ; I",
+    "         I ; I",
+    "         d | b\t",
+    "         H | H",
+    "         H | H",
+    "         H I H",
+    " ,;,     H I H     ,;,",
+    ";H@H;    ;_H_;,   ;H@H;",
+    "`\\Y/d_,;|4H@HK|;,_b\\Y/'",
+    " '\\;MMMMM$@@@$MMMMM;/'",
+    "   \"~~~*;!8@8!;*~~~\"",
+    "         ;888;",
+    "         ;888;",
+    "         ;888;",
+    "         ;888;",
+    "         d8@8b",
+    "         O8@8O",
+    "         T808T",
+    "          `~` \t"
+};
     }
 
     /// <summary>
