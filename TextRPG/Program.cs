@@ -292,14 +292,14 @@ namespace TextRPG
 
                     // Buy Armor in shop
                     case 1:
-                        UIManager.ShowShopList(ItemCategory.Armor);
+                        UIManager.ShowShopList(character, ItemCategory.Armor);
                         if (!int.TryParse(Console.ReadLine(), out int ind1)) { Console.WriteLine("| 잘못된 입력입니다! |"); break; }
                         else if (ind1 <= 0) break;
                         InShop_Buy(ItemCategory.Armor, ind1); break;
 
                     // Buy Weapon in shop
                     case 2:
-                        UIManager.ShowShopList(ItemCategory.Weapon);
+                        UIManager.ShowShopList(character, ItemCategory.Weapon);
                         if (!int.TryParse(Console.ReadLine(), out int ind2)) { Console.WriteLine("| 잘못된 입력입니다! |"); break; }
                         else if (ind2 <= 0) break;
                         InShop_Buy(ItemCategory.Weapon, ind2);
@@ -307,7 +307,7 @@ namespace TextRPG
 
                     // Buy Consumable in shop
                     case 3:
-                        UIManager.ShowShopList(ItemCategory.Consumable);
+                        UIManager.ShowShopList(character, ItemCategory.Consumable);
                         if (!int.TryParse(Console.ReadLine(), out int ind3)) { Console.WriteLine("| 잘못된 입력입니다! |"); break; }
                         else if (ind3 <= 0) break;
                         InShop_Buy(ItemCategory.Consumable, ind3);
@@ -454,7 +454,7 @@ namespace TextRPG
         /// <param name="character"></param>
         private void CompleteQuest(Character character)
         {
-            UIManager.QuestUI_Complete();
+            if (!UIManager.QuestUI_Complete()) { Console.Write("\nPress enter to continue..."); Console.ReadLine(); return; }
 
             if (!int.TryParse(Console.ReadLine(), out int opt)) { Console.WriteLine("| 잘못된 입력입니다! |"); Console.Write("\nPress enter to continue..."); Console.ReadLine(); return; }
             else if (opt < 1 || opt > QuestManager.GetCompletableQuests().Count()) { Console.WriteLine("| 잘못된 입력입니다! |"); Console.Write("\nPress enter to continue..."); Console.ReadLine(); return; }
@@ -630,7 +630,7 @@ namespace TextRPG
         private void InBattle()
         {
             Console.Clear();
-            UIManager.BaseUI(GameManager.SelectedCharacter, "Kill the monsters", typeof(BattleOptions));
+            UIManager.BattleUI(GameManager.SelectedCharacter, SpawnManager, "Kill the monsters");
             if (!int.TryParse(Console.ReadLine(), out int opt)) { Console.WriteLine("| 잘못된 입력입니다! |"); Console.Write("\nPress enter to continue..."); Console.ReadLine(); return; }
             else if (opt < 1 || opt > Enum.GetValues(typeof(BattleOptions)).Length) { Console.WriteLine("| 잘못된 입력입니다! |"); Console.Write("\nPress enter to continue..."); Console.ReadLine(); return; }
 
@@ -690,12 +690,14 @@ namespace TextRPG
             if (opt > 0 && opt <= SpawnManager.GetMonsterCount())
             {
                 AttackType? type = GameManager.SelectedCharacter.EquippedWeapon?.AttackType;
+                AttackStat newAtkStat = InBattle_CalculateAtkStat(GameManager.SelectedCharacter);
+
                 switch (type)
                 {
-                    case AttackType.Close: SpawnManager.spawnedMonsters.ElementAt(opt - 1).OnDamage(AttackType.Close, GameManager.SelectedCharacter.AttackStat.Attack, false); break;
-                    case AttackType.Long: SpawnManager.spawnedMonsters.ElementAt(opt - 1).OnDamage(AttackType.Long, GameManager.SelectedCharacter.AttackStat.RangeAttack, false); break;
-                    case AttackType.Magic: SpawnManager.spawnedMonsters.ElementAt(opt - 1).OnDamage(AttackType.Magic, GameManager.SelectedCharacter.AttackStat.MagicAttack, false); break;
-                    default: SpawnManager.spawnedMonsters.ElementAt(opt - 1).OnDamage(AttackType.Close, GameManager.SelectedCharacter.AttackStat.Attack, false); break;
+                    case AttackType.Close: SpawnManager.spawnedMonsters.ElementAt(opt - 1).OnDamage(AttackType.Close, newAtkStat.Attack, false); break;
+                    case AttackType.Long: SpawnManager.spawnedMonsters.ElementAt(opt - 1).OnDamage(AttackType.Long, newAtkStat.RangeAttack, false); break;
+                    case AttackType.Magic: SpawnManager.spawnedMonsters.ElementAt(opt - 1).OnDamage(AttackType.Magic, newAtkStat.MagicAttack, false); break;
+                    default: SpawnManager.spawnedMonsters.ElementAt(opt - 1).OnDamage(AttackType.Close, newAtkStat.Attack, false); break;
                 }
             }
             return true;
@@ -761,6 +763,30 @@ namespace TextRPG
             }
             else if (skill is BuffSkill buffSkill) return buffSkill.OnActive(GameManager.SelectedCharacter);
             return false;
+        }
+
+        /// <summary>
+        /// Calculates AttackStat of character in battle.
+        /// </summary>
+        /// <param name="character"></param>
+        /// <returns></returns>
+        private AttackStat InBattle_CalculateAtkStat(Character character)
+        {
+            AttackStat newAtkStat = new(character.AttackStat);
+            if (character.EquippedWeapon != null) { newAtkStat += character.AttackStat; }
+            foreach (var item in GameManager.Exposables)
+            {
+                if (item is AttackBuffPotion atkPotion) { newAtkStat += atkPotion.AttackStat; }
+                else if (item is AllBuffPotion allPotion) { newAtkStat += allPotion.AttackStat; }
+            }
+            foreach (var skill in character.Skills)
+            {
+                if (skill is BuffSkill buffSkill)
+                {
+                    if (buffSkill.Name.Equals("명상") && buffSkill.IsActive) newAtkStat *= buffSkill.Coefficient;
+                }
+            }
+            return newAtkStat;
         }
 
         /// <summary>

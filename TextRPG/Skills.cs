@@ -36,7 +36,7 @@ namespace TextRPG
 
         public virtual new string ToString()
         {
-            return $"Name : {name}, Desc. : {description}, Coef. : {coefficient:F2}, Mana Cost: {manaCost}";
+            return $"이름 : {name}, 설명 : {description}, 가중치 : {coefficient:F2}, MP 소모 : {manaCost}";
         }
     }
 
@@ -72,11 +72,12 @@ namespace TextRPG
             Console.WriteLine($"| 스킬_{Name}을 {target.Name}에 시전하였습니다! |");
 
             AttackType? type = character.EquippedWeapon?.AttackType;
+            AttackStat newAtkStat = CalculateAtkStat(character);
             switch (type)
             {
-                case AttackType.Close: target.OnDamage(AttackType.Close, Coefficient * character.AttackStat.Attack, true); break;
-                case AttackType.Long: target.OnDamage(AttackType.Long, Coefficient * character.AttackStat.RangeAttack, true); break;
-                case AttackType.Magic: target.OnDamage(AttackType.Magic, Coefficient * character.AttackStat.MagicAttack, true); break;
+                case AttackType.Close: target.OnDamage(AttackType.Close, Coefficient * newAtkStat.Attack, true); break;
+                case AttackType.Long: target.OnDamage(AttackType.Long, Coefficient * newAtkStat.RangeAttack, true); break;
+                case AttackType.Magic: target.OnDamage(AttackType.Magic, Coefficient * newAtkStat.MagicAttack, true); break;
             }
             return true;
         }
@@ -99,6 +100,7 @@ namespace TextRPG
             Console.WriteLine($"| 스킬_{Name}을 모든 몬스터에 시전하였습니다! |");
 
             AttackType? type = character.EquippedWeapon?.AttackType;
+            AttackStat newAtkStat = CalculateAtkStat(character);
             switch (type)
             {
                 case AttackType.Close:
@@ -107,7 +109,7 @@ namespace TextRPG
                     {
                         var next = current.Next;
                         Monster target = current.Value;
-                        target.OnDamage(AttackType.Close, Coefficient * character.AttackStat.Attack, true);
+                        target.OnDamage(AttackType.Close, Coefficient * newAtkStat.Attack, true);
                         current = next;
                     }
                     break;
@@ -117,7 +119,7 @@ namespace TextRPG
                     {
                         var next = current.Next;
                         Monster target = current.Value;
-                        target.OnDamage(AttackType.Long, Coefficient * character.AttackStat.RangeAttack, true);
+                        target.OnDamage(AttackType.Long, Coefficient * newAtkStat.RangeAttack, true);
                         current = next;
                     }
                     break;
@@ -127,12 +129,36 @@ namespace TextRPG
                     {
                         var next = current.Next;
                         Monster target = current.Value;
-                        target.OnDamage(AttackType.Magic, Coefficient * character.AttackStat.MagicAttack, true);
+                        target.OnDamage(AttackType.Magic, Coefficient * newAtkStat.MagicAttack, true);
                         current = next;
                     }
                     break;
             }
             return true;
+        }
+
+        /// <summary>
+        /// Calculate Attack Stat
+        /// </summary>
+        /// <param name="character"></param>
+        /// <returns></returns>
+        private AttackStat CalculateAtkStat(Character character)
+        {
+            AttackStat newAtkStat = new(character.AttackStat);
+            if (character.EquippedWeapon != null) { newAtkStat += character.AttackStat; }
+            foreach (var item in GameManager.Exposables)
+            {
+                if (item is AttackBuffPotion atkPotion) { newAtkStat += atkPotion.AttackStat; }
+                else if (item is AllBuffPotion allPotion) { newAtkStat += allPotion.AttackStat; }
+            }
+            foreach (var skill in character.Skills)
+            {
+                if (skill is BuffSkill buffSkill)
+                {
+                    if (buffSkill.Name.Equals("명상") && buffSkill.IsActive) newAtkStat *= buffSkill.Coefficient;
+                }
+            }
+            return newAtkStat;
         }
     }
 
@@ -143,8 +169,6 @@ namespace TextRPG
     {
         // Field
         private bool isActive;
-        private AttackStat originalAttackStat;
-        private DefendStat originalDefendStat;
         private int turnInterval;
 
         // Property
@@ -177,10 +201,6 @@ namespace TextRPG
             character.OnMagicPointConsume(ManaCost);
             Console.WriteLine($"| 스킬_{Name}을 시전하였습니다! |");
 
-            originalAttackStat = new(character.AttackStat);
-            originalDefendStat = new(character.DefendStat);
-            character.AttackStat *= Coefficient;
-            character.DefendStat *= Coefficient;
             UsedTurn = GameManager.CurrentTurn;
             IsActive = true;
             return true;
@@ -193,8 +213,6 @@ namespace TextRPG
         public void OnBuffExpired(Character character)
         {
             if (!isActive) return;
-            character.AttackStat = originalAttackStat;
-            character.DefendStat = originalDefendStat;
             IsActive = false;
             Console.WriteLine($"| 스킬_{Name} 의 효과가 사라졌습니다! |");
         }

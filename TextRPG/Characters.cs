@@ -185,24 +185,12 @@ namespace TextRPG
             Health = MaxHealth;
             MagicPoint = MaxMagicPoint;
 
-            AttackStat newAtkStat = new(AttackStat);
-            DefendStat newDefStat = new(DefendStat);
-            foreach (var item in GameManager.Exposables)
-            {
-                if(item is AttackBuffPotion attackBuffPotion) { newAtkStat -= attackBuffPotion.AttackStat; }
-                else if(item is DefendBuffPotion defendBuffPotion) { newDefStat -= defendBuffPotion.DefendStat; }
-                else if(item is AllBuffPotion allBuffPotion) { 
-                    newAtkStat -= allBuffPotion.AttackStat; 
-                    newDefStat -= allBuffPotion.DefendStat; 
-                }
-            }
-
-            AttackStat += new AttackStat(newAtkStat.Attack * 0.15f,
-                                         newAtkStat.RangeAttack * 0.15f,
-                                         newAtkStat.MagicAttack * 0.15f);
-            DefendStat += new DefendStat(newDefStat.Defend * 0.15f,
-                                         newDefStat.RangeDefend * 0.15f,
-                                         newDefStat.MagicDefend * 0.15f);
+            AttackStat += new AttackStat(AttackStat.Attack * 0.15f,
+                                         AttackStat.RangeAttack * 0.15f,
+                                         AttackStat.MagicAttack * 0.15f);
+            DefendStat += new DefendStat(DefendStat.Defend * 0.15f,
+                                         DefendStat.RangeDefend * 0.15f,
+                                         DefendStat.MagicDefend * 0.15f);
         }
 
         /// <summary>
@@ -221,10 +209,28 @@ namespace TextRPG
                 damage *= CriticalHitDamagePercentage;
                 sb.Append($"치명적인 공격에 맞아");
             }
+
+            // Calculate the defend stat of character
+            DefendStat newDefendStat = new(DefendStat);
+            foreach(var item in EquippedArmor) { if (item != null) newDefendStat += item.DefendStat; }
+            foreach(var item in GameManager.Exposables)
+            {
+                if(item is DefendBuffPotion defpotion) { newDefendStat += defpotion.DefendStat; }
+                else if (item is AllBuffPotion allBuffPotion) { newDefendStat += allBuffPotion.DefendStat; }
+            }
+            foreach(var skill in Skills)
+            {
+                if (skill is BuffSkill buffSkill)
+                {
+                    if (buffSkill.Name.Equals("명상") && buffSkill.IsActive) { newDefendStat *= buffSkill.Coefficient; }
+                }
+            }
+            
+            // Calculated damage
             float calculatedDamage =
-                type == AttackType.Close ? Math.Max(1f, damage * (1f - DefendStat.Defend / 100f)) :
-                (type == AttackType.Long ? Math.Max(1f, damage * (1f - DefendStat.RangeDefend / 100f)) :
-                Math.Max(1f, damage * (1f - DefendStat.MagicDefend / 100f)));
+                type == AttackType.Close ? Math.Max(1f, damage * (1f - newDefendStat.Defend / 100f)) :
+                (type == AttackType.Long ? Math.Max(1f, damage * (1f - newDefendStat.RangeDefend / 100f)) :
+                Math.Max(1f, damage * (1f - newDefendStat.MagicDefend / 100f)));
 
             sb.Append($" {calculatedDamage:F2}의 데미지를 받았습니다! |");
             Console.WriteLine(sb.ToString());
