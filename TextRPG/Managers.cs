@@ -170,8 +170,9 @@ namespace TextRPG
             Console.WriteLine("| 2. Quest 수주 |");
             Console.WriteLine("| 3. Quest 완료 |");
             Console.WriteLine("| 4. 수주 가능한 Quest 목록 |");
-            Console.WriteLine("| 5. 수주한 Quest 목록 |");
-            Console.WriteLine("| 6. 완료한 Quest 목록 |");
+            Console.WriteLine("| 5. 완료 가능한 Quest 목록 |");
+            Console.WriteLine("| 6. 수주한 Quest 목록 |");
+            Console.WriteLine("| 7. 완료한 Quest 목록 |");
             Console.WriteLine("| ------------------------------------------ |");
             Console.Write("\n원하는 기능을 선택하세요 : ");
         }
@@ -1592,7 +1593,8 @@ namespace TextRPG
             while (true)
             {
                 UIManager.JobSelectionUI();
-                if (!int.TryParse(Console.ReadLine(), out int opt)) { Console.WriteLine("| Invalid Input! |"); }
+                if (!int.TryParse(Console.ReadLine(), out int opt)) { Console.WriteLine("| 잘못된 입력입니다! |"); Console.Write("Press any key to continue..."); Console.ReadKey(); }
+                else if(opt < 0 || Enum.GetValues(typeof(Job)).Length < opt) { Console.WriteLine("| 잘못된 입력입니다! |"); Console.Write("Press any key to continue..."); Console.ReadKey(); }
                 else { option = Math.Clamp(opt, 0, Enum.GetValues(typeof(Job)).Length); break; }
             }
 

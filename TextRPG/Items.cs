@@ -185,8 +185,6 @@ namespace TextRPG
         public virtual void OnPurchase(Character character)
         {
             if (character.Currency < Price) { Console.WriteLine("| Not enough Money! |"); return; }
-            character.Currency -= Price;
-
             Console.WriteLine($"| {name}을 구매하였습니다! |"); 
         }
 
@@ -270,6 +268,7 @@ namespace TextRPG
         {
             base.OnPurchase(character);
             if (character.Currency < Price){ return; }
+            character.Currency -= Price;
             character.Armors.Add(new Helmet(this));
         }
 
@@ -316,6 +315,7 @@ namespace TextRPG
         {
             base.OnPurchase(character);
             if (character.Currency < Price) { return; }
+            character.Currency -= Price;
             character.Armors.Add(new ChestArmor(this));
         }
 
@@ -361,6 +361,7 @@ namespace TextRPG
         {
             base.OnPurchase(character);
             if (character.Currency < Price) { return; }
+            character.Currency -= Price;
             character.Armors.Add(new LegArmor(this));
         }
 
@@ -407,6 +408,7 @@ namespace TextRPG
         {
             base.OnPurchase(character);
             if (character.Currency < Price) { return; }
+            character.Currency -= Price;
             character.Armors.Add(new FootArmor(this));
         }
 
@@ -453,6 +455,7 @@ namespace TextRPG
         {
             base.OnPurchase(character);
             if (character.Currency < Price) { return; }
+            character.Currency -= Price;
             character.Armors.Add(new Gauntlet(this));
         }
 
@@ -546,7 +549,6 @@ namespace TextRPG
         public virtual void OnPurchase(Character character)
         {
             if (character.Currency < Price) { Console.WriteLine("| Not enough Money! |"); return; }
-            character.Currency -= Price;
             Console.WriteLine($"| {name} is purchased |");
         }
 
@@ -612,6 +614,7 @@ namespace TextRPG
         {
             base.OnPurchase(character);
             if (character.Currency < Price) { return; }
+            character.Currency -= Price;
             character.Weapons.Add(new Sword(this));
         }
 
@@ -669,6 +672,7 @@ namespace TextRPG
         {
             base.OnPurchase(character);
             if (character.Currency < Price) { return; }
+            character.Currency -= Price;
             character.Weapons.Add(new Bow(this));
         }
 
@@ -728,6 +732,7 @@ namespace TextRPG
         {
             base.OnPurchase(character);
             if (character.Currency < Price) { return; }
+            character.Currency -= Price;
             character.Weapons.Add(new Staff(this));
         }
 
@@ -810,7 +815,6 @@ namespace TextRPG
         public virtual void OnPurchase(Character character)
         {
             if (character.Currency < Price) { Console.WriteLine("| Not enough Money! |"); return; }
-            character.Currency -= Price;
             Console.WriteLine($"| {name} is purchased |");
         }
 
@@ -882,6 +886,7 @@ namespace TextRPG
         {
             base.OnPurchase(character);
             if (character.Currency < Price) { return; }
+            character.Currency -= Price;
             character.Consumables.Add(new HealthPotion(this));
         }
 
@@ -941,6 +946,7 @@ namespace TextRPG
         {
             base.OnPurchase(character);
             if (character.Currency < Price) { return; }
+            character.Currency -= Price;
             character.Consumables.Add(new MagicPotion(this));
         }
 
@@ -1022,6 +1028,7 @@ namespace TextRPG
         {
             base.OnPurchase(character);
             if (character.Currency < Price) { return; }
+            character.Currency -= Price;
             character.Consumables.Add(new AttackBuffPotion(this));
         }
 
@@ -1105,6 +1112,7 @@ namespace TextRPG
         {
             base.OnPurchase(character);
             if (character.Currency < Price) { return; }
+            character.Currency -= Price;
             character.Consumables.Add(new DefendBuffPotion(this));
         }
 
@@ -1194,6 +1202,7 @@ namespace TextRPG
         {
             base.OnPurchase(character);
             if (character.Currency < Price) { return; }
+            character.Currency -= Price;
             character.Consumables.Add(new AllBuffPotion(this));
         }
 

@@ -318,9 +318,9 @@ namespace TextRPG
                         string? input = Console.ReadLine(); if (input == null || input.Equals("exit")) break;
 
                         string[]? vals = input.Split(new char[] { ',', ' ', '|' });
-                        if (vals == null) { Console.WriteLine("| 잘못된 입력입니다! |"); break; }
-                        if (!int.TryParse(vals[0].Trim(new char[] { '[', ']', ' ', ',' }), out int cat)) { Console.WriteLine("| 잘못된 입력입니다! |"); break; }
-                        if (!int.TryParse(vals[1].Trim(new char[] { '[', ']', ' ', ',' }), out int ind4)) { Console.WriteLine("| 잘못된 입력입니다! |"); break; }
+                        if (vals == null || vals.Length < 2) { Console.WriteLine("| 잘못된 입력입니다! |"); Console.Write("Press any key to continue..."); Console.ReadKey(); break; }
+                        if (!int.TryParse(vals[0].Trim(new char[] { '[', ']', ' ', ',' }), out int cat)) { Console.WriteLine("| 잘못된 입력입니다! |"); Console.Write("Press any key to continue..."); Console.ReadKey(); break; }
+                        if (!int.TryParse(vals[1].Trim(new char[] { '[', ']', ' ', ',' }), out int ind4)) { Console.WriteLine("| 잘못된 입력입니다! |"); Console.Write("Press any key to continue..."); Console.ReadKey(); break; }
                         InShop_Sell((ItemCategory)Math.Clamp(cat - 1, 0, Enum.GetValues(typeof(ItemCategory)).Length - 1), ind4);
                         break;
                 }
@@ -634,8 +634,8 @@ namespace TextRPG
         {
             Console.Clear();
             UIManager.BaseUI(GameManager.SelectedCharacter, "Kill the monsters", typeof(BattleOptions));
-            if (!int.TryParse(Console.ReadLine(), out int opt)) { Console.WriteLine("| 잘못된 입력입니다! |"); return; }
-            else if (opt < 1 || opt > Enum.GetValues(typeof(BattleOptions)).Length) { Console.WriteLine("| 잘못된 입력입니다! |"); return; }
+            if (!int.TryParse(Console.ReadLine(), out int opt)) { Console.WriteLine("| 잘못된 입력입니다! |"); Console.Write("Press any key to continue..."); Console.ReadKey(); return; }
+            else if (opt < 1 || opt > Enum.GetValues(typeof(BattleOptions)).Length) { Console.WriteLine("| 잘못된 입력입니다! |"); Console.Write("Press any key to continue..."); Console.ReadKey(); return; }
 
             // Player Options
             switch ((BattleOptions)Math.Clamp(opt - 1, 0, Enum.GetValues(typeof(BattleOptions)).Length - 1))
@@ -682,13 +682,15 @@ namespace TextRPG
         /// </summary>
         private bool InBattle_Attack()
         {
-            UIManager.ShowMonsterList(SpawnManager);
             int opt;
             while (true)
             {
-                if (!int.TryParse(Console.ReadLine(), out int ind)) Console.WriteLine("| 잘못된 입력입니다! |");
-                else if (ind < 0 || ind > SpawnManager.GetMonsterCount()) Console.WriteLine("| 잘못된 입력입니다! |");
+                Console.Clear();
+                UIManager.ShowMonsterList(SpawnManager);
+                if (!int.TryParse(Console.ReadLine(), out int ind)) { Console.WriteLine("| 잘못된 입력입니다! |"); }
+                else if (ind < 0 || ind > SpawnManager.GetMonsterCount()) { Console.WriteLine("| 잘못된 입력입니다! |"); }
                 else { opt = Math.Clamp(ind, 0, SpawnManager.GetMonsterCount()); break; }
+                Console.Write("Press any key to continue..."); Console.ReadKey();
             }
 
             if (opt <= 0) return false;
@@ -712,11 +714,11 @@ namespace TextRPG
         /// </summary>
         private bool InBattle_Skill()
         {
-            UIManager.ShowSkillList(GameManager.SelectedCharacter);
-
             int skillOpt;
             while (true)
             {
+                Console.Clear();
+                UIManager.ShowSkillList(GameManager.SelectedCharacter);
                 if (!int.TryParse(Console.ReadLine(), out int ind)) Console.WriteLine("| 잘못된 입력입니다! |");
                 else if (ind < 0 || ind > GameManager.SelectedCharacter.Skills.Count) Console.WriteLine("| 잘못된 입력입니다! |");
                 else { skillOpt = Math.Clamp(ind, 0, GameManager.SelectedCharacter.Skills.Count); break; }
@@ -753,13 +755,20 @@ namespace TextRPG
                 int monsterOpt;
                 while (true)
                 {
-                    if (!int.TryParse(Console.ReadLine(), out int ind)) Console.WriteLine("| 잘못된 입력입니다! |");
-                    else if (ind < 0 || ind > SpawnManager.GetMonsterCount()) Console.WriteLine("| 잘못된 입력입니다! |");
+                    if (!int.TryParse(Console.ReadLine(), out int ind)) { Console.WriteLine("| 잘못된 입력입니다! |"); }
+                    else if (ind < 0 || ind > SpawnManager.GetMonsterCount()) { Console.WriteLine("| 잘못된 입력입니다! |"); }
                     else { monsterOpt = Math.Clamp(ind, 0, SpawnManager.GetMonsterCount()); break; }
                 }
                 if (monsterOpt <= 0) return false;
 
-                return attackSkill.OnActive(GameManager.SelectedCharacter, SpawnManager.spawnedMonsters.ElementAt(monsterOpt - 1));
+                bool isSuccess2 = attackSkill.OnActive(GameManager.SelectedCharacter, SpawnManager.spawnedMonsters.ElementAt(monsterOpt - 1));
+                if (!isSuccess2)
+                {
+                    Console.WriteLine("| 마나가 부족합니다! |");
+                    Console.Write("Press any key to continue...");
+                    Console.ReadKey(true);
+                }
+                return isSuccess2;
             }
             else if (skill is BuffSkill buffSkill) return buffSkill.OnActive(GameManager.SelectedCharacter);
             return false;
