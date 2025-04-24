@@ -251,24 +251,36 @@ namespace TextRPG
         public static void MonsterEncounterUI(SpawnManager spawnManager)
         {
             StringBuilder sb = new();
-            int i = 0;
 
             Console.WriteLine("\n| ---------------------------------- |");
             Console.ForegroundColor = ConsoleColor.Green;
             foreach (Monster monster in spawnManager.spawnedMonsters)
             {
-                if (i != 0) sb.Append(", ");
-                sb.Append(monster.Name); i++;
+                sb.Append($"Lv {monster.Level}: ").Append(monster.Name).Append('\n');
 
-                if (monster.AttackType == AttackType.Close) foreach (string line in Miscs.Goblin) Console.WriteLine(line);
-                else if (monster.AttackType == AttackType.Long) foreach (string line in Miscs.GoblinArcher) Console.WriteLine(line);
-                else foreach (string line in Miscs.GoblinWizard) Console.WriteLine(line);
+                string[] monsterArt;
+
+                if(monster.Level > 10) {
+                    if (monster.AttackType == AttackType.Close) monsterArt = Miscs.HighLevelGoblinWarrior;
+                    else if (monster.AttackType == AttackType.Long) monsterArt = Miscs.HighLevelGoblinArcher;
+                    else monsterArt = Miscs.HighLevelGoblinWizard;
+                }
+                else
+                {
+                    if (monster.AttackType == AttackType.Close) monsterArt = Miscs.Goblin;
+                    else if (monster.AttackType == AttackType.Long) monsterArt = Miscs.GoblinArcher;
+                    else monsterArt = Miscs.GoblinWizard;
+                }
+
+                foreach (string line in monsterArt) Console.WriteLine(line);
             }
             Console.ResetColor();
             Console.WriteLine("| ---------------------------------- |");
 
-            Console.WriteLine($"\n| Warning! : 포악한 {sb} 을 조우했다! |");
-            Console.WriteLine("Press any key to continue...");
+            Console.WriteLine($"\n| ---------- Warning! ---------- |");
+            Console.WriteLine($"| {spawnManager.spawnedMonsters.Count}마리의 몬스터가 나타났다! |");
+            Console.Write(sb.ToString());
+            Console.Write("\nPress any key to continue...");
             Console.ReadKey();
         }
 
@@ -280,13 +292,16 @@ namespace TextRPG
             Console.ReadKey();
         }
 
-        public static void GameOverUI(Character character)
+        public static void GameOverUI()
         {
             Console.WriteLine();
             Console.ForegroundColor = ConsoleColor.Red;
             foreach (string line in Miscs.GameOver) Console.WriteLine(line);
             Console.ResetColor();
+        }
 
+        public static void ReviveOptionUI(Character character)
+        {
             Console.WriteLine($"\nGold : {character.Currency}");
             if (character.Currency >= 100)
             {
@@ -1010,91 +1025,100 @@ namespace TextRPG
             +==================================================================================+
             ",
             @"
-            +================================================================================+
-            |                                            |||| |||                            |                  
-            |              *                         |||||                                   |    
-            |                       *             ||||                       right           |
-            |   *                               |||                                          | 
-            |               *                  ||                                        || ||
-            |                                  ||                                |  |||||    | 
-            |                                ||                              ||              |
-            |                               ||                           |||                 |
-            |                              ||                          ||           *        |
-            |                             ||                        ||                       |
-            |                *           ||                     ||              *            |
-            |                           ||                   ||                              |
-            |                           |                  ||                                |
-            |                          ||                 |                                  |
-            |                          |                ||                                   |
-            |                         ||               ||                                    |
-            |                         |                |                                     |
-            |                         |               ||                     .oOo.oOo.o      |
-            |.oOo.oOo.oO             ||               |                                      |
-            |                        |                ||                                     | 
-            |        .oOo.oOo.oOo   ||                ||                                     |
-            |                       ||                |                .oOo.oOo.oOo.oOo.     |
-            |.oOo.oO                 | |             ||             .oOo.                    | 
-            |                        |||             |        .oOo.oOo.oOo.o                 |
-            |                        ||              | |                                     |
-            +================================================================================+
+            +==================================================================================+ 
+            |                                                         ||                         
+            |                *                                   |||||                         | 
+            |                         *                     ||||                              || 
+            |     *                                      |||    ┌──────────┐                |||| 
+            |                 *                       |||       │ 1. RIGHT │             |||   | 
+            |                                      |||          └──────────┘       | |||       | 
+            |                                    ||                            |||             | 
+            |                                   |                          |||                 | 
+            |                                ||                          ||           *        | 
+            |   .oOo                       ||                         ||                       | 
+            |                  *          ||                      ||              *            | 
+            |                            ||                    ||                              | 
+            |                           ||                    ||                               | 
+            |                           ||                   ||                                | 
+            |                          |                   ||      .oO                         | 
+            |                         ||                  ||                                   | 
+            |                          |                 ||                                    | 
+            |                         |                  ||                    .oOo.oOo.o      | 
+            |  .oOo.oOo.oO             |                  |                                    | 
+            |                         |                  ||                                    | 
+            |          .oOo.oOo.oOo   |                   |                                    | 
+            |                         ||                   |             .oOo.oOo.oOo.oOo.     | 
+            |  .oOo.oO                ||                    |         .oOo.                    | 
+            |                         |                     ||  .oOo.oOo.oOo.o                 | 
+            |                         |                       |                    .oOo.o      | 
+            |                          |                      ||                          .oOo | 
+            |      .oOo.oO             ||                      |    .       .oOo.o             | 
+            |                           ||                 '    ||                             | 
+            +==================================================================================+
             ",
             @"
-            +===================================================================================+
-                                        |                                .oO               
-                 *       *              |             |                                    
-                       *                |                          ┌───────┐               
-                                        |                          │ RIGHT │               
-                                        |                          └───────┘               
-                                        |                                           |      
-                                        |                  ________________________________
-                   *                    |                  |                               
-                                        |                  |                   .-.-.   .-.-
-                                        |                  |                  / / \ \ / / \
-                               *        |                  |                 `-'   `-`-'   
-                                        |                  |           .-.-.               
-                            *           |                  |          / / \ \              
-                *                       |                  |         `-'   `-`             
-                                        |                  |                               
-                               *        |                  |      .-.-.   .-.-.            
-                                        |                  |     / / \ \ / / \ \           
-                                        |                  |    `-'   `-`-'   `-`.-.-.  o  
-                                        |                  |                    / / \ \    
-                    *                   |                  |                   `-'   `-`   
-                                        |                  |                               
-                              *         |                  |        .-.-.   .-.-.  Oo.oOo. 
-                                        |                  |       / / \ \ / / \ \         
-                                        |                  |    .o`-'   `-`-'   `-`        
-                                        |                  |                               
-            +===================================================================================+
+            +==================================================================================+
+            |                       -+         |   .           .     | ____|____|____|____|__| |
+            |                                  ||   ┌────────────┐   | __|____|____|____|____| |
+            |         -+H+-                     |   │ 2. FORWARD │   |  _________________ |__| |
+            |                                    |  └────────────┘     |____|____|____|__|__ __|
+            |                                    |                    ||__|____|____|____||_|__|
+            ||||                       -+H+     ||              .     ||____|____|____|__|__|__|
+            || |||||                             |       .           |  _________________ |_|__|
+            |      || ||||| |                    |                   | |____|____|____|__|__ __|
+            |               |  |||| ||          ||                   | |__|____|____|____||_|__|
+            |                          ||||||||  |             .      ||____|____|____|__|__|__|
+            |     .                           |||    ,              |  _________________ _|_|__|
+            |           ┌─────────┐   ,                        .    | |____|____|____|__|__ __ |
+            |        ,  │ 1. LEFT │                 .                ||__|____|____|____||_|__||
+            |           └─────────┘                                  ||____|____|____|__|__|__||
+            |                 ,                                     |______________________|__||
+            |||                                .                   ||____|____|____|____| _|__||
+            | |||| |||| ||||           .                '           |__|____|____|____|__|_|__||
+            |     |          ||||||                        .        |____|____|____|____||_|__||
+            |                     || ||                             |_ ______________________  |
+            |                          ||||||                      |  |____|____|____|____|__| |
+            |                               |||||        .           ||__|____|____|____|____| |
+            |     -+H+-                          |   '               ||____|____|____|____|__| |
+            |                                    |          '       |  _________________ |__|  |
+            |                                    |                  |_|____|____|____|__|__  __|
+            |                -+H+-+H             |                  |_| _________________ _||__|
+            |                                    |      '           |  |____|____|____|__| _|__|
+            |                                   ||                  |  |__|____|____|____||_|__|
+            |                                  |           '       | | |____|____|____|__||_   |
+            +==================================================================================+
             ",
             @"
-            +===================================================================================+
-                                                                │ ___________________________   
-                      *       *                                 │|____|____|____|____|____|__|| 
-                            *  ┌──────┐                         │|__|____|____|____|____|____|| 
-                               │ LEFT │                         │|____|____|____|____|____|__|| 
-                               └──────┘                         │ __ __|____|____|____|____|__| 
-                                                                │|__|__|____|____|____|____|__| 
-                ____________________ _ ______                   │|__||____|____|____|____|____| 
-                        *                    │                  │|__|__|____|____|____|____|__| 
-                                             │                  │ __ __|____|____|____|____|__|-
-                                             │                  │|__||____|____|____|____|____|\
-                                    *        │                  │|__|__|____|____|____|____| __ 
-                                             │                  │|__|_______________________|__|
-                                 *           │                  │|____|____|____|____|____|_|__|
-                     *                       │                  │|__|____|____|____|____|___|__|
-                                             │                  ││____|____|____|____|____|__|__
-                                    *        │                  ││___________________________   
-                                             │                  ││____|____|____|____|____|__| _
-                                             │                  ││__|____|____|____|____|____||_
-                                             │                  │|____|____|____|____|____|__||_
-                         *                   │                  │_ ___________________________|_
-                                             │                  │_|____|____|____|____|____|__ _
-                                   *         │                  │_|__|____|____|____|____|____|_
-                                             │                  │_|____|____|____|____|____|__|_
-                                             │                  │_ ______________________ __| __
-                                             │                  │_|____|____|____|____|__|__||__
-            +===================================================================================+
+            +==================================================================================+
+            |                            ||                   ||    .oO         ||||           |
+            |        *       *            |   ┌ ───────────┐   |           ||||||              |
+            |              *              |   │ 2. FORWARD │  ||      ||||||                   |
+            |                             |   └ ───────────┘   |   ||||                        |
+            |                            |                     | ||      ┌──────────┐          |
+            |                         *  |                      ||       │ 1. RIGHT │          |
+            |                            ||                              └──────────┘          |
+            |          *                  |                                                    |
+            |                             |                                                  |||
+            |                             |                                             |||||  |
+            |     .                *     |                                     ||| ||| |       |
+            |                             |                                 |||    .-.-.   .-.-|
+            |                   *        |                                |||     / / \ \ / / \|
+            |       *                    |                             ||||      `-'   `-`-'   |
+            |                             |                      | ||||| . .-.-.               |
+            |                      *      |                   | |||       / / \ \              |
+            |                             |                    ||        `-'   `.oOo.oOo.o     |
+            |                              |                   ||                              |
+            |                              |                   ||     .-.-.   .-.-.            |
+            |           *                  |                   ||    / / \ \ / / \ \           |
+            |                             ||                   ||   `-'   `-`-'   `-`.-.-.  o  |
+            |                     *     |||                    |  .oOo.             / / \ \    |
+            |                            ||                    |                   `-'   `-`   |
+            |                             |                   ||                               |
+            |      *                      |                   |         .-.-.   .-.-.  Oo.oOo. |
+            |                            ||             '     |        / / \ \ / / \ \         |
+            |                          *  |                   ||    .o`-'   `-`-'   `-`        |
+            |                            |||               '   ||                 .o           |
+            +==================================================================================+
             ",
             @"
             +===============================+=================================================+
@@ -1265,8 +1289,9 @@ namespace TextRPG
         /// </summary>
         private static Quest[] Quests =
         {
-            new KillMonsterQuest("Please save us from monsters' attack", "Kill 1 Goblins", QuestDifficulty.Normal, 1, 120,300),
-            new CollectItemQuest("Please bring me some goblin's ears", typeof(GoblinEar).Name, "Collect 1 Goblin's Ears", QuestDifficulty.Easy, 1, 100,300),
+            new KillMonsterQuest("Please save us from monsters' attack", "Kill 3 Goblins", QuestDifficulty.Easy, 3, 100,150),
+            new CollectItemQuest("Please bring me some goblin's ears", typeof(GoblinEar).Name, "Collect 2 Goblin's Ears", QuestDifficulty.Normal, 2, 75, 100),
+            new CollectItemQuest("Please bring me some goblin's eyes", typeof(GoblinEye).Name, "Collect 2 Goblin's Eyes", QuestDifficulty.Normal, 2, 75, 100),
         };
     }
 
@@ -1324,7 +1349,16 @@ namespace TextRPG
         /// <summary>
         /// Remove all spawned monsters
         /// </summary>
-        public void RemoveAllMonsters() { spawnedMonsters.Clear(); }
+        public void RemoveAllMonsters() 
+        {
+            var monster = spawnedMonsters.First;
+            while(monster != null)
+            {
+                var next = monster.Next;
+                spawnedMonsters.Remove(monster);
+                monster = next;
+            }
+        }
 
         // Private Methods
         /// <summary>
@@ -1498,7 +1532,8 @@ namespace TextRPG
         public static GameTime GameTime = GameTime.Afternoon;
         public static int KilledMonsterCount = 0;
         public static int CurrentTurn = 1;
-        public static int prevPath = 0;
+        public static int PrevPath = 0;
+        public static bool IsPathSelected = false;
         public static Queue<Consumables> Exposables = new();
 
         // Property
@@ -1517,7 +1552,7 @@ namespace TextRPG
         /// If not, it will return false.
         /// </summary>
         /// <returns>Returns true, if job selected successfully. If not, returns false.</returns>
-        public void SelectJob()
+        public void SelectJob(SpawnManager spawnManager)
         {
             int option;
             while (true)
@@ -1526,8 +1561,6 @@ namespace TextRPG
                 if (!int.TryParse(Console.ReadLine(), out int opt)) { Console.WriteLine("| Invalid Input! |"); }
                 else { option = Math.Clamp(opt, 0, Enum.GetValues(typeof(Job)).Length); break; }
             }
-
-            if (option <= 0) return;
 
             if (option <= 0) return;
 
@@ -1624,20 +1657,43 @@ namespace TextRPG
         }
 
         /// <summary>
-        /// Game Over UI will be displayed.
+        /// Change to GameOver state.
         /// </summary>
         private void GameOver()
         {
             GameState = GameState.GameOver;
-            UIManager.GameOverUI(SelectedCharacter);
+        }
+
+        /// <summary>
+        /// Actions when game is over.
+        /// </summary>
+        /// <param name="spawnManager"></param>
+        public void GameOverAction(SpawnManager spawnManager)
+        {
+            // Display Game Over UI
+            UIManager.GameOverUI();
+
+            // Remove all monsters
+            spawnManager.RemoveAllMonsters();
 
             // Low currency -> Reset game and move to main menu
-            if (SelectedCharacter.Currency < 100) { ResetGame(); return; }
+            if (SelectedCharacter.Currency < 100) { 
+                UIManager.ReviveOptionUI(SelectedCharacter);
+                ResetGame(); 
+                Console.Write("\nPress any key to continue..."); Console.ReadKey(); 
+                return;
+            }
 
             // Enough currency -> Give player option to revive
-            char key = char.ToLower(Console.ReadKey(true).KeyChar);
-            if (key.Equals('n')) { ResetGame(); return; }
-
+            while (true)
+            {
+                UIManager.ReviveOptionUI(SelectedCharacter);
+                string key = Console.ReadLine();
+                if (key.Equals("Y",StringComparison.OrdinalIgnoreCase)) { break; }
+                else if(key.Equals("N", StringComparison.OrdinalIgnoreCase)) { ResetGame(); return; }
+                else { Console.WriteLine("| 잘못된 입력입니다! |"); continue; }
+            }
+            
             // If player choose to revive, revive the character and move to town
             SelectedCharacter.OnRevive();
             GameState = GameState.Town;
@@ -1700,6 +1756,7 @@ namespace TextRPG
                     new CharacterConverter(), new ArmorConverter(),
                     new WeaponConverter(), new ConsumableConverter(),
                     new ImportantItemConverter(), new SkillConverter(),
+                    new EquippedArmorConverter(), 
                 },
                 WriteIndented = true
             };
@@ -1732,7 +1789,7 @@ namespace TextRPG
             var questOptions = new JsonSerializerOptions
             {
                 Converters = {
-                     new QuestConverter(),
+                     new QuestConverter(), new QuestListConverter(),
                 },
                 WriteIndented = true
             };
@@ -1764,12 +1821,18 @@ namespace TextRPG
                     new CharacterConverter(), new ArmorConverter(),
                     new WeaponConverter(), new ConsumableConverter(),
                     new ImportantItemConverter(), new SkillConverter(),
+                    new EquippedArmorConverter(),
                 },
                 WriteIndented = true
             };
             string characterJson = File.ReadAllText("data/character.json", Encoding.UTF8);
             var obj = JsonSerializer.Deserialize<Character>(characterJson, options);
             SelectedCharacter = obj ?? throw new InvalidOperationException("Failed to load character data.");
+            SelectedCharacter.OnDeath += GameOver;
+            foreach(var armor in SelectedCharacter.Armors)
+                if (armor.IsEquipped) SelectedCharacter.EquippedArmor[(int)(armor.ArmorPosition)] = armor;
+            foreach (var weapon in SelectedCharacter.Weapons)
+                if (weapon.IsEquipped) SelectedCharacter.EquippedWeapon = weapon;
 
             // Loading Game Data
             var gameOptions = new JsonSerializerOptions
@@ -1787,7 +1850,7 @@ namespace TextRPG
             var questOptions = new JsonSerializerOptions
             {
                 Converters = {
-                    new QuestConverter(),
+                    new QuestConverter(), new QuestListConverter(),
                 },
                 WriteIndented = true
             };

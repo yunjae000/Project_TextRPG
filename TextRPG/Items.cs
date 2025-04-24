@@ -130,7 +130,6 @@ namespace TextRPG
         public bool IsEquipped { get { return isEquipped; } set { isEquipped = value; } }
 
         // Constructor
-        public Armor() { name = "Unknown"; defendStat = new(1, 1, 1); price = 0; rarity = Rarity.Common; }
         public Armor(string name = "Unknown", DefendStat? defendStat = null, int price = 0, Rarity rarity = Rarity.Common)
         {
             this.name = name;
@@ -156,10 +155,10 @@ namespace TextRPG
         /// Calls when the armor is equipped
         /// </summary>
         /// <param name="character"></param>
-        public void OnEquipped(Character character)
+        public void OnEquip(Character character)
         {
             if (IsEquipped) { Console.WriteLine($"| {Name} is already equipped! |"); return; }
-            if (character.EquippedArmor[(int)(ArmorPosition)] != null) { character.EquippedArmor[(int)(ArmorPosition)]?.OnUnequipped(character); }
+            if (character.EquippedArmor[(int)(ArmorPosition)] != null) { character.EquippedArmor[(int)(ArmorPosition)].OnUnequip(character); }
             character.EquippedArmor[(int)(ArmorPosition)] = this;
             IsEquipped = true;
             character.DefendStat += DefendStat;
@@ -170,7 +169,7 @@ namespace TextRPG
         /// Calls when the armor is unequipped
         /// </summary>
         /// <param name="character"></param>
-        public void OnUnequipped(Character character)
+        public void OnUnequip(Character character)
         {
             if (!IsEquipped) { Console.WriteLine($"| {Name} is not equipped! |"); return; }
             character.EquippedArmor[(int)ArmorPosition] = null;
@@ -183,7 +182,7 @@ namespace TextRPG
         /// Calls when the armor is purchased
         /// </summary>
         /// <param name="character"></param>
-        public virtual void OnPurchased(Character character)
+        public virtual void OnPurchase(Character character)
         {
             if (character.Currency < Price) { Console.WriteLine("| Not enough Money! |"); return; }
             character.Currency -= Price;
@@ -195,7 +194,7 @@ namespace TextRPG
         /// Calls when the armor is sold
         /// </summary>
         /// <param name="character"></param>
-        public void OnSold(Character character)
+        public void OnSell(Character character)
         {
             if (IsEquipped) { Console.WriteLine($"| Not possible to sell!, {Name} is equipped! |"); return; }
             character.Currency += Price;
@@ -254,19 +253,23 @@ namespace TextRPG
         }
 
         [JsonConstructor]
-        public Helmet(string name, DefendStat defendStat, int price, Rarity rarity, ArmorPosition armorPosition)
+        public Helmet(string name, DefendStat defendStat, int price, Rarity rarity, 
+                      ArmorPosition armorPosition, ItemCategory category, bool isEquipped)
             : base(name, defendStat, price, rarity)
         {
             ArmorPosition = armorPosition;
+            Category = category;
+            IsEquipped = isEquipped;
         }
 
         /// <summary>
         /// Calls when the armor is purchased, adds the armor to the character's inventory
         /// </summary>
         /// <param name="character"></param>
-        public override void OnPurchased(Character character)
+        public override void OnPurchase(Character character)
         {
-            base.OnPurchased(character);
+            base.OnPurchase(character);
+            if (character.Currency < Price){ return; }
             character.Armors.Add(new Helmet(this));
         }
 
@@ -296,19 +299,23 @@ namespace TextRPG
         }
 
         [JsonConstructor]
-        public ChestArmor(string name, DefendStat defendStat, int price, Rarity rarity, ArmorPosition armorPosition)
+        public ChestArmor(string name, DefendStat defendStat, int price, Rarity rarity, 
+                          ArmorPosition armorPosition, ItemCategory category, bool isEquipped)
             : base(name, defendStat, price, rarity)
         {
             ArmorPosition = armorPosition;
+            Category = category;
+            IsEquipped = isEquipped;
         }
 
         /// <summary>
         /// Calls when the armor is purchased, adds the chest armor to the character's inventory
         /// </summary>
         /// <param name="character"></param>
-        public override void OnPurchased(Character character)
+        public override void OnPurchase(Character character)
         {
-            base.OnPurchased(character);
+            base.OnPurchase(character);
+            if (character.Currency < Price) { return; }
             character.Armors.Add(new ChestArmor(this));
         }
 
@@ -338,19 +345,22 @@ namespace TextRPG
         }
 
         [JsonConstructor]
-        public LegArmor(string name, DefendStat defendStat, int price, Rarity rarity, ArmorPosition armorPosition)
+        public LegArmor(string name, DefendStat defendStat, int price, Rarity rarity, ArmorPosition armorPosition, ItemCategory category, bool isEquipped)
             : base(name, defendStat, price, rarity)
         {
             ArmorPosition = armorPosition;
+            Category = category;
+            IsEquipped = isEquipped;
         }
 
         /// <summary>
         /// Calls when the armor is purchased, adds the leg armor to the character's inventory
         /// </summary>
         /// <param name="character"></param>
-        public override void OnPurchased(Character character)
+        public override void OnPurchase(Character character)
         {
-            base.OnPurchased(character);
+            base.OnPurchase(character);
+            if (character.Currency < Price) { return; }
             character.Armors.Add(new LegArmor(this));
         }
 
@@ -380,19 +390,23 @@ namespace TextRPG
         }
 
         [JsonConstructor]
-        public FootArmor(string name, DefendStat defendStat, int price, Rarity rarity, ArmorPosition armorPosition)
+        public FootArmor(string name, DefendStat defendStat, int price, Rarity rarity, 
+                         ArmorPosition armorPosition, ItemCategory category, bool isEquipped)
             : base(name, defendStat, price, rarity)
         {
             ArmorPosition = armorPosition;
+            Category = category;
+            IsEquipped = isEquipped;
         }
 
         /// <summary>
         /// Calls when the armor is purchased, adds the foot armor to the character's inventory
         /// </summary>
         /// <param name="character"></param>
-        public override void OnPurchased(Character character)
+        public override void OnPurchase(Character character)
         {
-            base.OnPurchased(character);
+            base.OnPurchase(character);
+            if (character.Currency < Price) { return; }
             character.Armors.Add(new FootArmor(this));
         }
 
@@ -422,19 +436,23 @@ namespace TextRPG
         }
 
         [JsonConstructor]
-        public Gauntlet(string name, DefendStat defendStat, int price, Rarity rarity, ArmorPosition armorPosition)
+        public Gauntlet(string name, DefendStat defendStat, int price, Rarity rarity, 
+                        ArmorPosition armorPosition, ItemCategory category, bool isEquipped)
             : base(name, defendStat, price, rarity)
         {
             ArmorPosition = armorPosition;
+            Category = category;
+            IsEquipped = isEquipped;
         }
 
         /// <summary>
         /// Calls when the armor is purchased, adds the gauntlet to the character's inventory
         /// </summary>
         /// <param name="character"></param>
-        public override void OnPurchased(Character character)
+        public override void OnPurchase(Character character)
         {
-            base.OnPurchased(character);
+            base.OnPurchase(character);
+            if (character.Currency < Price) { return; }
             character.Armors.Add(new Gauntlet(this));
         }
 
@@ -498,10 +516,10 @@ namespace TextRPG
         /// Calls when the weapon is equipped
         /// </summary>
         /// <param name="character"></param>
-        public void OnEquipped(Character character)
+        public void OnEquip(Character character)
         {
             if (IsEquipped) { Console.WriteLine($"| {Name} is already equipped! |"); return; }
-            if (character.EquippedWeapon != null) { character.EquippedWeapon?.OnUnequipped(character); }
+            if (character.EquippedWeapon != null) { character.EquippedWeapon?.OnUnequip(character); }
             character.EquippedWeapon = this;
             IsEquipped = true;
             character.AttackStat += AttackStat;
@@ -512,7 +530,7 @@ namespace TextRPG
         /// Calls when the weapon is unequipped
         /// </summary>
         /// <param name="character"></param>
-        public void OnUnequipped(Character character)
+        public void OnUnequip(Character character)
         {
             if (!IsEquipped) { Console.WriteLine($"| {Name} is not equipped! |"); return; }
             character.EquippedWeapon = null;
@@ -525,7 +543,7 @@ namespace TextRPG
         /// Calls when the weapon is purchased
         /// </summary>
         /// <param name="character"></param>
-        public virtual void OnPurchased(Character character)
+        public virtual void OnPurchase(Character character)
         {
             if (character.Currency < Price) { Console.WriteLine("| Not enough Money! |"); return; }
             character.Currency -= Price;
@@ -536,7 +554,7 @@ namespace TextRPG
         /// Calls when the weapon is sold
         /// </summary>
         /// <param name="character"></param>
-        public void OnSold(Character character)
+        public void OnSell(Character character)
         {
             character.Currency += Price;
             character.Weapons.Remove(this);
@@ -578,19 +596,22 @@ namespace TextRPG
         }
 
         [JsonConstructor]
-        public Sword(string name, AttackStat attackStat, int price, Rarity rarity, AttackType attackType)
+        public Sword(string name, AttackStat attackStat, int price, Rarity rarity, AttackType attackType, ItemCategory category, bool isEquipped)
             : base(name, attackStat, price, rarity)
         {
             AttackType = attackType;
+            Category = category;
+            IsEquipped = isEquipped;
         }
 
         /// <summary>
         /// Calls when the weapon is purchased, adds the sword to the character's inventory
         /// </summary>
         /// <param name="character"></param>
-        public override void OnPurchased(Character character)
+        public override void OnPurchase(Character character)
         {
-            base.OnPurchased(character);
+            base.OnPurchase(character);
+            if (character.Currency < Price) { return; }
             character.Weapons.Add(new Sword(this));
         }
 
@@ -632,19 +653,22 @@ namespace TextRPG
         }
 
         [JsonConstructor]
-        public Bow(string name, AttackStat attackStat, int price, Rarity rarity, AttackType attackType)
+        public Bow(string name, AttackStat attackStat, int price, Rarity rarity, AttackType attackType, ItemCategory category, bool isEquipped)
             : base(name, attackStat, price, rarity)
         {
             AttackType = attackType;
+            Category = category;
+            IsEquipped = isEquipped;
         }
 
         /// <summary>
         /// Calls when the weapon is purchased, adds the bow to the character's inventory
         /// </summary>
         /// <param name="character"></param>
-        public override void OnPurchased(Character character)
+        public override void OnPurchase(Character character)
         {
-            base.OnPurchased(character);
+            base.OnPurchase(character);
+            if (character.Currency < Price) { return; }
             character.Weapons.Add(new Bow(this));
         }
 
@@ -676,29 +700,34 @@ namespace TextRPG
     /// </summary>
     class Staff : Weapon
     {
-        public Staff(string name, AttackStat attackStat, int price, Rarity rarity) : base(name, attackStat, price, rarity)
+        public Staff(string name, AttackStat attackStat, int price, Rarity rarity) 
+            : base(name, attackStat, price, rarity)
         {
             AttackType = AttackType.Magic;
         }
-        public Staff(Staff staff) : base(staff.Name, staff.AttackStat, staff.Price, staff.Rarity)
+        public Staff(Staff staff) 
+            : base(staff.Name, staff.AttackStat, staff.Price, staff.Rarity)
         {
             AttackType = staff.AttackType;
         }
 
         [JsonConstructor]
-        public Staff(string name, AttackStat attackStat, int price, Rarity rarity, AttackType attackType)
+        public Staff(string name, AttackStat attackStat, int price, Rarity rarity, AttackType attackType, ItemCategory category, bool isEquipped)
             : base(name, attackStat, price, rarity)
         {
             AttackType = attackType;
+            Category = category;
+            IsEquipped = isEquipped;
         }
 
         /// <summary>
         /// Calls when the weapon is purchased, adds the staff to the character's inventory
         /// </summary>
         /// <param name="character"></param>
-        public override void OnPurchased(Character character)
+        public override void OnPurchase(Character character)
         {
-            base.OnPurchased(character);
+            base.OnPurchase(character);
+            if (character.Currency < Price) { return; }
             character.Weapons.Add(new Staff(this));
         }
 
@@ -778,7 +807,7 @@ namespace TextRPG
         /// Calls when the consumable is purchased
         /// </summary>
         /// <param name="character"></param>
-        public virtual void OnPurchased(Character character)
+        public virtual void OnPurchase(Character character)
         {
             if (character.Currency < Price) { Console.WriteLine("| Not enough Money! |"); return; }
             character.Currency -= Price;
@@ -789,7 +818,7 @@ namespace TextRPG
         /// Calls when the consumable is sold
         /// </summary>
         /// <param name="character"></param>
-        public void OnSold(Character character)
+        public void OnSell(Character character)
         {
             character.Currency += Price;
             character.Consumables.Remove(this);
@@ -849,9 +878,10 @@ namespace TextRPG
         /// Calls when the health potion is purchased, adds the health potion to the character's inventory
         /// </summary>
         /// <param name="character"></param>
-        public override void OnPurchased(Character character)
+        public override void OnPurchase(Character character)
         {
-            base.OnPurchased(character);
+            base.OnPurchase(character);
+            if (character.Currency < Price) { return; }
             character.Consumables.Add(new HealthPotion(this));
         }
 
@@ -898,6 +928,7 @@ namespace TextRPG
         public override void OnUsed(Character character)
         {
             if (character.MagicPoint >= character.MaxMagicPoint) { Console.WriteLine("| Magic is already full! |"); return; }
+            
             base.OnUsed(character);
             character.OnMagicPointHeal(Coefficient + (Coefficient * (int)Rarity * 0.1f));
         }
@@ -906,9 +937,10 @@ namespace TextRPG
         /// Calls when the magic potion is purchased, adds the magic potion to the character's inventory
         /// </summary>
         /// <param name="character"></param>
-        public override void OnPurchased(Character character)
+        public override void OnPurchase(Character character)
         {
-            base.OnPurchased(character);
+            base.OnPurchase(character);
+            if (character.Currency < Price) { return; }
             character.Consumables.Add(new MagicPotion(this));
         }
 
@@ -986,9 +1018,10 @@ namespace TextRPG
         /// Calls when the attack buff potion is purchased, adds the attack buff potion to the character's inventory
         /// </summary>
         /// <param name="character"></param>
-        public override void OnPurchased(Character character)
+        public override void OnPurchase(Character character)
         {
-            base.OnPurchased(character);
+            base.OnPurchase(character);
+            if (character.Currency < Price) { return; }
             character.Consumables.Add(new AttackBuffPotion(this));
         }
 
@@ -1068,9 +1101,10 @@ namespace TextRPG
         /// Calls when the defend buff potion is purchased, adds the defend buff potion to the character's inventory
         /// </summary>
         /// <param name="character"></param>
-        public override void OnPurchased(Character character)
+        public override void OnPurchase(Character character)
         {
-            base.OnPurchased(character);
+            base.OnPurchase(character);
+            if (character.Currency < Price) { return; }
             character.Consumables.Add(new DefendBuffPotion(this));
         }
 
@@ -1156,9 +1190,10 @@ namespace TextRPG
         /// Calls when the all buff potion is purchased, adds the all buff potion to the character's inventory
         /// </summary>
         /// <param name="character"></param>
-        public override void OnPurchased(Character character)
+        public override void OnPurchase(Character character)
         {
-            base.OnPurchased(character);
+            base.OnPurchase(character);
+            if (character.Currency < Price) { return; }
             character.Consumables.Add(new AllBuffPotion(this));
         }
 
@@ -1226,7 +1261,7 @@ namespace TextRPG
             Console.WriteLine($"| {Name} is dropped! |");
         }
 
-        public void OnSold(Character character)
+        public void OnSell(Character character)
         {
             character.Currency += Price;
             character.ImportantItems.Remove(this);

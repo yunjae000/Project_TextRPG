@@ -36,7 +36,7 @@ namespace TextRPG
             switch ((GameOption)(option - 1))
             {
                 case GameOption.NewGame:
-                    GameManager.SelectJob(); break;
+                    GameManager.SelectJob(SpawnManager); break;
                 case GameOption.Continue:
                     GameManager.LoadGame(); Console.Write("Press any key to continue...");
                     Console.ReadKey(); break;
@@ -94,13 +94,15 @@ namespace TextRPG
                 }
             }
 
-            Console.WriteLine("| 좋은 꿈 꾸세요! |");
-
             GameManager.SelectedCharacter.Currency -= (option * 20);
             GameManager.SelectedCharacter.OnHeal(GameManager.SelectedCharacter.MaxHealth * (0.25f + (0.25f * (option - 2))));
             GameManager.SelectedCharacter.OnMagicPointHeal(GameManager.SelectedCharacter.MaxMagicPoint * (0.25f + (0.25f * (option - 2))));
             if (GameManager.GameTime == GameTime.Afternoon) GameManager.GameTime = GameTime.Night;
             else { GameManager.GameTime = GameTime.Afternoon; GameManager.RemoveAllBuffs(); }
+            
+            Console.WriteLine("| 좋은 꿈 꾸세요! |");
+            Console.Write("Press any key to continue...");
+            Console.ReadKey(true);
         }
 
         /// <summary>
@@ -199,8 +201,8 @@ namespace TextRPG
                 switch (Math.Clamp(index, 1, 4))
                 {
                     case 1: break;
-                    case 2: wearable?.OnEquipped(GameManager.SelectedCharacter); break;
-                    case 3: wearable?.OnUnequipped(GameManager.SelectedCharacter); break;
+                    case 2: wearable?.OnEquip(GameManager.SelectedCharacter); break;
+                    case 3: wearable?.OnUnequip(GameManager.SelectedCharacter); break;
                     case 4: pickable?.OnDropped(GameManager.SelectedCharacter); break;
                 }
             }
@@ -339,19 +341,19 @@ namespace TextRPG
                     {
                         Console.WriteLine("| 아이템이 존재하지 않습니다! |"); break;
                     }
-                    ItemLists.Armors[ind - 1].OnPurchased(GameManager.SelectedCharacter); break;
+                    ItemLists.Armors[ind - 1].OnPurchase(GameManager.SelectedCharacter); break;
                 case ItemCategory.Weapon:
                     if (ItemLists.Weapons.Length < ind || ind < 1)
                     {
                         Console.WriteLine("| 아이템이 존재하지 않습니다! |"); break;
                     }
-                    ItemLists.Weapons[ind - 1].OnPurchased(GameManager.SelectedCharacter); break;
+                    ItemLists.Weapons[ind - 1].OnPurchase(GameManager.SelectedCharacter); break;
                 case ItemCategory.Consumable:
                     if (ItemLists.Consumables.Length < ind || ind < 1)
                     {
                         Console.WriteLine("| 아이템이 존재하지 않습니다! |"); break;
                     }
-                    ItemLists.Consumables[ind - 1].OnPurchased(GameManager.SelectedCharacter); break;
+                    ItemLists.Consumables[ind - 1].OnPurchase(GameManager.SelectedCharacter); break;
             }
             Console.Write("\nPress any key to continue..."); Console.ReadKey(true);
         }
@@ -370,25 +372,25 @@ namespace TextRPG
                     {
                         Console.WriteLine("| 아이템이 존재하지 않습니다! |"); break;
                     }
-                    GameManager.SelectedCharacter.Armors[ind - 1].OnSold(GameManager.SelectedCharacter); break;
+                    GameManager.SelectedCharacter.Armors[ind - 1].OnSell(GameManager.SelectedCharacter); break;
                 case ItemCategory.Weapon:
                     if (GameManager.SelectedCharacter.Weapons.Count < ind || ind < 1)
                     {
                         Console.WriteLine("| 아이템이 존재하지 않습니다! |"); break;
                     }
-                    GameManager.SelectedCharacter.Weapons[ind - 1].OnSold(GameManager.SelectedCharacter); break;
+                    GameManager.SelectedCharacter.Weapons[ind - 1].OnSell(GameManager.SelectedCharacter); break;
                 case ItemCategory.Consumable:
                     if (GameManager.SelectedCharacter.Consumables.Count < ind || ind < 1)
                     {
                         Console.WriteLine("| 아이템이 존재하지 않습니다! |"); break;
                     }
-                    GameManager.SelectedCharacter.Consumables[ind - 1].OnSold(GameManager.SelectedCharacter); break;
+                    GameManager.SelectedCharacter.Consumables[ind - 1].OnSell(GameManager.SelectedCharacter); break;
                 case ItemCategory.Misc:
                     if (GameManager.SelectedCharacter.ImportantItems.Count < ind || ind < 1)
                     {
                         Console.WriteLine("| 아이템이 존재하지 않습니다! |"); break;
                     }
-                    GameManager.SelectedCharacter.ImportantItems[ind - 1].OnSold(GameManager.SelectedCharacter); break;
+                    GameManager.SelectedCharacter.ImportantItems[ind - 1].OnSell(GameManager.SelectedCharacter); break;
             }
             Console.Write("\nPress any key to continue..."); Console.ReadKey(true);
         }
@@ -495,6 +497,7 @@ namespace TextRPG
         /// </summary>
         private void InTown_MoveToDungeon()
         {
+            Console.Clear();
             if (GameManager.GroundLevel < 3) foreach (string line in Miscs.EasyEntrance) Console.WriteLine(line);
             else foreach (string line in Miscs.HardEntrance) Console.WriteLine(line);
             GameManager.GameState = GameState.Dungeon;
@@ -535,13 +538,24 @@ namespace TextRPG
         {
             // Print UI of Kill Count and Player Options
             Console.Clear();  
-            int[] pathOptions = RandomPathOption();
+            int[] pathOptions = RandomPathOption(GameManager.IsPathSelected);
             UIManager.KillCountUI(GameManager.KilledMonsterCount, GameManager.Quota);
             UIManager.DungeonUI(GameManager.SelectedCharacter, GameManager, pathOptions);
 
             // Try parsing, if successed clamp Parsed Input
-            if (!int.TryParse(Console.ReadLine(), out int opt)) { Console.WriteLine("| 잘못된 입력입니다! |"); return; }
-            else if (opt < 1 || opt > (pathOptions.Length + Enum.GetValues(typeof(DungeonOptions)).Length - 4)) { Console.WriteLine("| 잘못된 입력입니다! |"); return; }
+            if (!int.TryParse(Console.ReadLine(), out int opt)) { 
+                GameManager.IsPathSelected = false; 
+                Console.WriteLine("| 잘못된 입력입니다! |"); 
+                Console.Write("Press any key to continue..."); Console.ReadKey(); 
+                return; 
+            }
+            else if (opt < 1 || opt > (pathOptions.Length + Enum.GetValues(typeof(DungeonOptions)).Length - 4)) { 
+                GameManager.IsPathSelected = false; 
+                Console.WriteLine("| 잘못된 입력입니다! |"); 
+                Console.Write("Press any key to continue..."); Console.ReadKey(); 
+                return; 
+            }
+            GameManager.IsPathSelected = true;
             opt = Math.Clamp(opt - 1, 0, (pathOptions.Length + Enum.GetValues(typeof(DungeonOptions)).Length - 4) - 1);
 
             // Choices
@@ -555,16 +569,22 @@ namespace TextRPG
         /// Randomly generates path options in dungeon.
         /// </summary>
         /// <returns></returns>
-        private int[] RandomPathOption()
+        private int[] RandomPathOption(bool IsPathSelected)
         {
-            int random = new Random().Next(0, Miscs.path.Length);
-            while(random == GameManager.prevPath) { random = new Random().Next(0, Miscs.path.Length); }
-            GameManager.prevPath = random;
+            int index;
 
-            string path = Miscs.path[random];
+            if (!IsPathSelected) { index = GameManager.PrevPath; }
+            else { 
+                int random = new Random().Next(0, Miscs.path.Length);
+                while(random == GameManager.PrevPath) { random = new Random().Next(0, Miscs.path.Length); }
+                GameManager.PrevPath = random;
+                index = random;
+            }
+
+            string path = Miscs.path[index];
             Console.WriteLine($"{path}");
 
-            return random switch
+            return index switch
             {
                 0 => new int[] { (int)DungeonOptions.Forward, (int)DungeonOptions.Backward },
                 1 => new int[] { (int)DungeonOptions.Left, (int)DungeonOptions.Backward },
@@ -793,7 +813,7 @@ namespace TextRPG
                     case GameState.Town: InTown(); break;
                     case GameState.Dungeon: InDungeon(); break;
                     case GameState.Battle: InBattle(); break;
-                    case GameState.GameOver: break;
+                    case GameState.GameOver: GameManager.GameOverAction(SpawnManager); break;
                 }
             }
         }
