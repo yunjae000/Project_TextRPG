@@ -11,7 +11,7 @@ namespace TextRPG
         public static void StartUI()
         {
             foreach (string line in Miscs.GameStart) Console.WriteLine(line);
-            Console.ReadKey();
+            Console.Write("\nPress enter to continue..."); Console.ReadLine();
         }
 
         public static void JobSelectionUI()
@@ -239,8 +239,7 @@ namespace TextRPG
             foreach (Consumables consumable in character.Consumables) { Console.WriteLine($"| {consumable} |"); }
             Console.WriteLine("| ----- \"잡동사니\" ----- |");
             foreach (ImportantItem item in character.ImportantItems) { Console.WriteLine($"| {item} |"); }
-            Console.WriteLine("\n| Press any key to continue... |");
-            Console.ReadKey();
+            Console.Write("\nPress enter to continue..."); Console.ReadLine();
         }
 
         public static void KillCountUI(int KillCount, int Quota)
@@ -282,16 +281,14 @@ namespace TextRPG
             Console.WriteLine($"\n| ---------- Warning! ---------- |");
             Console.WriteLine($"| {spawnManager.spawnedMonsters.Count}마리의 몬스터가 나타났다! |");
             Console.Write(sb.ToString());
-            Console.Write("\nPress any key to continue...");
-            Console.ReadKey();
+            Console.Write("\nPress enter to continue..."); Console.ReadLine();
         }
 
         public static void NoMonsterFoundUI()
         {
             int ind = new Random().Next(Miscs.Quotes.Length);
             Console.WriteLine($"\n| 아무 일도 없었다..., {Miscs.Quotes[ind]}");
-            Console.WriteLine("Press any key to continue...");
-            Console.ReadKey();
+            Console.Write("\nPress enter to continue..."); Console.ReadLine();
         }
 
         public static void GameOverUI()
@@ -1255,7 +1252,7 @@ namespace TextRPG
         public static IEnumerable<KillMonsterQuest> GetContractedQuests_KillMonster()
         {
             var contracted = from quest in Quests
-                             where quest.IsContracted == true && quest.IsCompleted == false && quest.QuestType == QuestType.KillMonster
+                             where quest.IsContracted == true && quest.IsCompleted == false && quest is KillMonsterQuest
                              select (KillMonsterQuest)quest;
             return contracted;
         }
@@ -1593,9 +1590,10 @@ namespace TextRPG
             while (true)
             {
                 UIManager.JobSelectionUI();
-                if (!int.TryParse(Console.ReadLine(), out int opt)) { Console.WriteLine("| 잘못된 입력입니다! |"); Console.Write("Press any key to continue..."); Console.ReadKey(); }
-                else if(opt < 0 || Enum.GetValues(typeof(Job)).Length < opt) { Console.WriteLine("| 잘못된 입력입니다! |"); Console.Write("Press any key to continue..."); Console.ReadKey(); }
+                if (!int.TryParse(Console.ReadLine(), out int opt)) { Console.WriteLine("| 잘못된 입력입니다! |"); }
+                else if(opt < 0 || Enum.GetValues(typeof(Job)).Length < opt) { Console.WriteLine("| 잘못된 입력입니다! |"); }
                 else { option = Math.Clamp(opt, 0, Enum.GetValues(typeof(Job)).Length); break; }
+                Console.Write("\nPress enter to continue..."); Console.ReadLine();
             }
 
             if (option <= 0) return;
@@ -1715,8 +1713,8 @@ namespace TextRPG
             // Low currency -> Reset game and move to main menu
             if (SelectedCharacter.Currency < 100) { 
                 UIManager.ReviveOptionUI(SelectedCharacter);
-                ResetGame(); 
-                Console.Write("\nPress any key to continue..."); Console.ReadKey(); 
+                ResetGame();
+                Console.Write("\nPress enter to continue..."); Console.ReadLine();
                 return;
             }
 
@@ -1845,8 +1843,7 @@ namespace TextRPG
             if (!File.Exists("data/character.json") || !File.Exists("data/game.json") || !File.Exists("data/quest.json"))
             {
                 Console.WriteLine("| 저장된 세이브 데이터가 없습니다! |");
-                Console.Write("| Press any key to continue... |");
-                Console.ReadKey();
+                Console.Write("\nPress enter to continue..."); Console.ReadLine();
                 return;
             }
 

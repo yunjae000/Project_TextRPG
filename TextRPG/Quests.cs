@@ -53,13 +53,14 @@ namespace TextRPG
             questGoal = quest.questGoal;
             rewardExp = quest.rewardExp;
             rewardGold = quest.rewardGold;
+            IsContracted = quest.IsContracted;
             IsCompleted = quest.IsCompleted;
             IsSpecial = quest.IsSpecial;
         }
 
         [JsonConstructor]
         public Quest(string name, string description, QuestDifficulty difficulty, QuestType questType,
-                     int questProgress, int questGoal, int rewardExp, int rewardGold,
+                     int questProgress, int questGoal, int rewardExp, int rewardGold, bool isContracted,
                      bool isCompleted, bool isSpecial)
         {
             this.name = name;
@@ -70,6 +71,7 @@ namespace TextRPG
             this.questGoal = questGoal;
             this.rewardExp = rewardExp;
             this.rewardGold = rewardGold;
+            IsContracted = isContracted;
             IsCompleted = isCompleted;
             IsSpecial = isSpecial;
         }
@@ -144,9 +146,9 @@ namespace TextRPG
 
         [JsonConstructor]
         public NormalQuest(string name, string description, QuestDifficulty difficulty, QuestType questType,
-                           int questProgress, int questGoal, int rewardExp, int rewardGold,
+                           int questProgress, int questGoal, int rewardExp, int rewardGold, bool isContracted,
                            bool isCompleted, bool isSpecial)
-            : base(name, description, difficulty, questType, questProgress, questGoal, rewardExp, rewardGold, isCompleted, isSpecial) { }
+            : base(name, description, difficulty, questType, questProgress, questGoal, rewardExp, rewardGold, isContracted, isCompleted, isSpecial) { }
 
         /// <summary>
         /// Called when the quest is canceled.
@@ -193,9 +195,9 @@ namespace TextRPG
         }
         [JsonConstructor]
         public KillMonsterQuest(string name, string description, QuestDifficulty difficulty, QuestType questType,
-                                int questProgress, int questGoal, int rewardExp, int rewardGold,
+                                int questProgress, int questGoal, int rewardExp, int rewardGold, bool isContracted,
                                 bool isCompleted, bool isSpecial)
-            : base(name, description, difficulty, questType, questProgress, questGoal, rewardExp, rewardGold, isCompleted, isSpecial) { }
+            : base(name, description, difficulty, questType, questProgress, questGoal, rewardExp, rewardGold, isContracted, isCompleted, isSpecial) { }
 
         /// <summary>
         /// Called when the quest is in progress.
@@ -258,9 +260,9 @@ namespace TextRPG
 
         [JsonConstructor]
         public CollectItemQuest(string name, string itemName, string description, QuestDifficulty difficulty, QuestType questType,
-                                int questProgress, int questGoal, int rewardExp, int rewardGold,
+                                int questProgress, int questGoal, int rewardExp, int rewardGold, bool isContracted,
                                 bool isCompleted, bool isSpecial)
-            : base(name, description, difficulty, questType, questProgress, questGoal, rewardExp, rewardGold, isCompleted, isSpecial)
+            : base(name, description, difficulty, questType, questProgress, questGoal, rewardExp, rewardGold, isContracted, isCompleted, isSpecial)
         {
             IsSpecial = isSpecial;
             ItemName = itemName;
@@ -327,14 +329,16 @@ namespace TextRPG
         private void RemoveQuestItems(Character character)
         {
             var current = character.ImportantItems.First;
-            
+            int count = 0;
             while(current != null)
             {
                 var next = current.Next;
+                if (count >= QuestGoal) break;
                 if (current.Value.GetType().Name.Equals(ItemName))
                 {
                     character.ImportantItems.Remove(current);
                     Console.WriteLine($"| '{current.Value.Name}' 아이템을 제거하였습니다! |");
+                    count++;
                 }
                 current = next;
             }
