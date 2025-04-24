@@ -17,12 +17,12 @@ namespace TextRPG
         public float Attack { get { return attack; } set { attack = Math.Max(0, value); } }
         public float RangeAttack { get { return rangeAttack; } set { rangeAttack = Math.Max(0, value); } }
         public float MagicAttack { get { return magicAttack; } set { magicAttack = Math.Max(0, value); } }
-        
+
         public AttackStat() { Attack = 0; RangeAttack = 0; MagicAttack = 0; }
         public AttackStat(float attack, float rangeAttack, float magicAttack)
         {
-            this.attack = attack; 
-            this.rangeAttack = rangeAttack; 
+            this.attack = attack;
+            this.rangeAttack = rangeAttack;
             this.magicAttack = magicAttack;
         }
         public AttackStat(AttackStat attackStat)
@@ -69,13 +69,13 @@ namespace TextRPG
         public float Defend { get { return defend; } set { defend = Math.Max(0, value); } }
         public float RangeDefend { get { return rangeDefend; } set { rangeDefend = Math.Max(0, value); } }
         public float MagicDefend { get { return magicDefend; } set { magicDefend = Math.Max(0, value); } }
-        
+
         public DefendStat() { defend = 0; rangeDefend = 0; magicDefend = 0; }
-        public DefendStat(float defend, float rangeDefend, float magicDefend) 
-        { 
-            this.defend = defend; 
-            this.rangeDefend = rangeDefend; 
-            this.magicDefend = magicDefend; 
+        public DefendStat(float defend, float rangeDefend, float magicDefend)
+        {
+            this.defend = defend;
+            this.rangeDefend = rangeDefend;
+            this.magicDefend = magicDefend;
         }
         public DefendStat(DefendStat defendStat)
         {
@@ -146,7 +146,7 @@ namespace TextRPG
                         defendStat.MagicDefend + ((int)rarity >= (int)Rarity.Hero ? defendStat.MagicDefend * ((int)rarity - (int)Rarity.Rare) * 0.05f : 0f));
                     this.defendStat = newStat;
                 }
-                else this.defendStat = defendStat;
+                else this.defendStat = new(defendStat);
             }
             else this.defendStat = new(1, 1, 1);
         }
@@ -183,10 +183,11 @@ namespace TextRPG
         /// Calls when the armor is purchased
         /// </summary>
         /// <param name="character"></param>
-        public virtual void OnPurchased(Character character) 
+        public virtual void OnPurchased(Character character)
         {
             if (character.Currency < Price) { Console.WriteLine("| Not enough Money! |"); return; }
             character.Currency -= Price;
+
             Console.WriteLine($"| {name}을 구매하였습니다! |"); 
         }
 
@@ -196,7 +197,7 @@ namespace TextRPG
         /// <param name="character"></param>
         public void OnSold(Character character)
         {
-            if(IsEquipped) { Console.WriteLine($"| Not possible to sell!, {Name} is equipped! |"); return; }
+            if (IsEquipped) { Console.WriteLine($"| Not possible to sell!, {Name} is equipped! |"); return; }
             character.Currency += Price;
             character.Armors.Remove(this);
             Console.WriteLine($"| {Name} is sold! |");
@@ -243,11 +244,13 @@ namespace TextRPG
     class Helmet : Armor
     {
         // Constructor
-        public Helmet(string name, DefendStat defendStat, int price, Rarity rarity) : base(name, defendStat, price, rarity) {
+        public Helmet(string name, DefendStat defendStat, int price, Rarity rarity) : base(name, defendStat, price, rarity)
+        {
             ArmorPosition = ArmorPosition.Head;
         }
-        public Helmet(Helmet helmet) : base(helmet.Name, helmet.DefendStat, helmet.Price, helmet.Rarity) { 
-            ArmorPosition = helmet.ArmorPosition; 
+        public Helmet(Helmet helmet) : base(helmet.Name, helmet.DefendStat, helmet.Price, helmet.Rarity)
+        {
+            ArmorPosition = helmet.ArmorPosition;
         }
 
         [JsonConstructor]
@@ -283,10 +286,12 @@ namespace TextRPG
     class ChestArmor : Armor
     {
         // Constructor
-        public ChestArmor(string name, DefendStat defendStat, int price, Rarity rarity) : base(name, defendStat, price, rarity) {
+        public ChestArmor(string name, DefendStat defendStat, int price, Rarity rarity) : base(name, defendStat, price, rarity)
+        {
             ArmorPosition = ArmorPosition.Torso;
         }
-        public ChestArmor(ChestArmor chestArmor) : base(chestArmor.Name, chestArmor.DefendStat, chestArmor.Price, chestArmor.Rarity) {
+        public ChestArmor(ChestArmor chestArmor) : base(chestArmor.Name, chestArmor.DefendStat, chestArmor.Price, chestArmor.Rarity)
+        {
             ArmorPosition = ArmorPosition.Torso;
         }
 
@@ -323,10 +328,12 @@ namespace TextRPG
     class LegArmor : Armor
     {
         // Constructor
-        public LegArmor(string name, DefendStat defendStat, int price, Rarity rarity) : base(name, defendStat, price, rarity) {
+        public LegArmor(string name, DefendStat defendStat, int price, Rarity rarity) : base(name, defendStat, price, rarity)
+        {
             ArmorPosition = ArmorPosition.Leg;
         }
-        public LegArmor(LegArmor legArmor) : base(legArmor.Name, legArmor.DefendStat, legArmor.Price, legArmor.Rarity) {
+        public LegArmor(LegArmor legArmor) : base(legArmor.Name, legArmor.DefendStat, legArmor.Price, legArmor.Rarity)
+        {
             ArmorPosition = ArmorPosition.Leg;
         }
 
@@ -363,10 +370,12 @@ namespace TextRPG
     class FootArmor : Armor
     {
         // Constructor
-        public FootArmor(string name, DefendStat defendStat, int price, Rarity rarity) : base(name, defendStat, price, rarity) {
+        public FootArmor(string name, DefendStat defendStat, int price, Rarity rarity) : base(name, defendStat, price, rarity)
+        {
             ArmorPosition = ArmorPosition.Foot;
         }
-        public FootArmor(FootArmor footArmor) : base(footArmor.Name, footArmor.DefendStat, footArmor.Price, footArmor.Rarity) {
+        public FootArmor(FootArmor footArmor) : base(footArmor.Name, footArmor.DefendStat, footArmor.Price, footArmor.Rarity)
+        {
             ArmorPosition = ArmorPosition.Foot;
         }
 
@@ -403,10 +412,12 @@ namespace TextRPG
     class Gauntlet : Armor
     {
         // Constructor
-        public Gauntlet(string name, DefendStat defendStat, int price, Rarity rarity) : base(name, defendStat, price, rarity) {
+        public Gauntlet(string name, DefendStat defendStat, int price, Rarity rarity) : base(name, defendStat, price, rarity)
+        {
             ArmorPosition = ArmorPosition.Arm;
         }
-        public Gauntlet(Gauntlet guntlet) : base(guntlet.Name, guntlet.DefendStat, guntlet.Price, guntlet.Rarity) {
+        public Gauntlet(Gauntlet guntlet) : base(guntlet.Name, guntlet.DefendStat, guntlet.Price, guntlet.Rarity)
+        {
             ArmorPosition = ArmorPosition.Arm;
         }
 
@@ -478,7 +489,7 @@ namespace TextRPG
                     };
                     this.attackStat = newStat;
                 }
-                else this.attackStat = attackStat;
+                else this.attackStat = new(attackStat);
             }
             else this.attackStat = new(1, 1, 1);
         }
@@ -514,11 +525,11 @@ namespace TextRPG
         /// Calls when the weapon is purchased
         /// </summary>
         /// <param name="character"></param>
-        public virtual void OnPurchased(Character character) 
-        { 
-            if(character.Currency < Price) { Console.WriteLine("| Not enough Money! |"); return; }
-            character.Currency -= Price; 
-            Console.WriteLine($"| {name} is purchased |"); 
+        public virtual void OnPurchased(Character character)
+        {
+            if (character.Currency < Price) { Console.WriteLine("| Not enough Money! |"); return; }
+            character.Currency -= Price;
+            Console.WriteLine($"| {name} is purchased |");
         }
 
         /// <summary>
@@ -557,15 +568,17 @@ namespace TextRPG
     /// </summary>
     class Sword : Weapon
     {
-        public Sword(string name, AttackStat attackStat, int price, Rarity rarity) : base(name, attackStat, price, rarity) {
+        public Sword(string name, AttackStat attackStat, int price, Rarity rarity) : base(name, attackStat, price, rarity)
+        {
             AttackType = AttackType.Close;
         }
-        public Sword(Sword sword) : base(sword.Name, sword.AttackStat, sword.Price, sword.Rarity) { 
-            AttackType = sword.AttackType; 
+        public Sword(Sword sword) : base(sword.Name, sword.AttackStat, sword.Price, sword.Rarity)
+        {
+            AttackType = sword.AttackType;
         }
 
         [JsonConstructor]
-        public Sword(string name, AttackStat attackStat, int price, Rarity rarity, AttackType attackType) 
+        public Sword(string name, AttackStat attackStat, int price, Rarity rarity, AttackType attackType)
             : base(name, attackStat, price, rarity)
         {
             AttackType = attackType;
@@ -609,10 +622,12 @@ namespace TextRPG
     /// </summary>
     class Bow : Weapon
     {
-        public Bow(string name, AttackStat attackStat, int price, Rarity rarity) : base(name, attackStat, price, rarity ) {
+        public Bow(string name, AttackStat attackStat, int price, Rarity rarity) : base(name, attackStat, price, rarity)
+        {
             AttackType = AttackType.Long;
         }
-        public Bow(Bow bow) : base(bow.Name, bow.AttackStat, bow.Price, bow.Rarity) {
+        public Bow(Bow bow) : base(bow.Name, bow.AttackStat, bow.Price, bow.Rarity)
+        {
             AttackType = bow.AttackType;
         }
 
@@ -661,10 +676,12 @@ namespace TextRPG
     /// </summary>
     class Staff : Weapon
     {
-        public Staff(string name, AttackStat attackStat, int price, Rarity rarity) : base(name, attackStat, price, rarity) {
+        public Staff(string name, AttackStat attackStat, int price, Rarity rarity) : base(name, attackStat, price, rarity)
+        {
             AttackType = AttackType.Magic;
         }
-        public Staff(Staff staff) : base(staff.Name, staff.AttackStat, staff.Price, staff.Rarity) {
+        public Staff(Staff staff) : base(staff.Name, staff.AttackStat, staff.Price, staff.Rarity)
+        {
             AttackType = staff.AttackType;
         }
 
@@ -730,7 +747,7 @@ namespace TextRPG
         public ItemCategory Category { get; protected set; } = ItemCategory.Consumable;
         public Rarity Rarity { get { return rarity; } protected set { rarity = value; } }
         public ConsumableCategory ConsumableCategory { get { return consumableCategory; } protected set { consumableCategory = value; } }
-        
+
         // Constructor
         public Consumables(string name, float coefficient, int price, ConsumableCategory consumableCategory, Rarity rarity)
         {
@@ -822,8 +839,8 @@ namespace TextRPG
         /// <param name="character"></param>
         public override void OnUsed(Character character)
         {
-            if(character.Health >= character.MaxHealth) { Console.WriteLine("| Health is already full! |"); return; }
-            
+            if (character.Health >= character.MaxHealth) { Console.WriteLine("| Health is already full! |"); return; }
+
             base.OnUsed(character);
             character.OnHeal(Coefficient + (Coefficient * (int)Rarity * 0.1f));
         }
@@ -916,7 +933,7 @@ namespace TextRPG
             return sb.ToString();
         }
     }
-    
+
     /// <summary>
     /// Attack Buff Potion -> Buffs Attack Parameters until the day passes.
     /// </summary>
@@ -929,14 +946,14 @@ namespace TextRPG
         public AttackStat AttackStat { get { return attackStat; } protected set { attackStat = value; } }
 
         // Constructor
-        public AttackBuffPotion(string name, float coefficient, int price, Rarity rarity = Rarity.Common) 
+        public AttackBuffPotion(string name, float coefficient, int price, Rarity rarity = Rarity.Common)
             : base(name, coefficient, price, ConsumableCategory.IncreaseAttack, rarity)
         {
             attackStat = new AttackStat(coefficient, coefficient, coefficient);
         }
         public AttackBuffPotion(AttackBuffPotion potion) : base(potion.Name, potion.Coefficient, potion.Price, potion.ConsumableCategory, potion.Rarity)
         {
-            attackStat = potion.AttackStat;
+            attackStat = new(potion.AttackStat);
         }
 
         [JsonConstructor]
@@ -1018,7 +1035,7 @@ namespace TextRPG
         }
         public DefendBuffPotion(DefendBuffPotion potion) : base(potion.Name, potion.Coefficient, potion.Price, potion.ConsumableCategory, potion.Rarity)
         {
-            defendStat = potion.DefendStat;
+            defendStat = new(potion.DefendStat);
         }
 
         [JsonConstructor]
@@ -1094,7 +1111,7 @@ namespace TextRPG
         public DefendStat DefendStat { get { return defendStat; } protected set { defendStat = value; } }
 
         // Constructor
-        public AllBuffPotion(string name, float coefficient, int price, Rarity rarity = Rarity.Common) 
+        public AllBuffPotion(string name, float coefficient, int price, Rarity rarity = Rarity.Common)
             : base(name, coefficient, price, ConsumableCategory.IncreaseAllStat, rarity)
         {
             attackStat = new AttackStat(coefficient, coefficient, coefficient);
@@ -1102,8 +1119,8 @@ namespace TextRPG
         }
         public AllBuffPotion(AllBuffPotion potion) : base(potion.Name, potion.Coefficient, potion.Price, potion.ConsumableCategory, potion.Rarity)
         {
-            attackStat = potion.AttackStat;
-            defendStat = potion.DefendStat;
+            attackStat = new(potion.AttackStat);
+            defendStat = new(potion.DefendStat);
         }
 
         [JsonConstructor]
@@ -1200,11 +1217,11 @@ namespace TextRPG
         {
             Console.WriteLine($"| Picked {Name}! |");
         }
-        
+
         public void OnDropped(Character character)
         {
             character.ImportantItems.Remove(this);
-            var quests = QuestManager.GetContractedQuests_CollectItem(Name);
+            var quests = QuestManager.GetContractedQuests_CollectItem(GetType().Name);
             foreach (var quest in quests) { quest.OnProgress(character); }
             Console.WriteLine($"| {Name} is dropped! |");
         }
@@ -1213,7 +1230,7 @@ namespace TextRPG
         {
             character.Currency += Price;
             character.ImportantItems.Remove(this);
-            var quests = QuestManager.GetContractedQuests_CollectItem(Name);
+            var quests = QuestManager.GetContractedQuests_CollectItem(GetType().Name);
             foreach (var quest in quests) { quest.OnProgress(character); }
             Console.WriteLine($"| {Name} is sold! |");
         }
@@ -1232,8 +1249,15 @@ namespace TextRPG
         {
             base.OnPicked(character);
             character.ImportantItems.Add(new GoblinEar(this));
-            var quests = QuestManager.GetContractedQuests_CollectItem(Name);
+            var quests = QuestManager.GetContractedQuests_CollectItem(GetType().Name);
             foreach (var quest in quests) { quest.OnProgress(character); }
+        }
+
+        public override string ToString()
+        {
+            StringBuilder sb = new();
+            sb.Append($"{Name} | 가격 : {Price} | {Rarity}");
+            return sb.ToString();
         }
     }
 
@@ -1250,8 +1274,15 @@ namespace TextRPG
         {
             base.OnPicked(character);
             character.ImportantItems.Add(new GoblinEye(this));
-            var quests = QuestManager.GetContractedQuests_CollectItem(Name);
+            var quests = QuestManager.GetContractedQuests_CollectItem(GetType().Name);
             foreach (var quest in quests) { quest.OnProgress(character); }
+        }
+
+        public override string ToString()
+        {
+            StringBuilder sb = new();
+            sb.Append($"{Name} | 가격 : {Price} | {Rarity}");
+            return sb.ToString();
         }
     }
 

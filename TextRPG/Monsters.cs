@@ -1,3 +1,5 @@
+using System.Text;
+
 namespace TextRPG
 {
     /// <summary>
@@ -22,7 +24,7 @@ namespace TextRPG
         public AttackStat AttackStat { get { return characterStat.AttackStat; } set { characterStat.AttackStat = value; } }
         public DefendStat DefendStat { get { return characterStat.DefendStat; } set { characterStat.DefendStat = value; } }
         public AttackType AttackType { get; protected set; }
-        
+
         public int Exp { get { return exp; } set { exp = value; } }
         public bool IsAlive { get { return isAlive; } private set { isAlive = value; } }
 
@@ -39,17 +41,54 @@ namespace TextRPG
         // Methods
         public CharacterStat GetStat() { return characterStat; }
 
-        public void OnDamage(AttackType type, float damage)
+        /// <summary>
+        /// Apply damage to the monster based on the attack type and damage value.
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="damage"></param>
+        public void OnDamage(AttackType type, float damage, bool isSkill)
         {
+            if (IsEvaded() && !isSkill) { Console.WriteLine($"| {Name}이 공격을 회피하였습니다! |"); return; }
+
+            StringBuilder sb = new();
+            sb.Append($"| {Name}이 ");
+            if (IsCriticalHit())
+            {
+                damage *= CriticalHitDamagePercentage;
+                sb.Append($"치명적인 공격에 맞아");
+            }
             float calculatedDamage =
                 type == AttackType.Close ? Math.Max(1f, (damage * (1f - DefendStat.Defend / 100f))) :
                 (type == AttackType.Long ? Math.Max(1f, damage * (1f - DefendStat.RangeDefend / 100f)) :
                 Math.Max(1f, (damage * (1f - DefendStat.MagicDefend / 100f))));
 
-            Console.WriteLine($"| {Name}이 {calculatedDamage:F2}의 데미지를 받았습니다! |");
+            sb.Append($" {calculatedDamage:F2}의 데미지를 받았습니다! |");
+            Console.WriteLine(sb.ToString());
             Health -= calculatedDamage;
 
             if (Health < 1f && IsAlive) Die();
+        }
+
+        /// <summary>
+        /// Check if the character evaded the attack.
+        /// </summary>
+        /// <returns></returns>
+        private bool IsEvaded()
+        {
+            Random rand = new Random();
+            float EvasionPercent = rand.Next(0, 100);
+            return EvasionPercent < 10;
+        }
+
+        /// <summary>
+        /// Check if the character's attack is a critical hit.
+        /// </summary>
+        /// <returns></returns>
+        private bool IsCriticalHit()
+        {
+            Random rand = new Random();
+            float CriticalPercent = rand.Next(0, 100);
+            return CriticalPercent < CriticalHitChance;
         }
 
         private void Die()
@@ -94,7 +133,7 @@ namespace TextRPG
     /// </summary>
     class GoblinMage : Monster
     {
-        public GoblinMage(CharacterStat characterStat, int exp) : base (characterStat, exp)
+        public GoblinMage(CharacterStat characterStat, int exp) : base(characterStat, exp)
         {
             AttackType = AttackType.Magic;
         }

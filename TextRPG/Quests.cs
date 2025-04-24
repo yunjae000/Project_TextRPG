@@ -32,7 +32,7 @@ namespace TextRPG
         [JsonInclude] public bool IsSpecial { get; protected set; } = false;
 
         // Constructor
-        public Quest(string name, string description, QuestDifficulty difficulty, QuestType questType, 
+        public Quest(string name, string description, QuestDifficulty difficulty, QuestType questType,
                      int questGoal, int rewardExp, int rewardGold)
         {
             this.name = name;
@@ -58,8 +58,8 @@ namespace TextRPG
         }
 
         [JsonConstructor]
-        public Quest(string name, string description, QuestDifficulty difficulty, QuestType questType, 
-                     int questProgress, int questGoal, int rewardExp, int rewardGold, 
+        public Quest(string name, string description, QuestDifficulty difficulty, QuestType questType,
+                     int questProgress, int questGoal, int rewardExp, int rewardGold,
                      bool isCompleted, bool isSpecial)
         {
             this.name = name;
@@ -106,7 +106,7 @@ namespace TextRPG
         /// </summary>
         /// <param name="character"></param>
         public virtual void OnProgress(Character character) { }
-        
+
         /// <summary>
         /// Called when the quest is completed.
         /// </summary>
@@ -141,7 +141,7 @@ namespace TextRPG
                            int questGoal, int rewardExp, int rewardGold)
             : base(name, description, difficulty, questType, questGoal, rewardExp, rewardGold) { IsSpecial = false; }
         public NormalQuest(NormalQuest quest) : base(quest) { IsSpecial = false; }
-        
+
         [JsonConstructor]
         public NormalQuest(string name, string description, QuestDifficulty difficulty, QuestType questType,
                            int questProgress, int questGoal, int rewardExp, int rewardGold,
@@ -182,19 +182,19 @@ namespace TextRPG
     {
         // Constructor
         public KillMonsterQuest(string name, string description, QuestDifficulty difficulty,
-                                int questGoal, int rewardExp, int rewardGold) 
-            : base(name, description, difficulty, QuestType.KillMonster, questGoal, rewardExp, rewardGold) 
-        { 
+                                int questGoal, int rewardExp, int rewardGold)
+            : base(name, description, difficulty, QuestType.KillMonster, questGoal, rewardExp, rewardGold)
+        {
             IsSpecial = false;
         }
-        public KillMonsterQuest(KillMonsterQuest quest) : base(quest) 
-        { 
+        public KillMonsterQuest(KillMonsterQuest quest) : base(quest)
+        {
             IsSpecial = false;
         }
         [JsonConstructor]
-        public KillMonsterQuest(string name, string description, QuestDifficulty difficulty, QuestType questType, 
-                                int questProgress, int questGoal, int rewardExp, int rewardGold, 
-                                bool isCompleted, bool isSpecial) 
+        public KillMonsterQuest(string name, string description, QuestDifficulty difficulty, QuestType questType,
+                                int questProgress, int questGoal, int rewardExp, int rewardGold,
+                                bool isCompleted, bool isSpecial)
             : base(name, description, difficulty, questType, questProgress, questGoal, rewardExp, rewardGold, isCompleted, isSpecial) { }
 
         /// <summary>
@@ -203,10 +203,10 @@ namespace TextRPG
         /// <param name="character"></param>
         public override void OnProgress()
         {
-            if(IsContracted && !IsCompleted) { 
-                QuestProgress++; 
-                if (QuestProgress >= QuestGoal) { IsCompleted = true; } 
-            }
+            if (!IsContracted || IsCompleted) return;
+
+            QuestProgress++;
+            if (QuestProgress >= QuestGoal) { IsCompleted = true; }
         }
 
         /// <summary>
@@ -225,7 +225,7 @@ namespace TextRPG
         public override string ToString()
         {
             StringBuilder sb = new(base.ToString());
-            if(IsContracted) sb.AppendLine($"| 진행도 : '{QuestProgress}/{QuestGoal}' |");
+            if (IsContracted) sb.AppendLine($"| 진행도 : '{QuestProgress}/{QuestGoal}' |");
             return sb.ToString();
         }
     }
@@ -244,21 +244,27 @@ namespace TextRPG
         // Constructor
         public CollectItemQuest(CollectItemQuest quest) : base(quest)
         {
+            ItemName = quest.ItemName;
             IsSpecial = false;
         }
 
-        public CollectItemQuest(string name, string description, QuestDifficulty difficulty,
-                                int questGoal, int rewardExp, int rewardGold) 
+        public CollectItemQuest(string name, string itemName, string description, QuestDifficulty difficulty,
+                                int questGoal, int rewardExp, int rewardGold)
             : base(name, description, difficulty, QuestType.CollectItem, questGoal, rewardExp, rewardGold)
         {
             IsSpecial = false;
+            ItemName = itemName;
         }
 
         [JsonConstructor]
-        public CollectItemQuest(string name, string description, QuestDifficulty difficulty, QuestType questType,
+        public CollectItemQuest(string name, string itemName, string description, QuestDifficulty difficulty, QuestType questType,
                                 int questProgress, int questGoal, int rewardExp, int rewardGold,
                                 bool isCompleted, bool isSpecial)
-            : base(name, description, difficulty, questType, questProgress, questGoal, rewardExp, rewardGold, isCompleted, isSpecial) { }
+            : base(name, description, difficulty, questType, questProgress, questGoal, rewardExp, rewardGold, isCompleted, isSpecial)
+        {
+            IsSpecial = isSpecial;
+            ItemName = itemName;
+        }
 
         // Methods
 
@@ -270,11 +276,9 @@ namespace TextRPG
             base.OnContracted();
             foreach (var item in character.ImportantItems)
             {
-                if (item.Name.Contains(nameof(ItemName)))
-                {
-                    QuestProgress++;
-                    if (QuestProgress >= QuestGoal) { IsCompleted = true; break; }
-                }
+                if (!item.GetType().Name.Equals(ItemName)) continue;
+                QuestProgress++;
+                if (QuestProgress >= QuestGoal) { IsCompleted = true; break; }
             }
         }
 
@@ -284,17 +288,14 @@ namespace TextRPG
         /// <param name="character"></param>
         public override void OnProgress(Character character)
         {
-            if (IsContracted && !IsCompleted)
+            if (!IsContracted || IsCompleted) return;
+
+            QuestProgress = 0;
+            foreach (var item in character.ImportantItems)
             {
-                QuestProgress = 0;
-                foreach (var item in character.ImportantItems)
-                {
-                    if (item.Name.Contains(nameof(ItemName)))
-                    {
-                        QuestProgress++;
-                        if (QuestProgress >= QuestGoal) { IsCompleted = true; break; }
-                    }
-                }
+                if (!item.GetType().Name.Equals(ItemName)) continue;
+                QuestProgress++;
+                if (QuestProgress >= QuestGoal) { IsCompleted = true; break; }
             }
         }
 
@@ -328,7 +329,7 @@ namespace TextRPG
             int i = 0;
             foreach (var item in character.ImportantItems)
             {
-                if (item.Name.Contains(nameof(ItemName)))
+                if (item.GetType().Name.Equals(ItemName))
                 {
                     item.OnDropped(character); i++;
                     if (i >= QuestGoal) break;
@@ -337,3 +338,4 @@ namespace TextRPG
         }
     }
 }
+

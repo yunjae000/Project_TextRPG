@@ -19,7 +19,7 @@ namespace TextRPG
         private int level;
         private AttackStat attackStat;
         private DefendStat defendStat;
-        
+
         // Property
         public string Name { get { return name; } set { name = value; } }
         public int Level { get { return level; } set { level = Math.Min(100, value); } }
@@ -144,7 +144,7 @@ namespace TextRPG
 
             Exp += exp;
             Level = Exp / 100 + 1;
-            if(curLvl != Level) OnLevelUp();
+            if (curLvl != Level) OnLevelUp();
         }
 
         /// <summary>
@@ -185,8 +185,8 @@ namespace TextRPG
             Health = MaxHealth;
             MagicPoint = MaxMagicPoint;
 
-            AttackStat += new AttackStat(AttackStat.Attack * 0.15f, 
-                                         AttackStat.RangeAttack * 0.15f, 
+            AttackStat += new AttackStat(AttackStat.Attack * 0.15f,
+                                         AttackStat.RangeAttack * 0.15f,
                                          AttackStat.MagicAttack * 0.15f);
             DefendStat += new DefendStat(DefendStat.Defend * 0.15f,
                                          DefendStat.RangeDefend * 0.15f,
@@ -198,14 +198,24 @@ namespace TextRPG
         /// </summary>
         /// <param name="type"></param>
         /// <param name="damage"></param>
-        public void OnDamage(AttackType type, float damage)
+        public void OnDamage(AttackType type, float damage, bool isSkill)
         {
-            float calculatedDamage = 
-                type == AttackType.Close ? Math.Max(1f, damage * (1f - DefendStat.Defend / 100f)) : 
+            if (IsEvaded() && !isSkill) { Console.WriteLine($"| {Name}이 공격을 회피하였습니다! |"); return; }
+
+            StringBuilder sb = new();
+            sb.Append($"| {Name}이 ");
+            if (IsCriticalHit())
+            {
+                damage *= CriticalHitDamagePercentage;
+                sb.Append($"치명적인 공격에 맞아");
+            }
+            float calculatedDamage =
+                type == AttackType.Close ? Math.Max(1f, damage * (1f - DefendStat.Defend / 100f)) :
                 (type == AttackType.Long ? Math.Max(1f, damage * (1f - DefendStat.RangeDefend / 100f)) :
                 Math.Max(1f, damage * (1f - DefendStat.MagicDefend / 100f)));
 
-            Console.WriteLine($"| {Name}이 {calculatedDamage:F2}의 데미지를 받았습니다! |");
+            sb.Append($" {calculatedDamage:F2}의 데미지를 받았습니다! |");
+            Console.WriteLine(sb.ToString());
             Health -= calculatedDamage;
 
             if (Health < 1f && IsAlive) Die();
@@ -220,11 +230,33 @@ namespace TextRPG
             if (IsAlive) { return false; }
 
             IsAlive = true;
-            if (Currency < 100) return false; 
+            if (Currency < 100) return false;
             Currency -= 100;
             Health = MaxHealth;
             MagicPoint = MaxMagicPoint;
             return true;
+        }
+
+        /// <summary>
+        /// Check if the character evaded the attack.
+        /// </summary>
+        /// <returns></returns>
+        private bool IsEvaded()
+        {
+            Random rand = new Random();
+            float EvasionPercent = rand.Next(0, 100);
+            return EvasionPercent < 10;
+        }
+
+        /// <summary>
+        /// Check if the character's attack is a critical hit.
+        /// </summary>
+        /// <returns></returns>
+        private bool IsCriticalHit()
+        {
+            Random rand = new Random();
+            float CriticalPercent = rand.Next(0, 100);
+            return CriticalPercent < CriticalHitChance;
         }
 
         /// <summary>
@@ -248,11 +280,11 @@ namespace TextRPG
               .AppendLine($"Level : {Level}")
               .AppendLine($"AttackStat : {AttackStat}").AppendLine($"DefendStat : {DefendStat}")
               .AppendLine($"Currency : {Currency}").AppendLine($"Exp : {Exp}");
-            foreach(Armor armor in Armors) { sb.Append(armor.ToString() + ", "); }
+            foreach (Armor armor in Armors) { sb.Append(armor.ToString() + ", "); }
             sb.AppendLine();
-            foreach(Weapon weapon in Weapons) { sb.Append(weapon.ToString() + ", "); }
+            foreach (Weapon weapon in Weapons) { sb.Append(weapon.ToString() + ", "); }
             sb.AppendLine();
-            foreach(Consumables consumable in Consumables) { sb.Append(consumable.ToString() + ", "); }
+            foreach (Consumables consumable in Consumables) { sb.Append(consumable.ToString() + ", "); }
             sb.AppendLine();
             foreach (ImportantItem importantItem in ImportantItems) { sb.Append(importantItem.ToString() + ", "); }
             sb.AppendLine();
@@ -279,9 +311,9 @@ namespace TextRPG
         public Warrior(Warrior warrior) : base(warrior.CharacterStat, warrior.Currency, warrior.Exp) { job = Job.Warrior; }
 
         [JsonConstructor]
-        public Warrior(string name, float maxHealth, float health, float maxMagicPoint, float magicPoint, 
-            int criticalHitChance, float criticalHitDamagePercentage, int level, 
-            AttackStat attackStat, DefendStat defendStat, int currency, int exp, bool isAlive, 
+        public Warrior(string name, float maxHealth, float health, float maxMagicPoint, float magicPoint,
+            int criticalHitChance, float criticalHitDamagePercentage, int level,
+            AttackStat attackStat, DefendStat defendStat, int currency, int exp, bool isAlive,
             List<Armor> armors, List<Weapon> weapons, List<Consumables> consumables, List<ImportantItem> importantItems, List<Skill> skills,
             Armor?[] equippedArmor, Weapon? equippedWeapon)
             : base(name, maxHealth, health, maxMagicPoint, magicPoint, criticalHitChance, criticalHitDamagePercentage, level, attackStat, defendStat, currency, exp, isAlive)
@@ -318,9 +350,9 @@ namespace TextRPG
         public Wizard(Wizard wizard) : base(wizard.CharacterStat, wizard.Currency, wizard.Exp) { job = Job.Wizard; }
 
         [JsonConstructor]
-        public Wizard(string name, float maxHealth, float health, float maxMagicPoint, 
-            float magicPoint, int criticalHitChance, float criticalHitDamagePercentage, int level, 
-            AttackStat attackStat, DefendStat defendStat, int currency, int exp, bool isAlive, 
+        public Wizard(string name, float maxHealth, float health, float maxMagicPoint,
+            float magicPoint, int criticalHitChance, float criticalHitDamagePercentage, int level,
+            AttackStat attackStat, DefendStat defendStat, int currency, int exp, bool isAlive,
             List<Armor> armors, List<Weapon> weapons, List<Consumables> consumables, List<ImportantItem> importantItems, List<Skill> skills,
             Armor?[] equippedArmor, Weapon? equippedWeapon)
             : base(name, maxHealth, health, maxMagicPoint, magicPoint, criticalHitChance, criticalHitDamagePercentage, level, attackStat, defendStat, currency, exp, isAlive)
@@ -358,9 +390,9 @@ namespace TextRPG
         public Archer(Archer archer) : base(archer.CharacterStat, archer.Currency, archer.Exp) { job = Job.Archer; }
 
         [JsonConstructor]
-        public Archer(string name, float maxHealth, float health, float maxMagicPoint, 
-            float magicPoint, int criticalHitChance, float criticalHitDamagePercentage, int level, 
-            AttackStat attackStat, DefendStat defendStat, int currency, int exp, bool isAlive, 
+        public Archer(string name, float maxHealth, float health, float maxMagicPoint,
+            float magicPoint, int criticalHitChance, float criticalHitDamagePercentage, int level,
+            AttackStat attackStat, DefendStat defendStat, int currency, int exp, bool isAlive,
             List<Armor> armors, List<Weapon> weapons, List<Consumables> consumables, List<ImportantItem> importantItems, List<Skill> skills,
             Armor?[] equippedArmor, Weapon? equippedWeapon)
             : base(name, maxHealth, health, maxMagicPoint, magicPoint, criticalHitChance, criticalHitDamagePercentage, level, attackStat, defendStat, currency, exp, isAlive)

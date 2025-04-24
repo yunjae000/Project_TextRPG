@@ -5,12 +5,12 @@ namespace TextRPG
     {
         Shop, Rest, Quest, Dungeon, Inventory, Status, Option,
     }
-    
+
     public enum DungeonOptions
     {
-        Forward, Left, Right, Backward, Inventory, Status, BackToTown, 
+        Forward, Left, Right, Backward, Inventory, Status, BackToTown,
     }
-    
+
     public enum BattleOptions
     {
         Attack, Skill, Inventory, Status, Escape,
@@ -103,7 +103,7 @@ namespace TextRPG
     {
         Afternoon, Night,
     }
-    
+
     public enum Job
     {
         Warrior, Wizard, Archer,

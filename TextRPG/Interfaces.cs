@@ -2,9 +2,9 @@ namespace TextRPG
 {
     interface IDamagable
     {
-        public void OnDamage(AttackType type, float damage);
+        public void OnDamage(AttackType type, float damage, bool isSkill);
     }
-    
+
     interface IWearable
     {
         public void OnEquipped(Character character);
