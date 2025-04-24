@@ -7,8 +7,8 @@ namespace TextRPG
 
     interface IWearable
     {
-        public void OnEquipped(Character character);
-        public void OnUnequipped(Character character);
+        public void OnEquip(Character character);
+        public void OnUnequip(Character character);
     }
 
     interface IUseable
@@ -19,12 +19,12 @@ namespace TextRPG
 
     interface IPurchasable
     {
-        public void OnPurchased(Character character);
+        public void OnPurchase(Character character);
     }
 
     interface ISellable
     {
-        public void OnSold(Character character);
+        public void OnSell(Character character);
     }
 
     interface IPickable

@@ -326,14 +326,17 @@ namespace TextRPG
         /// <param name="character"></param>
         private void RemoveQuestItems(Character character)
         {
-            int i = 0;
-            foreach (var item in character.ImportantItems)
+            var current = character.ImportantItems.First;
+            
+            while(current != null)
             {
-                if (item.GetType().Name.Equals(ItemName))
+                var next = current.Next;
+                if (current.Value.GetType().Name.Equals(ItemName))
                 {
-                    item.OnDropped(character); i++;
-                    if (i >= QuestGoal) break;
+                    character.ImportantItems.Remove(current);
+                    Console.WriteLine($"| '{current.Value.Name}' 아이템을 제거하였습니다! |");
                 }
+                current = next;
             }
         }
     }
