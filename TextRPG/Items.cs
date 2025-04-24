@@ -161,7 +161,6 @@ namespace TextRPG
             if (character.EquippedArmor[(int)(ArmorPosition)] != null) { character.EquippedArmor[(int)(ArmorPosition)].OnUnequip(character); }
             character.EquippedArmor[(int)(ArmorPosition)] = this;
             IsEquipped = true;
-            character.DefendStat += DefendStat;
             Console.WriteLine($"| {name} equipped! |");
         }
 
@@ -174,7 +173,6 @@ namespace TextRPG
             if (!IsEquipped) { Console.WriteLine($"| {Name} is not equipped! |"); return; }
             character.EquippedArmor[(int)ArmorPosition] = null;
             IsEquipped = false;
-            character.DefendStat -= DefendStat;
             Console.WriteLine($"| {name} unequipped! |");
         }
 
@@ -233,6 +231,12 @@ namespace TextRPG
               .Append($"MDef. : {DefendStat.MagicDefend:F2} | ")
               .Append($"가격 : {Price} | {Rarity}");
             return sb.ToString();
+        }
+
+        public override bool Equals(object? obj)
+        {
+            if(obj is Armor armor) return Name == armor.Name;
+            return false;
         }
     }
     /// <summary>
@@ -525,7 +529,6 @@ namespace TextRPG
             if (character.EquippedWeapon != null) { character.EquippedWeapon?.OnUnequip(character); }
             character.EquippedWeapon = this;
             IsEquipped = true;
-            character.AttackStat += AttackStat;
             Console.WriteLine($"| {name} equipped! |");
         }
 
@@ -538,7 +541,6 @@ namespace TextRPG
             if (!IsEquipped) { Console.WriteLine($"| {Name} is not equipped! |"); return; }
             character.EquippedWeapon = null;
             IsEquipped = false;
-            character.AttackStat -= AttackStat;
             Console.WriteLine($"| {name} unequipped! |");
         }
 
@@ -582,6 +584,17 @@ namespace TextRPG
             if (IsEquipped) { Console.WriteLine($"| Not possible to drop!, {Name} is equipped! |"); return; }
             character.Weapons.Remove(this);
             Console.WriteLine($"| Dropped {name}! |");
+        }
+
+        /// <summary>
+        /// Compare the weapon with another object
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public override bool Equals(object? obj)
+        {
+            if(obj is Weapon weapon) return Name == weapon.Name;
+            return false;
         }
     }
     /// <summary>
@@ -804,9 +817,9 @@ namespace TextRPG
         /// It removes all buffs from the character given by this item.
         /// </summary>
         /// <param name="character"></param>
-        public virtual void OnDeBuffed(Character character)
+        public void OnDeBuffed(Character character)
         {
-            Console.WriteLine("| All Buffs Removed! |");
+            Console.WriteLine($"| {Name}의 효과가 사라졌습니다! |");
         }
 
         /// <summary>
@@ -1012,13 +1025,6 @@ namespace TextRPG
             GameManager.Exposables.Enqueue(this);
 
             base.OnUsed(character);
-            character.AttackStat += AttackStat;
-        }
-
-        public override void OnDeBuffed(Character character)
-        {
-            base.OnDeBuffed(character);
-            character.AttackStat -= AttackStat;
         }
 
         /// <summary>
@@ -1096,13 +1102,6 @@ namespace TextRPG
             GameManager.Exposables.Enqueue(this);
 
             base.OnUsed(character);
-            character.DefendStat += DefendStat;
-        }
-
-        public override void OnDeBuffed(Character character)
-        {
-            base.OnDeBuffed(character);
-            character.DefendStat -= DefendStat;
         }
 
         /// <summary>
@@ -1184,15 +1183,6 @@ namespace TextRPG
             GameManager.Exposables.Enqueue(this);
 
             base.OnUsed(character);
-            character.AttackStat += AttackStat;
-            character.DefendStat += DefendStat;
-        }
-
-        public override void OnDeBuffed(Character character)
-        {
-            base.OnDeBuffed(character);
-            character.AttackStat -= AttackStat;
-            character.DefendStat -= DefendStat;
         }
 
         /// <summary>
