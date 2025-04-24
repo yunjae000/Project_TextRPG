@@ -564,6 +564,10 @@ namespace TextRPG
             string path = Miscs.path[random];
             Console.WriteLine($"{path}");
 
+            foreach (string line in Miscs.path[random].Split('\n'))
+            {
+                Console.WriteLine(line);
+            }
             return random switch
             {
                 0 => new int[] { (int)DungeonOptions.Forward, (int)DungeonOptions.Backward },
