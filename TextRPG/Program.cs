@@ -495,7 +495,7 @@ namespace TextRPG
         private void InTown_MoveToDungeon()
         {
             Console.Clear();
-            if (GameManager.GroundLevel < 3) foreach (string line in Miscs.EasyEntrance) Console.WriteLine(line);
+            if (GameManager.GroundLevel < 10) foreach (string line in Miscs.EasyEntrance) Console.WriteLine(line);
             else foreach (string line in Miscs.HardEntrance) Console.WriteLine(line);
             GameManager.GameState = GameState.Dungeon;
             Console.WriteLine("\nPress enter to continue...");
@@ -552,14 +552,14 @@ namespace TextRPG
                 Console.Write("\nPress enter to continue..."); Console.ReadLine(); 
                 return; 
             }
-            GameManager.IsPathSelected = true;
             opt = Math.Clamp(opt - 1, 0, (pathOptions.Length + Enum.GetValues(typeof(DungeonOptions)).Length - 4) - 1);
 
             // Choices
             if (opt >= 0 && opt < pathOptions.Length) { InDungeon_MonsterEncounter((DungeonOptions)pathOptions[opt]); }
-            else if (opt <= pathOptions.Length) { InInventory(); }
-            else if (opt <= pathOptions.Length + 1) { InStatus(); }
+            else if (opt <= pathOptions.Length) { GameManager.IsPathSelected = false; InInventory(); }
+            else if (opt <= pathOptions.Length + 1) { GameManager.IsPathSelected = false; InStatus(); }
             else { InDungeon_ReturnToTown(); }
+            GameManager.IsPathSelected = true;
         }
 
         /// <summary>

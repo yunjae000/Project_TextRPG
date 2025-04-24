@@ -8,12 +8,18 @@ namespace TextRPG
     /// </summary>
     static class UIManager
     {
+        /// <summary>
+        /// Show Game Start UI
+        /// </summary>
         public static void StartUI()
         {
             foreach (string line in Miscs.GameStart) Console.WriteLine(line);
             Console.Write("\nPress enter to continue..."); Console.ReadLine();
         }
 
+        /// <summary>
+        /// Show Character Selection UI
+        /// </summary>
         public static void JobSelectionUI()
         {
             Console.WriteLine();
@@ -22,6 +28,10 @@ namespace TextRPG
             Console.Write("원하는 직업을 선택하세요 : ");
         }
 
+        /// <summary>
+        /// Show Inventory UI
+        /// </summary>
+        /// <param name="character"></param>
         public static void InventoryUI(Character character)
         {
             foreach (string line in Miscs.Inventory) Console.WriteLine(line);
@@ -44,6 +54,9 @@ namespace TextRPG
             Console.Write("원하는 기능을 선택하세요 : ");
         }
 
+        /// <summary>
+        /// Show Inventory UI - Item Selection
+        /// </summary>
         public static void InventoryUI_Equipment()
         {
             Console.WriteLine("\n| ----- \"장비\" ----- |");
@@ -54,6 +67,9 @@ namespace TextRPG
             Console.Write("원하는 기능을 선택하세요 : ");
         }
 
+        /// <summary>
+        /// Show Inventory UI - Item Selection
+        /// </summary>
         public static void InventoryUI_Consumable()
         {
             Console.WriteLine("\n| ----- \"소모품\" ----- |");
@@ -62,6 +78,9 @@ namespace TextRPG
             Console.Write("원하는 기능을 선택하세요 : ");
         }
 
+        /// <summary>
+        /// Show Inventory UI - Miscellaneous
+        /// </summary>
         public static void InventoryUI_Misc()
         {
             Console.WriteLine("\n| ----- \"잡동사니\" ----- |");
@@ -70,6 +89,10 @@ namespace TextRPG
             Console.Write("원하는 기능을 선택하세요 : ");
         }
 
+        /// <summary>
+        /// Show Shop UI
+        /// </summary>
+        /// <param name="character"></param>
         public static void ShopUI(Character character)
         {
             Console.WriteLine("| ----- Welcome to Henry's Shop! ----- |");
@@ -443,6 +466,14 @@ namespace TextRPG
             Console.WriteLine($"| 현재 시간 : {GameManager.GameTime} |");
             Console.WriteLine($"| HP : {character.Health} | MP : {character.MagicPoint} |");
             Console.WriteLine($"| Gold : {character.Currency} |");
+
+            foreach(Skill skill in character.Skills)
+            {
+                if(skill is BuffSkill buffSkill && buffSkill.IsActive)
+                    Console.WriteLine($"| {buffSkill.Name} 효과의 남은 턴 ({GameManager.CurrentTurn - buffSkill.UsedTurn}/{buffSkill.TurnInterval}) | ");
+                
+            }
+
             Console.WriteLine("| .:~:..:~:..:~:..:~:..:~:. |");
             Console.WriteLine("| .:~:. 몬스터 정보 .:~:. |");
             foreach(Monster monster in spawnManager.spawnedMonsters)
@@ -1717,19 +1748,19 @@ namespace TextRPG
                     Console.WriteLine("| 전사를 선택하였습니다! |");
                     Console.Write("전사의 이름을 작성해주세요 : ");
                     name = Console.ReadLine() ?? "Jake"; if (name.Length < 1) name = "Jake";
-                    SelectedCharacter = new Warrior(new CharacterStat(name, 150, 50, 15, 1.6f, 1, new AttackStat(30f, 6f, 1f), new DefendStat(25, 15, 5)), 250, 0);
+                    SelectedCharacter = new Warrior(new CharacterStat(name, 150, 50, 15, 1.6f, 1, new AttackStat(25f, 10f, 8f), new DefendStat(25, 15, 5)), 250, 0);
                     break;
                 case Job.Wizard:
                     Console.WriteLine("| 법사를 선택하였습니다! |");
                     Console.Write("법사의 이름을 작성해주세요 : ");
                     name = Console.ReadLine() ?? "Lucy"; if (name.Length < 1) name = "Lucy";
-                    SelectedCharacter = new Wizard(new CharacterStat(name, 100, 80, 15, 1.6f, 1, new AttackStat(1f, 6f, 30f), new DefendStat(5, 10, 30)), 250, 0);
+                    SelectedCharacter = new Wizard(new CharacterStat(name, 100, 80, 15, 1.6f, 1, new AttackStat(8f, 10f, 25f), new DefendStat(5, 10, 30)), 250, 0);
                     break;
                 case Job.Archer:
                     Console.WriteLine("| 궁수를 선택하였습니다! |");
                     Console.Write("궁수의 이름을 작성해주세요 : ");
                     name = Console.ReadLine() ?? "Omen"; if (name.Length < 1) name = "Omen";
-                    SelectedCharacter = new Archer(new CharacterStat(name, 120, 65, 15, 1.6f, 1, new AttackStat(6f, 30f, 1f), new DefendStat(15, 25, 5)), 250, 0);
+                    SelectedCharacter = new Archer(new CharacterStat(name, 120, 65, 15, 1.6f, 1, new AttackStat(10f, 25f, 8f), new DefendStat(15, 25, 5)), 250, 0);
                     break;
             }
 
