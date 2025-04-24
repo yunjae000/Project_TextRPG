@@ -109,7 +109,7 @@ namespace TextRPG
         public List<Weapon> Weapons { get; set; } = new List<Weapon>();
         public List<Consumables> Consumables { get; set; } = new List<Consumables>();
         public List<Skill> Skills { get; set; } = new List<Skill>();
-        public List<ImportantItem> ImportantItems { get; set; } = new List<ImportantItem>();
+        public LinkedList<ImportantItem> ImportantItems { get; set; } = new LinkedList<ImportantItem>();
 
         public Armor?[] EquippedArmor { get; set; } = new Armor[Enum.GetValues(typeof(ArmorPosition)).Length];
         public Weapon? EquippedWeapon { get; set; } = null;
@@ -326,7 +326,7 @@ namespace TextRPG
         public Warrior(string name, float maxHealth, float health, float maxMagicPoint, float magicPoint,
             int criticalHitChance, float criticalHitDamagePercentage, int level,
             AttackStat attackStat, DefendStat defendStat, int currency, int exp, bool isAlive,
-            List<Armor> armors, List<Weapon> weapons, List<Consumables> consumables, List<ImportantItem> importantItems, List<Skill> skills,
+            List<Armor> armors, List<Weapon> weapons, List<Consumables> consumables, LinkedList<ImportantItem> importantItems, List<Skill> skills,
             Armor?[] equippedArmor, Weapon? equippedWeapon)
             : base(name, maxHealth, health, maxMagicPoint, magicPoint, criticalHitChance, criticalHitDamagePercentage, level, attackStat, defendStat, currency, exp, isAlive)
         {
@@ -334,7 +334,7 @@ namespace TextRPG
             Armors = armors ?? new List<Armor>();
             Weapons = weapons ?? new List<Weapon>();
             Consumables = consumables ?? new List<Consumables>();
-            ImportantItems = importantItems ?? new List<ImportantItem>();
+            ImportantItems = importantItems ?? new LinkedList<ImportantItem>();
             Skills = skills ?? new List<Skill>();
             EquippedArmor = equippedArmor ?? new Armor[Enum.GetValues(typeof(ArmorPosition)).Length];
             EquippedWeapon = equippedWeapon;
@@ -365,7 +365,7 @@ namespace TextRPG
         public Wizard(string name, float maxHealth, float health, float maxMagicPoint,
             float magicPoint, int criticalHitChance, float criticalHitDamagePercentage, int level,
             AttackStat attackStat, DefendStat defendStat, int currency, int exp, bool isAlive,
-            List<Armor> armors, List<Weapon> weapons, List<Consumables> consumables, List<ImportantItem> importantItems, List<Skill> skills,
+            List<Armor> armors, List<Weapon> weapons, List<Consumables> consumables, LinkedList<ImportantItem> importantItems, List<Skill> skills,
             Armor?[] equippedArmor, Weapon? equippedWeapon)
             : base(name, maxHealth, health, maxMagicPoint, magicPoint, criticalHitChance, criticalHitDamagePercentage, level, attackStat, defendStat, currency, exp, isAlive)
         {
@@ -374,7 +374,7 @@ namespace TextRPG
             Armors = armors ?? new List<Armor>();
             Weapons = weapons ?? new List<Weapon>();
             Consumables = consumables ?? new List<Consumables>();
-            ImportantItems = importantItems ?? new List<ImportantItem>();
+            ImportantItems = importantItems ?? new LinkedList<ImportantItem>();
             Skills = skills ?? new List<Skill>();
             EquippedArmor = equippedArmor ?? new Armor[Enum.GetValues(typeof(ArmorPosition)).Length];
             EquippedWeapon = equippedWeapon;
@@ -405,7 +405,7 @@ namespace TextRPG
         public Archer(string name, float maxHealth, float health, float maxMagicPoint,
             float magicPoint, int criticalHitChance, float criticalHitDamagePercentage, int level,
             AttackStat attackStat, DefendStat defendStat, int currency, int exp, bool isAlive,
-            List<Armor> armors, List<Weapon> weapons, List<Consumables> consumables, List<ImportantItem> importantItems, List<Skill> skills,
+            List<Armor> armors, List<Weapon> weapons, List<Consumables> consumables, LinkedList<ImportantItem> importantItems, List<Skill> skills,
             Armor?[] equippedArmor, Weapon? equippedWeapon)
             : base(name, maxHealth, health, maxMagicPoint, magicPoint, criticalHitChance, criticalHitDamagePercentage, level, attackStat, defendStat, currency, exp, isAlive)
         {
@@ -414,7 +414,7 @@ namespace TextRPG
             Armors = armors ?? new List<Armor>();
             Weapons = weapons ?? new List<Weapon>();
             Consumables = consumables ?? new List<Consumables>();
-            ImportantItems = importantItems ?? new List<ImportantItem>();
+            ImportantItems = importantItems ?? new LinkedList<ImportantItem>();
             Skills = skills ?? new List<Skill>();
             EquippedArmor = equippedArmor ?? new Armor[Enum.GetValues(typeof(ArmorPosition)).Length];
             EquippedWeapon = equippedWeapon;

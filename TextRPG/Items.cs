@@ -185,7 +185,7 @@ namespace TextRPG
         public virtual void OnPurchase(Character character)
         {
             if (character.Currency < Price) { Console.WriteLine("| Not enough Money! |"); return; }
-            Console.WriteLine($"| {name}을 구매하였습니다! |"); 
+            Console.WriteLine($"| {name}을 구매하였습니다! |");
         }
 
         /// <summary>
@@ -1292,7 +1292,7 @@ namespace TextRPG
         public override void OnPicked(Character character)
         {
             base.OnPicked(character);
-            character.ImportantItems.Add(new GoblinEar(this));
+            character.ImportantItems.AddLast(new GoblinEar(this));
             var quests = QuestManager.GetContractedQuests_CollectItem(GetType().Name);
             foreach (var quest in quests) { quest.OnProgress(character); }
         }
@@ -1317,7 +1317,7 @@ namespace TextRPG
         public override void OnPicked(Character character)
         {
             base.OnPicked(character);
-            character.ImportantItems.Add(new GoblinEye(this));
+            character.ImportantItems.AddLast(new GoblinEye(this));
             var quests = QuestManager.GetContractedQuests_CollectItem(GetType().Name);
             foreach (var quest in quests) { quest.OnProgress(character); }
         }

@@ -28,8 +28,8 @@ namespace TextRPG
             {
                 Console.Clear();
                 UIManager.GameOptionUI();
-                if (!int.TryParse(Console.ReadLine(), out int opt)) { Console.WriteLine("| 잘못된 입력입니다! |"); Console.Write("Press any key to continue..."); Console.ReadKey(true); }
-                else if (opt < 1 || opt > Enum.GetValues(typeof(GameOption)).Length) { Console.WriteLine("| 잘못된 입력입니다! |"); Console.Write("Press any key to continue..."); Console.ReadKey(true); }
+                if (!int.TryParse(Console.ReadLine(), out int opt)) { Console.WriteLine("| 잘못된 입력입니다! |"); Console.Write("Press any key to continue..."); Console.ReadKey(); }
+                else if (opt < 1 || opt > Enum.GetValues(typeof(GameOption)).Length) { Console.WriteLine("| 잘못된 입력입니다! |"); Console.Write("Press any key to continue..."); Console.ReadKey(); }
                 else { option = Math.Clamp(opt, 1, Enum.GetValues(typeof(GameOption)).Length); break; }
             }
 
@@ -102,7 +102,7 @@ namespace TextRPG
             
             Console.WriteLine("| 좋은 꿈 꾸세요! |");
             Console.Write("Press any key to continue...");
-            Console.ReadKey(true);
+            Console.ReadKey();
         }
 
         /// <summary>
@@ -142,7 +142,7 @@ namespace TextRPG
                 if (!InInventory_ChangeStateOfItem(category, wearable, useable, pickable)) continue;
 
                 Console.Write("Press any key to continue...");
-                Console.ReadKey(true);
+                Console.ReadKey();
             }
         }
 
@@ -177,7 +177,7 @@ namespace TextRPG
                     break;
                 case ItemCategory.Misc:
                     if (character.ImportantItems.Count < 1) break;
-                    pickable = character.ImportantItems[Math.Clamp(ind - 1, 0, character.ImportantItems.Count - 1)];
+                    pickable = character.ImportantItems.ElementAt(Math.Clamp(ind - 1, 0, character.ImportantItems.Count - 1));
                     break;
             }
         }
@@ -253,7 +253,7 @@ namespace TextRPG
                 {
                     Console.WriteLine("| 잘못된 입력입니다! |");
                     Console.Write("Press any key to continue...");
-                    Console.ReadKey(true);
+                    Console.ReadKey();
                     continue;
                 }
 
@@ -267,7 +267,7 @@ namespace TextRPG
                         Console.WriteLine("| 잘못된 입력입니다! |"); break;
                 }
                 Console.Write("Press any key to continue...");
-                Console.ReadKey(true);
+                Console.ReadKey();
             }
         }
 
@@ -355,7 +355,7 @@ namespace TextRPG
                     }
                     ItemLists.Consumables[ind - 1].OnPurchase(GameManager.SelectedCharacter); break;
             }
-            Console.Write("\nPress any key to continue..."); Console.ReadKey(true);
+            Console.Write("\nPress any key to continue..."); Console.ReadKey();
         }
 
         /// <summary>
@@ -390,9 +390,9 @@ namespace TextRPG
                     {
                         Console.WriteLine("| 아이템이 존재하지 않습니다! |"); break;
                     }
-                    GameManager.SelectedCharacter.ImportantItems[ind - 1].OnSell(GameManager.SelectedCharacter); break;
+                    GameManager.SelectedCharacter.ImportantItems.ElementAt(ind - 1).OnSell(GameManager.SelectedCharacter); break;
             }
-            Console.Write("\nPress any key to continue..."); Console.ReadKey(true);
+            Console.Write("\nPress any key to continue..."); Console.ReadKey();
         }
 
         /// <summary>
@@ -405,8 +405,8 @@ namespace TextRPG
                 Console.Clear();
                 foreach (string line in Miscs.Quest) Console.WriteLine(line);
                 UIManager.QuestUI();
-                if (!int.TryParse(Console.ReadLine(), out int opt)) { Console.WriteLine("| 잘못된 입력입니다! |"); continue; }
-                else if (opt < 1 || opt > 7) { Console.WriteLine("| 잘못된 입력입니다! |"); continue; }
+                if (!int.TryParse(Console.ReadLine(), out int opt)) { Console.WriteLine("| 잘못된 입력입니다! |"); Console.Write("Press any key to continue..."); Console.ReadKey(); continue; }
+                else if (opt < 1 || opt > 7) { Console.WriteLine("| 잘못된 입력입니다! |"); Console.Write("Press any key to continue..."); Console.ReadKey(); continue; }
 
                 switch (Math.Clamp(opt, 1, 7))
                 {
@@ -428,17 +428,16 @@ namespace TextRPG
         {
             UIManager.QuestUI_Contract();
 
-            if (!int.TryParse(Console.ReadLine(), out int opt)) { Console.WriteLine("| 잘못된 입력입니다! |"); return; }
-            else if (opt < 1 || opt > QuestManager.GetContractableQuests().Count()) { Console.WriteLine("| 잘못된 입력입니다! |"); return; }
+            if (!int.TryParse(Console.ReadLine(), out int opt)) { Console.WriteLine("| 잘못된 입력입니다! |"); Console.Write("Press any key to continue..."); Console.ReadKey(); return; }
+            else if (opt < 1 || opt > QuestManager.GetContractableQuests().Count()) { Console.WriteLine("| 잘못된 입력입니다! |"); Console.Write("Press any key to continue..."); Console.ReadKey(); return; }
 
             while (true)
             {
                 Console.Write("이 Quest를 정말로 수주할 것입니까? (Y/N) : ");
-                char key = char.ToLower(Console.ReadKey(true).KeyChar);
-
-                if (key.Equals('n')) return;
-                else if (key.Equals('y')) break;
-                else { Console.WriteLine("| 잘못된 입력입니다! |"); }
+                string key = Console.ReadLine();
+                if (key.Equals("Y", StringComparison.OrdinalIgnoreCase)) { break; }
+                else if (key.Equals("N", StringComparison.OrdinalIgnoreCase)) { return; }
+                else { Console.WriteLine("| 잘못된 입력입니다! |"); Console.Write("Press any key to continue..."); Console.ReadKey(); }
             }
 
             var quest = QuestManager.GetContractableQuests().ElementAt(opt - 1);
@@ -446,7 +445,7 @@ namespace TextRPG
             else ((CollectItemQuest)quest).OnContracted(GameManager.SelectedCharacter);
 
             Console.Write("Press any key to continue...");
-            Console.ReadKey(true);
+            Console.ReadKey();
         }
 
         /// <summary>
@@ -457,17 +456,16 @@ namespace TextRPG
         {
             UIManager.QuestUI_Complete();
 
-            if (!int.TryParse(Console.ReadLine(), out int opt)) { Console.WriteLine("| 잘못된 입력입니다! |"); return; }
-            else if (opt < 1 || opt > QuestManager.GetCompletableQuests().Count()) { Console.WriteLine("| 잘못된 입력입니다! |"); return; }
+            if (!int.TryParse(Console.ReadLine(), out int opt)) { Console.WriteLine("| 잘못된 입력입니다! |"); Console.Write("Press any key to continue..."); Console.ReadKey(); return; }
+            else if (opt < 1 || opt > QuestManager.GetCompletableQuests().Count()) { Console.WriteLine("| 잘못된 입력입니다! |"); Console.Write("Press any key to continue..."); Console.ReadKey(); return; }
 
             while (true)
             {
                 Console.Write("이 Quest를 정말로 완료할 것입니까? (Y/N) : ");
-                char key = char.ToLower(Console.ReadKey(true).KeyChar);
-
-                if (key.Equals('n')) return;
-                else if (key.Equals('y')) break;
-                else { Console.WriteLine("| 잘못된 입력입니다! |"); }
+                string key = Console.ReadLine();
+                if (key.Equals("Y", StringComparison.OrdinalIgnoreCase)) { break; }
+                else if (key.Equals("N", StringComparison.OrdinalIgnoreCase)) { return; }
+                else { Console.WriteLine("| 잘못된 입력입니다! |"); Console.Write("Press any key to continue..."); Console.ReadKey(); }
             }
 
             var quest = QuestManager.GetCompletableQuests().ElementAt(opt - 1);
@@ -475,7 +473,7 @@ namespace TextRPG
             else if (quest is CollectItemQuest) ((CollectItemQuest)quest).OnCompleted(character);
 
             Console.Write("Press any key to continue...");
-            Console.ReadKey(true);
+            Console.ReadKey();
         }
 
         /// <summary>
@@ -489,7 +487,7 @@ namespace TextRPG
             else if (type == QuestStatus.Completable) { foreach (var quest in QuestManager.GetCompletableQuests()) Console.WriteLine($"{quest.ToString()}"); }
             else { foreach (var quest in QuestManager.GetCompletedQuests()) Console.WriteLine($"{quest.ToString()}"); }
             Console.WriteLine("| Press any key to continue... |");
-            Console.ReadKey(true);
+            Console.ReadKey();
         }
 
         /// <summary>
@@ -502,7 +500,7 @@ namespace TextRPG
             else foreach (string line in Miscs.HardEntrance) Console.WriteLine(line);
             GameManager.GameState = GameState.Dungeon;
             Console.WriteLine("Press any key to continue...");
-            Console.ReadKey(true);
+            Console.ReadKey();
         }
 
         /// <summary>
@@ -622,7 +620,7 @@ namespace TextRPG
             if (GameManager.GameTime == GameTime.Afternoon) GameManager.GameTime = GameTime.Night;
             else { GameManager.GameTime = GameTime.Afternoon; GameManager.RemoveAllBuffs(); }
             Console.WriteLine("| 마을로 무사귀환하였습니다... |");
-            Console.Write("Press any key to continue..."); Console.ReadKey(true);
+            Console.Write("Press any key to continue..."); Console.ReadKey();
         }
         #endregion
 
@@ -674,7 +672,7 @@ namespace TextRPG
             InBattle_RemoveBuffSkills(true);
 
             Console.WriteLine("Press any key to continue...");
-            Console.ReadKey(true);
+            Console.ReadKey();
         }
 
         /// <summary>
@@ -723,7 +721,7 @@ namespace TextRPG
                 else if (ind < 0 || ind > GameManager.SelectedCharacter.Skills.Count) Console.WriteLine("| 잘못된 입력입니다! |");
                 else { skillOpt = Math.Clamp(ind, 0, GameManager.SelectedCharacter.Skills.Count); break; }
                 Console.Write("Press any key to continue...");
-                Console.ReadKey(true);
+                Console.ReadKey();
             }
 
             if (skillOpt <= 0) return false;
@@ -735,7 +733,7 @@ namespace TextRPG
                 {
                     Console.WriteLine("\n| 무기를 장착해야 액티브 스킬을 사용할 수 있습니다! |");
                     Console.Write("Press any key to continue...");
-                    Console.ReadKey(true);
+                    Console.ReadKey();
                     return false;
                 }
 
@@ -746,7 +744,7 @@ namespace TextRPG
                     {
                         Console.WriteLine("| 마나가 부족합니다! |");
                         Console.Write("Press any key to continue...");
-                        Console.ReadKey(true);
+                        Console.ReadKey();
                     }
                     return isSuccess;
                 }
@@ -766,7 +764,7 @@ namespace TextRPG
                 {
                     Console.WriteLine("| 마나가 부족합니다! |");
                     Console.Write("Press any key to continue...");
-                    Console.ReadKey(true);
+                    Console.ReadKey();
                 }
                 return isSuccess2;
             }
