@@ -804,7 +804,7 @@ namespace TextRPG
             |                                                                         CHO_YUNJAE  | 
             |                                                                        PARK_JIHWAN  | 
             |                                                                        KIM_KONGSIK  | 
-            |                                                                      BANG_EUNSEONG  | 
+            |                                                               ★ MVP  BANG_EUNSEONG  | 
             |                                                                                     | 
             +=====================================================================================+"
         };
