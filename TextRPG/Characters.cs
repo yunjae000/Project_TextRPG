@@ -269,7 +269,7 @@ namespace TextRPG
         /// <returns></returns>
         private bool IsEvaded()
         {
-            Random rand = new Random();
+            Random rand = new();
             float EvasionPercent = rand.Next(0, 100);
             return EvasionPercent < 10;
         }
@@ -280,7 +280,7 @@ namespace TextRPG
         /// <returns></returns>
         private bool IsCriticalHit()
         {
-            Random rand = new Random();
+            Random rand = new();
             float CriticalPercent = rand.Next(0, 100);
             return CriticalPercent < CriticalHitChance;
         }
