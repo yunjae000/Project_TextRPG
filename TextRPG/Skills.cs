@@ -168,7 +168,7 @@ namespace TextRPG
     class BuffSkill : Skill, ISkillBuff
     {
         // Field
-        private bool isActive;
+        private bool isActive = false;
         private int turnInterval;
 
         // Property

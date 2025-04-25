@@ -58,7 +58,7 @@ namespace TextRPG
                 sb.Append($"치명적인 공격에 맞아");
             }
             float calculatedDamage =
-                type == AttackType.Close ? Math.Max(1f, (damage * (1f - DefendStat.Defend / 100f))) :
+                type == AttackType.Close ? Math.Max(1f, damage * (1f - DefendStat.Defend / 100f)) :
                 (type == AttackType.Long ? Math.Max(1f, damage * (1f - DefendStat.RangeDefend / 100f)) :
                 Math.Max(1f, (damage * (1f - DefendStat.MagicDefend / 100f))));
 
@@ -149,9 +149,9 @@ namespace TextRPG
     static class MonsterLists
     {
         public static Monster[] monsters = {
-            new GoblinWarrior(new CharacterStat("Normal Goblin Warrior", 150, 10, 15, 1.6f, 1, new AttackStat(20f, 1f, 1f), new DefendStat(18, 15, 3)), 20),
-            new GoblinArcher(new CharacterStat("Normal Goblin Archer", 120, 30, 15, 1.6f, 1, new AttackStat(1f, 20f, 1f), new DefendStat(15, 18, 3)), 20),
-            new GoblinMage(new CharacterStat("Normal Goblin Mage", 100, 50, 15, 1.6f, 1, new AttackStat(1f, 1f, 20f), new DefendStat(3, 15, 18)), 20),
+            new GoblinWarrior(new CharacterStat("Normal Goblin Warrior", 150, 10, 15, 1.6f, 1, new AttackStat(15f, 1f, 1f), new DefendStat(18f, 15f, 3f)), 20),
+            new GoblinArcher(new CharacterStat("Normal Goblin Archer", 120, 30, 15, 1.6f, 1, new AttackStat(1f, 15f, 1f), new DefendStat(15f, 18f, 3f)), 20),
+            new GoblinMage(new CharacterStat("Normal Goblin Mage", 100, 50, 15, 1.6f, 1, new AttackStat(1f, 1f, 15f), new DefendStat(3f, 15f, 18f)), 20),
         };
     }
 }

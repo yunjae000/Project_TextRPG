@@ -10,10 +10,10 @@ namespace TextRPG
         /// <returns>Returns true, when player chooses to start the game.</returns>
         private bool InMainMenu()
         {
+            UIManager.StartUI();
             int option;
             while (true)
             {
-                Console.Clear();
                 UIManager.GameOptionUI();
                 if (!int.TryParse(Console.ReadLine(), out int opt)) { Console.WriteLine("| 잘못된 입력입니다! |"); Console.Write("\nPress enter to continue..."); Console.ReadLine(); }
                 else if (opt < 1 || opt > Enum.GetValues(typeof(GameOption)).Length) { Console.WriteLine("| 잘못된 입력입니다! |"); Console.Write("\nPress enter to continue..."); Console.ReadLine(); }
@@ -44,7 +44,6 @@ namespace TextRPG
 
             while (!isSelected)
             {
-                Console.Clear();
                 UIManager.CabinUI(GameManager.SelectedCharacter);
 
                 if (!int.TryParse(Console.ReadLine(), out int opt)) { Console.WriteLine("| 잘못된 입력입니다! |"); Console.Write("\nPress enter to continue..."); Console.ReadLine(); continue; }
@@ -100,7 +99,6 @@ namespace TextRPG
             while (true)
             {
                 // Prints Inventory UI
-                Console.Clear();
                 UIManager.InventoryUI(GameManager.SelectedCharacter);
 
                 // Get Input from user
@@ -222,7 +220,6 @@ namespace TextRPG
         /// </summary>
         private void InStatus()
         {
-            Console.Clear();
             UIManager.StatusUI(GameManager.SelectedCharacter);
         }
 
@@ -249,9 +246,8 @@ namespace TextRPG
                     case SettingOptions.Back: return;
                     case SettingOptions.Save: GameManager.SaveGame(); break;
                     case SettingOptions.Load: GameManager.LoadGame(); break;
-                    case SettingOptions.EndGame: GameManager.GameState = GameState.MainMenu; Console.WriteLine(); return;
-                    default:
-                        Console.WriteLine("| 잘못된 입력입니다! |"); break;
+                    case SettingOptions.EndGame: GameManager.ResetGame(); return;
+                    default: Console.WriteLine("| 잘못된 입력입니다! |"); break;
                 }
                 Console.Write("\nPress enter to continue...");
                 Console.ReadLine();
@@ -267,8 +263,9 @@ namespace TextRPG
 
             while (true)
             {
-                Console.Clear();
+                // Prints Shop UI
                 UIManager.ShopUI(character);
+
                 if (!int.TryParse(Console.ReadLine(), out int opt)) { Console.WriteLine("| 잘못된 입력입니다! |"); Console.Write("\nPress enter to continue..."); Console.ReadLine(); continue; }
                 else if (opt < 0 || opt > 4) { Console.WriteLine("| 잘못된 입력입니다! |"); Console.Write("\nPress enter to continue..."); Console.ReadLine(); continue; }
                 
@@ -389,8 +386,6 @@ namespace TextRPG
         {
             while (true)
             {
-                Console.Clear();
-                foreach (string line in Miscs.Quest) Console.WriteLine(line);
                 UIManager.QuestUI();
                 if (!int.TryParse(Console.ReadLine(), out int opt)) { Console.WriteLine("| 잘못된 입력입니다! |"); Console.Write("\nPress enter to continue..."); Console.ReadLine(); continue; }
                 else if (opt < 1 || opt > 7) { Console.WriteLine("| 잘못된 입력입니다! |"); Console.Write("\nPress enter to continue..."); Console.ReadLine(); continue; }
@@ -400,10 +395,10 @@ namespace TextRPG
                     case 1: return;
                     case 2: ContractQuest(); break;
                     case 3: CompleteQuest(GameManager.SelectedCharacter); break;
-                    case 4: ShowQuests(QuestStatus.NotStarted); break;
-                    case 5: ShowQuests(QuestStatus.Completable); break;
-                    case 6: ShowQuests(QuestStatus.InProgress); break;
-                    case 7: ShowQuests(QuestStatus.Completed); break;
+                    case 4: UIManager.QuestUI_ShowQuests(QuestStatus.NotStarted); break;
+                    case 5: UIManager.QuestUI_ShowQuests(QuestStatus.Completable); break;
+                    case 6: UIManager.QuestUI_ShowQuests(QuestStatus.InProgress); break;
+                    case 7: UIManager.QuestUI_ShowQuests(QuestStatus.Completed); break;
                 }
             }
         }
@@ -464,19 +459,6 @@ namespace TextRPG
         }
 
         /// <summary>
-        /// Shows quests by type in the game.
-        /// </summary>
-        private void ShowQuests(QuestStatus type)
-        {
-            if (type == QuestStatus.NotStarted) { foreach (var quest in QuestManager.GetContractableQuests()) Console.WriteLine($"{quest.ToString()}"); }
-            else if (type == QuestStatus.InProgress) { foreach (var quest in QuestManager.GetContractedQuests()) Console.WriteLine($"{quest.ToString()}"); }
-            else if(type == QuestStatus.Completable) { foreach(var quest in QuestManager.GetCompletableQuests()) Console.WriteLine($"{quest.ToString()}"); }
-            else { foreach (var quest in QuestManager.GetCompletedQuests()) Console.WriteLine($"{quest.ToString()}"); }
-            Console.Write("\nPress enter to continue...");
-            Console.ReadLine();
-        }
-
-        /// <summary>
         /// Moves player to dungeon.
         /// </summary>
         private void InTown_MoveToDungeon()
@@ -494,8 +476,6 @@ namespace TextRPG
         /// </summary>
         private void InTown()
         {
-            Console.Clear();
-            foreach (string line in Miscs.Town) Console.WriteLine(line);
             UIManager.BaseUI(GameManager.SelectedCharacter, "The Town of Adventurers", typeof(IdleOptions));
 
             if (!int.TryParse(Console.ReadLine(), out int opt)) { Console.WriteLine("| 잘못된 입력입니다! |"); Console.WriteLine("\nPress enter to continue..."); Console.ReadLine(); return; }
@@ -521,9 +501,8 @@ namespace TextRPG
         private void InDungeon()
         {
             // Print UI of Kill Count and Player Options
-            Console.Clear();  
+            Console.Clear();
             int[] pathOptions = RandomPathOption(GameManager.IsPathSelected);
-            UIManager.KillCountUI(GameManager.KilledMonsterCount, GameManager.Quota);
             UIManager.DungeonUI(GameManager.SelectedCharacter, pathOptions);
 
             // Try parsing, if successed clamp Parsed Input
@@ -617,8 +596,8 @@ namespace TextRPG
         /// </summary>
         private void InBattle()
         {
-            Console.Clear();
-            UIManager.BattleUI(GameManager.SelectedCharacter, "Kill the monsters");
+            UIManager.BattleUI(GameManager.SelectedCharacter);
+            
             if (!int.TryParse(Console.ReadLine(), out int opt)) { Console.WriteLine("| 잘못된 입력입니다! |"); Console.Write("\nPress enter to continue..."); Console.ReadLine(); return; }
             else if (opt < 1 || opt > Enum.GetValues(typeof(BattleOptions)).Length) { Console.WriteLine("| 잘못된 입력입니다! |"); Console.Write("\nPress enter to continue..."); Console.ReadLine(); return; }
 
@@ -665,8 +644,7 @@ namespace TextRPG
             int opt;
             while (true)
             {
-                Console.Clear();
-                UIManager.ShowMonsterList();
+                UIManager.ShowMonsterList(GameManager.SelectedCharacter);
                 if (!int.TryParse(Console.ReadLine(), out int ind)) { Console.WriteLine("| 잘못된 입력입니다! |"); }
                 else if (ind < 0 || ind > SpawnManager.GetMonsterCount()) { Console.WriteLine("| 잘못된 입력입니다! |"); }
                 else { opt = Math.Clamp(ind, 0, SpawnManager.GetMonsterCount()); break; }
@@ -699,8 +677,8 @@ namespace TextRPG
             int skillOpt;
             while (true)
             {
-                Console.Clear();
                 UIManager.ShowSkillList(GameManager.SelectedCharacter);
+                
                 if (!int.TryParse(Console.ReadLine(), out int ind)) Console.WriteLine("| 잘못된 입력입니다! |");
                 else if (ind < 0 || ind > GameManager.SelectedCharacter.Skills.Count) Console.WriteLine("| 잘못된 입력입니다! |");
                 else { skillOpt = Math.Clamp(ind, 0, GameManager.SelectedCharacter.Skills.Count); break; }
@@ -730,7 +708,7 @@ namespace TextRPG
                     return isSuccess;
                 }
 
-                UIManager.ShowMonsterList();
+                UIManager.ShowMonsterList(GameManager.SelectedCharacter);
                 int monsterOpt;
                 while (true)
                 {
@@ -761,19 +739,22 @@ namespace TextRPG
         private AttackStat InBattle_CalculateAtkStat(Character character)
         {
             AttackStat newAtkStat = new(character.AttackStat);
-            if (character.EquippedWeapon != null) { newAtkStat += character.AttackStat; }
+            if (character.EquippedWeapon != null) { newAtkStat += character.EquippedWeapon.AttackStat; }
+            Console.WriteLine($"{newAtkStat}");
             foreach (var item in GameManager.Exposables)
             {
                 if (item is AttackBuffPotion atkPotion) { newAtkStat += atkPotion.AttackStat; }
                 else if (item is AllBuffPotion allPotion) { newAtkStat += allPotion.AttackStat; }
             }
+            Console.WriteLine($"{newAtkStat}");
             foreach (var skill in character.Skills)
             {
                 if (skill is BuffSkill buffSkill)
                 {
-                    if (buffSkill.Name.Equals("명상") && buffSkill.IsActive) newAtkStat *= buffSkill.Coefficient;
+                    if (buffSkill.IsActive) newAtkStat *= buffSkill.Coefficient;
                 }
             }
+            Console.WriteLine($"{newAtkStat}");
             return newAtkStat;
         }
 
@@ -834,8 +815,6 @@ namespace TextRPG
     {
         static void Main(string[] args)
         {
-            // Game Start UI
-            UIManager.StartUI();
             InGame inGame = new();
 
             // Main Game

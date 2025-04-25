@@ -147,12 +147,13 @@ namespace TextRPG
             this.rarity = rarity;
             if (defendStat != null)
             {
-                if ((int)rarity > (int)Rarity.Common)
+                if ((int)rarity > (int)Rarity.Rare)
                 {
                     DefendStat newStat = new(
-                        defendStat.Defend + ((int)rarity >= (int)Rarity.Hero ? defendStat.Defend * ((int)rarity - (int)Rarity.Rare) * 0.05f : 0f),
-                        defendStat.RangeDefend + ((int)rarity >= (int)Rarity.Hero ? defendStat.RangeDefend * ((int)rarity - (int)Rarity.Rare) * 0.05f : 0f),
-                        defendStat.MagicDefend + ((int)rarity >= (int)Rarity.Hero ? defendStat.MagicDefend * ((int)rarity - (int)Rarity.Rare) * 0.05f : 0f));
+                        defendStat.Defend + defendStat.Defend * ((int)rarity - (int)Rarity.Rare) * 0.05f,
+                        defendStat.RangeDefend + defendStat.RangeDefend * ((int)rarity - (int)Rarity.Rare) * 0.05f,
+                        defendStat.MagicDefend + defendStat.MagicDefend * ((int)rarity - (int)Rarity.Rare) * 0.05f
+                    );
                     this.defendStat = newStat;
                 }
                 else this.defendStat = new(defendStat);
@@ -168,7 +169,7 @@ namespace TextRPG
         public void OnEquip(Character character)
         {
             if (IsEquipped) { Console.WriteLine($"| {Name} is already equipped! |"); return; }
-            if (character.EquippedArmor[(int)(ArmorPosition)] != null) { character.EquippedArmor[(int)(ArmorPosition)].OnUnequip(character); }
+            if (character.EquippedArmor[(int)(ArmorPosition)] != null) { character.EquippedArmor[(int)(ArmorPosition)]?.OnUnequip(character); }
             character.EquippedArmor[(int)(ArmorPosition)] = this;
             IsEquipped = true;
             Console.WriteLine($"| {name} equipped! |");
@@ -514,15 +515,14 @@ namespace TextRPG
             this.rarity = rarity;
             if (attackStat != null)
             {
-                if ((int)rarity > (int)Rarity.Common)
+                if ((int)rarity > (int)Rarity.Rare)
                 {
                     AttackStat newStat = new()
                     {
-                        Attack = attackStat.Attack + ((int)rarity >= (int)Rarity.Hero ? attackStat.Attack * ((int)rarity - (int)Rarity.Rare) * 0.05f : 0f),
-                        RangeAttack = attackStat.RangeAttack + ((int)rarity >= (int)Rarity.Hero ? attackStat.RangeAttack * ((int)rarity - (int)Rarity.Rare) * 0.05f : 0f),
-                        MagicAttack = attackStat.MagicAttack + ((int)rarity >= (int)Rarity.Hero ? attackStat.MagicAttack * ((int)rarity - (int)Rarity.Rare) * 0.05f : 0f)   
+                        Attack = attackStat.Attack + attackStat.Attack * ((int)rarity - (int)Rarity.Rare) * 0.05f,
+                        RangeAttack = attackStat.RangeAttack + attackStat.RangeAttack * ((int)rarity - (int)Rarity.Rare) * 0.05f,
+                        MagicAttack = attackStat.MagicAttack + attackStat.MagicAttack * ((int)rarity - (int)Rarity.Rare) * 0.05f
                     };
-                    this.attackStat = newStat;
                 }
                 else this.attackStat = new(attackStat);
             }

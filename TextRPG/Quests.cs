@@ -169,7 +169,7 @@ namespace TextRPG
             StringBuilder sb = new();
             _ = IsSpecial == true ? sb.Append("| [★] ") : sb.Append("| [] ");
             sb.AppendLine($"Quest : '{Name}' |")
-              .AppendLine($"| 상세설명 : '{Description}' | ")
+              .AppendLine($"| 상세설명 : '{Description}'")
               .AppendLine($"| 난이도 : '{Difficulty}', 타입 : '{QuestType}' |")
               .AppendLine($"| Exp : '{RewardExp}', Gold : '{RewardGold} |");
             return sb.ToString();
