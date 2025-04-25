@@ -3,17 +3,17 @@ namespace TextRPG
     #region InGame Options
     public enum IdleOptions
     {
-        Shop, Quest, Dungeon, Rest, Inventory, Status, Option,
+        Shop, Rest, Quest, Dungeon, Inventory, Status, Option,
     }
-    
+
     public enum DungeonOptions
     {
-        Forward, Left, Right, Backward, Inventory, Status, BackToTown, 
+        Forward, Left, Right, Backward, Inventory, Status, BackToTown,
     }
-    
+
     public enum BattleOptions
     {
-        Attack, Inventory, Status, Escape,
+        Attack, Skill, Inventory, Status, Escape,
     }
 
     public enum SettingOptions
@@ -30,7 +30,7 @@ namespace TextRPG
 
     public enum ItemCategory
     {
-        Armor, Weapon, Consumable
+        Armor, Weapon, Consumable, Misc,
     }
 
     public enum ConsumableCategory
@@ -63,10 +63,22 @@ namespace TextRPG
     }
     #endregion
 
-    #region Quest Difficulty
+    #region Quests
     public enum QuestDifficulty
     {
         Easy, Normal, Hard,
+    }
+    public enum QuestType
+    {
+        KillMonster,
+        CollectItem,
+    }
+    public enum QuestStatus
+    {
+        NotStarted,
+        InProgress,
+        Completable,
+        Completed,
     }
     #endregion
 
@@ -91,7 +103,7 @@ namespace TextRPG
     {
         Afternoon, Night,
     }
-    
+
     public enum Job
     {
         Warrior, Wizard, Archer,

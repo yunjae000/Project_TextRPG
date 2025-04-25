@@ -2,13 +2,13 @@ namespace TextRPG
 {
     interface IDamagable
     {
-        public void OnDamage(AttackType type, float damage);
+        public void OnDamage(AttackType type, float damage, bool isSkill);
     }
-    
+
     interface IWearable
     {
-        public void OnEquipped(Character character);
-        public void OnUnequipped(Character character);
+        public void OnEquip(Character character);
+        public void OnUnequip(Character character);
     }
 
     interface IUseable
@@ -19,12 +19,12 @@ namespace TextRPG
 
     interface IPurchasable
     {
-        public void OnPurchased(Character character);
+        public void OnPurchase(Character character);
     }
 
     interface ISellable
     {
-        public void OnSold(Character character);
+        public void OnSell(Character character);
     }
 
     interface IPickable
@@ -35,14 +35,27 @@ namespace TextRPG
 
     interface IContractable
     {
+        public void OnContracted();
         public void OnContracted(Character character);
+        public void OnProgress();
+        public void OnProgress(Character character);
         public void OnCompleted(Character character);
-        public void OnCompletable();
-        public void OnNotCompletable();
     }
 
     interface ICancelable
     {
-        public void OnCanceled(Character character);
+        public void OnCanceled();
+    }
+
+    interface ISkillActive
+    {
+        public bool OnActive(Character character, Monster target);
+        public bool OnActive(Character character, LinkedList<Monster> targets);
+    }
+
+    interface ISkillBuff
+    {
+        public bool OnActive(Character character);
+        public void OnBuffExpired(Character character);
     }
 }
