@@ -183,9 +183,9 @@ namespace TextRPG
             if (category == ItemCategory.Armor || category == ItemCategory.Weapon)
             {
                 int option = 1;
-                UIManager.InventoryUI_Equipment();
                 while (true)
                 {
+                    UIManager.InventoryUI_Equipment();
                     if (!int.TryParse(Console.ReadLine(), out int index)) { Console.WriteLine("| 잘못된 입력입니다! |"); Console.Write("Press enter to continue..."); Console.ReadLine(); }
                     else if(index < 1 || index > 4) { Console.WriteLine("| 잘못된 입력입니다! |"); Console.Write("Press enter to continue..."); Console.ReadLine(); }
                     else { option = Math.Clamp(index, 1, 4); break; }
@@ -202,9 +202,9 @@ namespace TextRPG
             else if (category == ItemCategory.Consumable)
             {
                 int option = 1;
-                UIManager.InventoryUI_Consumable();
                 while (true)
                 {
+                    UIManager.InventoryUI_Consumable();
                     if (!int.TryParse(Console.ReadLine(), out int index)) { Console.WriteLine("| 잘못된 입력입니다! |"); Console.Write("Press enter to continue..."); Console.ReadLine(); }
                     else if (index < 1 || index > 2) { Console.WriteLine("| 잘못된 입력입니다! |"); Console.Write("Press enter to continue..."); Console.ReadLine(); }
                     else { option = Math.Clamp(index, 1, 2); break; }
@@ -219,9 +219,9 @@ namespace TextRPG
             else
             {
                 int option = 1;
-                UIManager.InventoryUI_Misc();
                 while (true)
                 {
+                    UIManager.InventoryUI_Misc();
                     if (!int.TryParse(Console.ReadLine(), out int index)) { Console.WriteLine("| 잘못된 입력입니다! |"); Console.Write("Press enter to continue..."); Console.ReadLine(); }
                     else if (index < 1 || index > 2) { Console.WriteLine("| 잘못된 입력입니다! |"); Console.Write("Press enter to continue..."); Console.ReadLine(); }
                     else { option = Math.Clamp(index, 1, 2); break; }
