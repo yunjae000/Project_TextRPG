@@ -525,7 +525,10 @@ namespace TextRPG
         /// </summary>
         public static void SettingOptionUI()
         {
-            Console.WriteLine($"\n| .:~:. 옵션 .:~:. |");
+            Console.WriteLine($"\n| .:~:..:~:. 옵션 .:~:..:~:. |");
+            foreach(var line in Miscs.SettingDesign) Console.WriteLine(line);
+            Console.WriteLine("| .:~:..:~:.:~:.:~:.:~:..:~:. |\n");
+
             int i = 1;
             foreach (var opt in Enum.GetValues(typeof(SettingOptions)))
             {
