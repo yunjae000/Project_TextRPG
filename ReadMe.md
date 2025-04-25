@@ -84,3 +84,5 @@ https://www.figma.com/design/GP9zVKt0nwOz0Bjb08yUHn/%EB%8D%98-Dun.-?node-id=0-1&
 - 저장 및 불러오기는 항상 마을에서만 가능합니다.
 
 # 📽️ 시연 영상
+
+[https://drive.google.com/file/d/1Y2EJO8IVItsPf8ZQu3SNBExjzbX5yq1K/view?usp=sharing]
