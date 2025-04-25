@@ -236,7 +236,7 @@ namespace TextRPG
         public override string ToString()
         {
             StringBuilder sb = new();
-            _ = IsEquipped == true ? sb.Append("[E]") : sb.Append("[ ]");
+            if (IsEquipped == true) sb.Append("[E]"); else sb.Append("[ ]");
             sb.Append($"{Name} | Def. : {DefendStat.Defend:F2}, ")
               .Append($"RDef. : {DefendStat.RangeDefend:F2}, ")
               .Append($"MDef. : {DefendStat.MagicDefend:F2} | ")
@@ -523,6 +523,7 @@ namespace TextRPG
                         RangeAttack = attackStat.RangeAttack + attackStat.RangeAttack * ((int)rarity - (int)Rarity.Rare) * 0.05f,
                         MagicAttack = attackStat.MagicAttack + attackStat.MagicAttack * ((int)rarity - (int)Rarity.Rare) * 0.05f
                     };
+                    this.attackStat = newStat;
                 }
                 else this.attackStat = new(attackStat);
             }
@@ -606,12 +607,29 @@ namespace TextRPG
             if(obj is Weapon weapon) return Name == weapon.Name;
             return false;
         }
+
+        /// <summary>
+        /// Describe the weapon
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            StringBuilder sb = new();
+            if (IsEquipped == true) sb.Append("[E]"); else sb.Append("[ ]");
+
+            if (AttackType == AttackType.Close) sb.Append($"{Name} | Atk. : {AttackStat.Attack:F2} | ");
+            else if(AttackType == AttackType.Long) sb.Append($"{Name} | Rng Atk. : {AttackStat.RangeAttack:F2} | ");
+            else if (AttackType == AttackType.Magic) sb.Append($"{Name} | Mag Atk. : {AttackStat.MagicAttack:F2} | ");
+            sb.Append($"가격 : {Price} | {Rarity}");
+            return sb.ToString();
+        }
     }
     /// <summary>
     /// Sword -> Close Range Attack Stat
     /// </summary>
     class Sword : Weapon
     {
+        // Constructor
         public Sword(string name, AttackStat attackStat, int price, Rarity rarity) : base(name, attackStat, price, rarity)
         {
             AttackType = AttackType.Close;
@@ -650,19 +668,6 @@ namespace TextRPG
         {
             base.OnPicked(character);
             character.Weapons.Add(new Sword(this));
-        }
-
-        /// <summary>
-        /// Describe the sword
-        /// </summary>
-        /// <returns></returns>
-        public override string ToString()
-        {
-            StringBuilder sb = new();
-            _ = IsEquipped == true ? sb.Append("[E]") : sb.Append("[ ]");
-            sb.Append($"{Name} | Atk. : {AttackStat.Attack:F2} | ")
-              .Append($"가격 : {Price} | {Rarity}");
-            return sb.ToString();
         }
     }
     /// <summary>
@@ -708,19 +713,6 @@ namespace TextRPG
         {
             base.OnPicked(character);
             character.Weapons.Add(new Bow(this));
-        }
-
-        /// <summary>
-        /// Describe the bow
-        /// </summary>
-        /// <returns></returns>
-        public override string ToString()
-        {
-            StringBuilder sb = new();
-            _ = IsEquipped == true ? sb.Append("[E]") : sb.Append("[ ]");
-            sb.Append($"{Name} | Rng Atk. : {AttackStat.RangeAttack:F2} | ")
-              .Append($"가격 : {Price} | {Rarity}");
-            return sb.ToString();
         }
     }
     /// <summary>
@@ -768,19 +760,6 @@ namespace TextRPG
         {
             base.OnPicked(character);
             character.Weapons.Add(new Staff(this));
-        }
-
-        /// <summary>
-        /// Describe the staff
-        /// </summary>
-        /// <returns></returns>
-        public override string ToString()
-        {
-            StringBuilder sb = new();
-            _ = IsEquipped == true ? sb.Append("[E]") : sb.Append("[ ]");
-            sb.Append($"{Name} | Mag Atk. : {AttackStat.MagicAttack:F2} | ")
-              .Append($"가격 : {Price} | {Rarity}");
-            return sb.ToString();
         }
     }
     #endregion

@@ -81,12 +81,14 @@ namespace TextRPG
             }
 
             GameManager.SelectedCharacter.Currency -= (option * 20);
+            Console.WriteLine($"| {Math.Min(GameManager.SelectedCharacter.MaxHealth * (0.25f + (0.25f * (option - 2))), (GameManager.SelectedCharacter.MaxHealth - GameManager.SelectedCharacter.Health))}의 HP를 회복했습니다! |");
+            Console.WriteLine($"| {Math.Min(GameManager.SelectedCharacter.MaxMagicPoint * (0.25f + (0.25f * (option - 2))), (GameManager.SelectedCharacter.MaxMagicPoint - GameManager.SelectedCharacter.MagicPoint))}의 MP를 회복했습니다! |");
+            
             GameManager.SelectedCharacter.OnHeal(GameManager.SelectedCharacter.MaxHealth * (0.25f + (0.25f * (option - 2))));
             GameManager.SelectedCharacter.OnMagicPointHeal(GameManager.SelectedCharacter.MaxMagicPoint * (0.25f + (0.25f * (option - 2))));
             if (GameManager.GameTime == GameTime.Afternoon) GameManager.GameTime = GameTime.Night;
             else { GameManager.GameTime = GameTime.Afternoon; GameManager.RemoveAllBuffs(); }
             
-            Console.WriteLine("| 좋은 꿈 꾸세요! |");
             Console.Write("\nPress enter to continue...");
             Console.ReadLine();
         }
@@ -124,7 +126,7 @@ namespace TextRPG
                 if (wearable == null && useable == null && pickable == null) { Console.WriteLine("| Selected Category is empty! |"); break; }
 
                 // Select Item and Modify
-                if (!InInventory_ChangeStateOfItem(category, wearable, useable, pickable)) continue;
+                InInventory_ChangeStateOfItem(category, wearable, useable, pickable);
 
                 Console.Write("Press enter to continue...");
                 Console.ReadLine();
@@ -175,28 +177,40 @@ namespace TextRPG
         /// <param name="useable"></param>
         /// <param name="pickable"></param>
         /// <returns></returns>
-        private bool InInventory_ChangeStateOfItem(ItemCategory category, IWearable? wearable, IUseable? useable, IPickable? pickable)
+        private void InInventory_ChangeStateOfItem(ItemCategory category, IWearable? wearable, IUseable? useable, IPickable? pickable)
         {
             // Select Item and Modify
             if (category == ItemCategory.Armor || category == ItemCategory.Weapon)
             {
+                int option = 1;
                 UIManager.InventoryUI_Equipment();
-                if (!int.TryParse(Console.ReadLine(), out int index)) { Console.WriteLine("| 잘못된 입력입니다! |"); return false; }
-
-                switch (Math.Clamp(index, 1, 4))
+                while (true)
                 {
-                    case 1: break;
-                    case 2: wearable?.OnEquip(GameManager.SelectedCharacter); break;
-                    case 3: wearable?.OnUnequip(GameManager.SelectedCharacter); break;
-                    case 4: pickable?.OnDropped(GameManager.SelectedCharacter); break;
+                    if (!int.TryParse(Console.ReadLine(), out int index)) { Console.WriteLine("| 잘못된 입력입니다! |"); Console.Write("Press enter to continue..."); Console.ReadLine(); }
+                    else if(index < 1 || index > 4) { Console.WriteLine("| 잘못된 입력입니다! |"); Console.Write("Press enter to continue..."); Console.ReadLine(); }
+                    else { option = Math.Clamp(index, 1, 4); break; }
                 }
+                
+                switch (option)
+                    {
+                        case 1: break;
+                        case 2: wearable?.OnEquip(GameManager.SelectedCharacter); break;
+                        case 3: wearable?.OnUnequip(GameManager.SelectedCharacter); break;
+                        case 4: pickable?.OnDropped(GameManager.SelectedCharacter); break;
+                    }
             }
             else if (category == ItemCategory.Consumable)
             {
+                int option = 1;
                 UIManager.InventoryUI_Consumable();
-                if (!int.TryParse(Console.ReadLine(), out int index)) { Console.WriteLine("| 잘못된 입력입니다! |"); return false; }
+                while (true)
+                {
+                    if (!int.TryParse(Console.ReadLine(), out int index)) { Console.WriteLine("| 잘못된 입력입니다! |"); Console.Write("Press enter to continue..."); Console.ReadLine(); }
+                    else if (index < 1 || index > 2) { Console.WriteLine("| 잘못된 입력입니다! |"); Console.Write("Press enter to continue..."); Console.ReadLine(); }
+                    else { option = Math.Clamp(index, 1, 2); break; }
+                }
 
-                switch (Math.Clamp(index, 1, 2))
+                switch (option)
                 {
                     case 1: break;
                     case 2: useable?.OnUsed(GameManager.SelectedCharacter); break;
@@ -204,15 +218,20 @@ namespace TextRPG
             }
             else
             {
+                int option = 1;
                 UIManager.InventoryUI_Misc();
-                if (!int.TryParse(Console.ReadLine(), out int index)) { Console.WriteLine("| 잘못된 입력입니다! |"); return false; }
-                switch (Math.Clamp(index, 1, 2))
+                while (true)
+                {
+                    if (!int.TryParse(Console.ReadLine(), out int index)) { Console.WriteLine("| 잘못된 입력입니다! |"); Console.Write("Press enter to continue..."); Console.ReadLine(); }
+                    else if (index < 1 || index > 2) { Console.WriteLine("| 잘못된 입력입니다! |"); Console.Write("Press enter to continue..."); Console.ReadLine(); }
+                    else { option = Math.Clamp(index, 1, 2); break; }
+                }
+                switch (option)
                 {
                     case 1: break;
                     case 2: pickable?.OnDropped(GameManager.SelectedCharacter); break;
                 }
             }
-            return true;
         }
 
         /// <summary>
