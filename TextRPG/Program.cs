@@ -81,8 +81,8 @@ namespace TextRPG
             }
 
             GameManager.SelectedCharacter.Currency -= (option * 20);
-            Console.WriteLine($"| {Math.Min(GameManager.SelectedCharacter.MaxHealth * (0.25f + (0.25f * (option - 2))), (GameManager.SelectedCharacter.MaxHealth - GameManager.SelectedCharacter.Health))}의 HP를 회복했습니다! |");
-            Console.WriteLine($"| {Math.Min(GameManager.SelectedCharacter.MaxMagicPoint * (0.25f + (0.25f * (option - 2))), (GameManager.SelectedCharacter.MaxMagicPoint - GameManager.SelectedCharacter.MagicPoint))}의 MP를 회복했습니다! |");
+            Console.WriteLine($"| {Math.Min(GameManager.SelectedCharacter.MaxHealth * (0.25f + (0.25f * (option - 2))), (GameManager.SelectedCharacter.MaxHealth - GameManager.SelectedCharacter.Health)):F2}의 HP를 회복했습니다! |");
+            Console.WriteLine($"| {Math.Min(GameManager.SelectedCharacter.MaxMagicPoint * (0.25f + (0.25f * (option - 2))), (GameManager.SelectedCharacter.MaxMagicPoint - GameManager.SelectedCharacter.MagicPoint)):F2}의 MP를 회복했습니다! |");
             
             GameManager.SelectedCharacter.OnHeal(GameManager.SelectedCharacter.MaxHealth * (0.25f + (0.25f * (option - 2))));
             GameManager.SelectedCharacter.OnMagicPointHeal(GameManager.SelectedCharacter.MaxMagicPoint * (0.25f + (0.25f * (option - 2))));
